@@ -1,0 +1,133 @@
+// UrbanDana — Prisma schema (SQLite for dev, swappable to Postgres in prod)
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ===== Catalog =====
+model Product {
+  id          String     @id @default(cuid())
+  slug        String     @unique
+  title       String
+  subtitle    String?
+  description String
+  category    String     // "Bandana Caps" | "Visors" | "Limited Edition" | "Bundles"
+  badge       String?    // "Bestseller" | "New" | "Limited" | null
+  price       Int        // in paise (₹1 = 100 paise)
+  oldPrice    Int?
+  rating      Float      @default(4.8)
+  reviews     Int        @default(0)
+  stock       Int        @default(50)
+  isFeatured  Boolean    @default(false)
+  isLimited   Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  images      ProductImage[]
+  variants    ProductVariant[]
+  cartItems   CartItem[]
+  orderItems  OrderItem[]
+  wishlist    Wishlist[]
+}
+
+model ProductImage {
+  id        String  @id @default(cuid())
+  productId String
+  url       String
+  alt       String?
+  position  Int     @default(0)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model ProductVariant {
+  id        String  @id @default(cuid())
+  productId String
+  name      String  // "color" or "size"
+  value     String  // e.g. "Red", "One Size"
+  stock     Int     @default(50)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+// ===== Cart =====
+model Cart {
+  id        String     @id @default(cuid())
+  userId    String?
+  sessionId String?
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  cartId    String
+  productId String
+  quantity  Int      @default(1)
+  variant   String?  // JSON string of selected options
+  product   Product  @relation(fields: [productId], references: [id])
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+}
+
+// ===== Orders =====
+model Order {
+  id            String      @id @default(cuid())
+  orderNumber   String      @unique
+  userId        String?
+  email         String
+  phone         String
+  firstName     String
+  lastName      String
+  address       String
+  city          String
+  state         String
+  pincode       String
+  totalAmount   Int
+  status        String      @default("PENDING") // PENDING | PAID | SHIPPED | DELIVERED | CANCELLED
+  paymentMethod String      @default("COD")     // COD | UPI | CARD
+  items         OrderItem[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  productId String
+  title     String
+  price     Int
+  quantity  Int
+  variant   String?
+  product   Product @relation(fields: [productId], references: [id])
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+// ===== Users & Auth =====
+model User {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  password  String
+  firstName String?
+  lastName  String?
+  phone     String?
+  role      String    @default("CUSTOMER") // CUSTOMER | ADMIN
+  wishlist  Wishlist[]
+  createdAt DateTime  @default(now())
+}
+
+model Wishlist {
+  id        String  @id @default(cuid())
+  userId    String
+  productId String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+// ===== Founder / CMS content =====
+model CmsContent {
+  id      String @id @default(cuid())
+  key     String @unique
+  value   String
+}

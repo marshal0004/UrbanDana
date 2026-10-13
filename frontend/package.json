@@ -1,0 +1,37 @@
+{
+  "name": "urbandana-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "UrbanDana - India's Original Bandana Cap | Next.js 16 + TypeScript + Tailwind 4",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "16.0.0",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "framer-motion": "^11.11.0",
+    "lucide-react": "^0.454.0",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.5.4",
+    "zustand": "^5.0.0",
+    "axios": "^1.7.7",
+    "swr": "^2.2.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.8.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.6.0",
+    "tailwindcss": "^4.0.0",
+    "@tailwindcss/postcss": "^4.0.0",
+    "postcss": "^8.4.47",
+    "autoprefixer": "^10.4.20"
+  },
+  "allowScripts": {
+    "sharp@0.34.5": true
+  }
+}

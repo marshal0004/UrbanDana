@@ -1,0 +1,33 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Env (keep .env.example committed; ignore real .env per app)
+.env
+.env.local
+.env.*.local
+
+# Backend
+backend/node_modules/
+backend/dist/
+backend/prisma/migrations/
+backend/dev.db*
+backend/uploads/seed/
+# Note: backend/uploads/products/ IS committed — seed data references those paths
+
+# Frontend
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/dist/
+
+# Misc
+*.tsbuildinfo
+next-env.d.ts
