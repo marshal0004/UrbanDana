@@ -19,7 +19,12 @@ backend/dist/
 backend/prisma/migrations/
 backend/dev.db*
 backend/uploads/seed/
-# Note: backend/uploads/products/ IS committed — seed data references those paths
+# Classified image folders ARE committed — seed data references those paths
+# backend/uploads/products/caps/
+# backend/uploads/products/tshirts/
+# backend/uploads/products/models/
+# backend/uploads/products/logos/
+# backend/uploads/products/lifestyle/
 
 # Frontend
 frontend/node_modules/
