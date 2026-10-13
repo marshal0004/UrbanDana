@@ -7,6 +7,7 @@ import authRouter from "./routes/auth.js";
 import cartRouter from "./routes/cart.js";
 import ordersRouter from "./routes/orders.js";
 import cmsRouter from "./routes/cms.js";
+import paymentsRouter from "./routes/payments.js";
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/orders", ordersRouter);
 app.use("/api/cms", cmsRouter);
+app.use("/api/payments", paymentsRouter);
 
 // 404
 app.use((req, res) => res.status(404).json({ error: "Not found", path: req.path }));

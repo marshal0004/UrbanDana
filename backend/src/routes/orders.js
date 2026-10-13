@@ -1,8 +1,35 @@
 import { Router } from "express";
 import prisma from "../lib/prisma.js";
 import { generateOrderNumber } from "../lib/utils.js";
+import { authMiddleware } from "../lib/auth.js";
 
 const router = Router();
+
+/**
+ * GET /api/orders
+ * - Admin: returns all orders
+ * - Customer (logged in): returns their orders (matched by email)
+ * - Anonymous: 401 (must be authed to list)
+ */
+router.get("/", authMiddleware, async (req, res, next) => {
+  try {
+    if (!req.user) return res.status(401).json({ error: "Authentication required" });
+
+    const where = req.user.role === "ADMIN"
+      ? {}
+      : { email: req.user.email };
+
+    const orders = await prisma.order.findMany({
+      where,
+      include: { items: true },
+      orderBy: { createdAt: "desc" },
+      take: 100,
+    });
+    res.json(orders);
+  } catch (e) {
+    next(e);
+  }
+});
 
 router.post("/", async (req, res, next) => {
   try {

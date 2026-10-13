@@ -1,71 +1,160 @@
 "use client";
 import Link from "next/link";
-import { ArrowRight, Sparkles } from "lucide-react";
-import { useInView } from "@/hooks/useInView";
+import { useEffect, useState, useCallback } from "react";
+import { ArrowRight, Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { absUrl, type Product } from "@/lib/api";
+
+const SLIDES = [
+  {
+    pill: "NEW DROP — SUNSET ART CAP",
+    pillIcon: Sparkles,
+    eyebrow: "India's Original Bandana Cap",
+    title: "STYLE THAT",
+    titleAccent: "NEVER",
+    titleEnd: "STOPS.",
+    subtitle: "One cap. Three looks. Wear it forward, backward, or fold it low. Handcrafted in India. No restocks. No rules.",
+    primaryCta: { href: "/shop", label: "Shop the Drop" },
+    secondaryCta: { href: "/about", label: "The Urbandana Story" },
+    bg: "linear-gradient(135deg, #0a0a0a 0%, #1a0507 50%, #2a0a10 100%)",
+    accent: "#c8102e",
+  },
+  {
+    pill: "LIMITED — 200 PIECES ONLY",
+    pillIcon: Sparkles,
+    eyebrow: "Hand-drawn. Hand-finished.",
+    title: "WHEN IT'S GONE,",
+    titleAccent: "IT'S GONE",
+    titleEnd: "FOREVER.",
+    subtitle: "Sunset Art Cap — hand-drawn sun motif in golden orange against deep indigo. Numbered authenticity tag. Only 200 made.",
+    primaryCta: { href: "/product/sunset-art-cap", label: "Get the Sunset Art Cap" },
+    secondaryCta: { href: "/shop?category=Limited Edition", label: "All Limited Drops" },
+    bg: "linear-gradient(135deg, #0a0a0a 0%, #1a0f05 50%, #2a1f0a 100%)",
+    accent: "#d4a017",
+  },
+  {
+    pill: "BEST VALUE — SAVE ₹2,000",
+    pillIcon: Sparkles,
+    eyebrow: "The complete collection",
+    title: "SIX CAPS.",
+    titleAccent: "ONE",
+    titleEnd: "BOX.",
+    subtitle: "All 6 signature colourways in a premium wooden gift box with numbered certificate. The ultimate Urbandana collector's item.",
+    primaryCta: { href: "/product/collector-s-full-set", label: "Get the Collector's Set" },
+    secondaryCta: { href: "/shop?category=Bundles", label: "All Bundles" },
+    bg: "linear-gradient(135deg, #0a0a0a 0%, #0f1a1a 50%, #0a2a2a 100%)",
+    accent: "#10b981",
+  },
+];
 
 export default function Hero() {
-  const { ref, inView } = useInView();
+  const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const slide = SLIDES[active];
+
+  const next = useCallback(() => setActive((i) => (i + 1) % SLIDES.length), []);
+  const prev = useCallback(() => setActive((i) => (i - 1 + SLIDES.length) % SLIDES.length), []);
+
+  useEffect(() => {
+    if (paused) return;
+    const t = setInterval(next, 6000);
+    return () => clearInterval(t);
+  }, [next, paused]);
 
   return (
-    <section ref={ref} className="relative min-h-[92vh] flex flex-col justify-end overflow-hidden">
-      {/* Background image */}
-      <div className="absolute inset-0 -z-10">
+    <section
+      className="relative min-h-[88vh] flex flex-col justify-end overflow-hidden"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      {/* Background — animated gradient */}
+      <div className="absolute inset-0 -z-10 transition-all duration-1000" style={{ background: slide.bg }} />
+      <div className="absolute inset-0 -z-10 opacity-30">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="https://images.unsplash.com/photo-1521369909029-2afed882baee?w=2000&q=80&auto=format&fit=crop"
           alt=""
-          className="w-full h-full object-cover opacity-50"
-          onError={(e) => {
-            (e.target as HTMLImageElement).src =
-              "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 900'%3E%3Crect width='100%25' height='100%25' fill='%230a0a0a'/%3E%3C/svg%3E";
-          }}
+          className="w-full h-full object-cover mix-blend-overlay"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-brand-black/40 via-brand-black/30 to-brand-black" />
       </div>
 
-      {/* Floating "NEW DROP" pill */}
-      <div className="absolute top-32 left-1/2 -translate-x-1/2 z-10">
-        <div className="inline-flex items-center gap-2 bg-brand-red/90 backdrop-blur-sm text-paper text-[10px] font-bold uppercase tracking-widest px-4 py-2 rounded-full">
-          <Sparkles className="w-3 h-3" />
-          New Drop — Sunset Art Cap · 200 pieces only
+      {/* Slide indicators (right side) */}
+      <div className="absolute right-6 top-1/2 -translate-y-1/2 z-20 hidden md:flex flex-col gap-2">
+        {SLIDES.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setActive(i)}
+            className="group relative w-1 h-12 rounded-full bg-white/20 overflow-hidden"
+            aria-label={`Slide ${i + 1}`}
+          >
+            <span
+              className={cn("absolute inset-0 bg-paper transition-all", active === i ? "h-full" : "h-0")}
+              style={{ backgroundColor: slide.accent }}
+            />
+          </button>
+        ))}
+      </div>
+
+      {/* Arrows (desktop) */}
+      <button
+        onClick={prev}
+        className="absolute left-6 top-1/2 -translate-y-1/2 z-20 hidden md:flex w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 items-center justify-center text-paper/80 hover:text-paper hover:bg-white/10 transition"
+        aria-label="Previous slide"
+      >
+        <ChevronLeft className="w-5 h-5" />
+      </button>
+      <button
+        onClick={next}
+        className="absolute right-6 top-1/2 -translate-y-1/2 z-20 hidden md:flex w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 items-center justify-center text-paper/80 hover:text-paper hover:bg-white/10 transition"
+        style={{ marginRight: "32px" }}
+        aria-label="Next slide"
+      >
+        <ChevronRight className="w-5 h-5" />
+      </button>
+
+      {/* Floating NEW DROP pill */}
+      <div className="absolute top-12 left-1/2 -translate-x-1/2 z-10">
+        <div
+          className="inline-flex items-center gap-2 backdrop-blur-sm text-paper text-[10px] font-bold uppercase tracking-widest px-4 py-2 rounded-full"
+          style={{ backgroundColor: `${slide.accent}E6` }}
+        >
+          <slide.pillIcon className="w-3 h-3" />
+          {slide.pill}
         </div>
       </div>
 
       {/* Content */}
       <div className="relative z-10 mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 pb-20">
-        <div className={cn("max-w-3xl transition-all duration-1000", inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8")}>
-          <p className="text-xs uppercase tracking-[0.4em] text-brand-red mb-5 font-semibold">
-            India's Original Bandana Cap
+        <div key={active} className="max-w-3xl animate-[fadeIn_0.6s_ease]">
+          <p className="text-xs uppercase tracking-[0.4em] mb-5 font-semibold" style={{ color: slide.accent }}>
+            {slide.eyebrow}
           </p>
           <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter text-paper leading-[0.9]">
-            STYLE THAT
+            {slide.title}
             <br />
-            <span className="text-brand-red">NEVER</span> STOPS.
+            <span style={{ color: slide.accent }}>{slide.titleAccent}</span> {slide.titleEnd}
           </h1>
           <p className="mt-8 text-lg text-paper/70 max-w-xl leading-relaxed">
-            One cap. Three looks. Wear it forward, backward, or fold it low.
-            Handcrafted in India. No restocks. No rules.
+            {slide.subtitle}
           </p>
 
-          {/* CTAs */}
           <div className="mt-10 flex flex-col sm:flex-row gap-4">
             <Link
-              href="/shop"
-              className="group inline-flex items-center justify-center gap-2 bg-brand-red hover:bg-brand-red-soft text-paper text-sm font-bold uppercase tracking-widest px-8 py-4 rounded-full transition"
+              href={slide.primaryCta.href}
+              className="group inline-flex items-center justify-center gap-2 text-paper text-sm font-bold uppercase tracking-widest px-8 py-4 rounded-full transition hover:scale-105"
+              style={{ backgroundColor: slide.accent }}
             >
-              Shop the Drop
+              {slide.primaryCta.label}
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition" />
             </Link>
             <Link
-              href="/about"
+              href={slide.secondaryCta.href}
               className="inline-flex items-center justify-center gap-2 border border-white/20 hover:border-white text-paper text-sm font-bold uppercase tracking-widest px-8 py-4 rounded-full transition backdrop-blur-sm"
             >
-              The Urbandana Story
+              {slide.secondaryCta.label}
             </Link>
           </div>
 
-          {/* Trust row */}
           <div className="mt-14 flex flex-wrap items-center gap-x-8 gap-y-3 text-[11px] uppercase tracking-widest text-paper/50">
             <span>★ 4.8/5 from 700+ reviews</span>
             <span className="opacity-40">|</span>
@@ -78,11 +167,12 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Bottom-right scroll cue */}
-      <div className="absolute bottom-6 right-6 z-10 hidden lg:flex flex-col items-center gap-2 text-paper/40">
-        <span className="text-[10px] uppercase tracking-widest [writing-mode:vertical-rl]">Scroll</span>
-        <span className="block w-px h-12 bg-gradient-to-b from-paper/40 to-transparent" />
-      </div>
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </section>
   );
 }

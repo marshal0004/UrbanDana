@@ -1,19 +1,58 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useShop } from "@/context/ShopContext";
+import { useAuth } from "@/context/AuthContext";
 import { api } from "@/lib/api";
 import { rupee } from "@/lib/utils";
 import Link from "next/link";
-import { ArrowRight, Check, Lock } from "lucide-react";
+import { ArrowRight, Check, Lock, CreditCard, Loader2 } from "lucide-react";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 export default function CheckoutPage() {
   const { cart, cartTotal, sessionId } = useShop();
+  const { user, token } = useAuth();
   const [placing, setPlacing] = useState(false);
-  const [placed, setPlaced] = useState<{ orderNumber: string; totalAmount: number } | null>(null);
+  const [placed, setPlaced] = useState<{ orderNumber: string; totalAmount: number; id: string } | null>(null);
+  const [razorpayAvailable, setRazorpayAvailable] = useState(false);
+  const [razorpayKeyId, setRazorpayKeyId] = useState<string | null>(null);
   const [form, setForm] = useState({
     email: "", phone: "", firstName: "", lastName: "",
     address: "", city: "", state: "", pincode: "", paymentMethod: "COD",
   });
+
+  // Pre-fill from logged-in user
+  useEffect(() => {
+    if (user) {
+      setForm((f) => ({
+        ...f,
+        email: user.email || f.email,
+        firstName: user.firstName || f.firstName,
+        lastName: user.lastName || f.lastName,
+        phone: user.phone || f.phone,
+      }));
+    }
+  }, [user]);
+
+  // Check Razorpay availability
+  useEffect(() => {
+    fetch(`${API_URL}/api/payments/health`)
+      .then((r) => r.json())
+      .then((d) => {
+        setRazorpayAvailable(d.razorpay === true);
+        setRazorpayKeyId(d.keyId);
+      })
+      .catch(() => setRazorpayAvailable(false));
+
+    // Load Razorpay checkout.js script
+    if (typeof window !== "undefined" && !document.querySelector("script#razorpay-checkout")) {
+      const s = document.createElement("script");
+      s.id = "razorpay-checkout";
+      s.src = "https://checkout.razorpay.com/v1/checkout.js";
+      s.async = true;
+      document.body.appendChild(s);
+    }
+  }, []);
 
   const shipping = cartTotal >= 99900 ? 0 : 9900;
   const total = cartTotal + shipping;
@@ -23,6 +62,7 @@ export default function CheckoutPage() {
     if (!cart?.items?.length) return;
     setPlacing(true);
     try {
+      // 1. Create UrbanDana order in DB
       const order = await api.createOrder({
         ...form,
         items: cart.items.map((i) => ({
@@ -32,10 +72,84 @@ export default function CheckoutPage() {
         })),
         paymentMethod: form.paymentMethod,
       });
-      setPlaced({ orderNumber: order.orderNumber, totalAmount: order.totalAmount });
+
+      // 2. If COD, we're done
+      if (form.paymentMethod === "COD") {
+        setPlaced({ orderNumber: order.orderNumber, totalAmount: order.totalAmount, id: order.id });
+        return;
+      }
+
+      // 3. If Razorpay, create Razorpay order + open checkout
+      if (form.paymentMethod === "RAZORPAY") {
+        if (!razorpayAvailable || !razorpayKeyId) {
+          alert("Online payments not configured. Please choose COD.");
+          setPlacing(false);
+          return;
+        }
+
+        const r = await fetch(`${API_URL}/api/payments/create-order`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ amount: total, orderId: order.id }),
+        });
+        if (!r.ok) {
+          const e = await r.json().catch(() => ({}));
+          throw new Error(e.error || "Failed to create Razorpay order");
+        }
+        const rzpOrder = await r.json();
+
+        // Open Razorpay checkout modal
+        const rzp = new (window as any).Razorpay({
+          key: razorpayKeyId,
+          amount: rzpOrder.amount,
+          currency: rzpOrder.currency,
+          name: "URBANDANA",
+          description: `Order ${order.orderNumber}`,
+          order_id: rzpOrder.razorpayOrderId,
+          prefill: {
+            name: `${form.firstName} ${form.lastName}`,
+            email: form.email,
+            contact: form.phone,
+          },
+          theme: { color: "#c8102e" },
+          handler: async (response: any) => {
+            // Verify signature server-side
+            try {
+              const vr = await fetch(`${API_URL}/api/payments/verify`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                body: JSON.stringify({
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_signature: response.razorpay_signature,
+                  orderId: order.id,
+                }),
+              });
+              if (!vr.ok) {
+                const e = await vr.json().catch(() => ({}));
+                throw new Error(e.error || "Payment verification failed");
+              }
+              setPlaced({ orderNumber: order.orderNumber, totalAmount: order.totalAmount, id: order.id });
+            } catch (err) {
+              console.error("verify failed", err);
+              alert(`Payment verification failed: ${err instanceof Error ? err.message : "unknown"}. Contact support with order ${order.orderNumber}.`);
+            } finally {
+              setPlacing(false);
+            }
+          },
+          modal: {
+            ondismiss: () => {
+              setPlacing(false);
+              alert(`Payment cancelled. Your order ${order.orderNumber} is pending — pay later from your account page.`);
+            },
+          },
+        });
+        rzp.open();
+        return;
+      }
     } catch (e) {
       console.error(e);
-      alert("Failed to place order. Please try again.");
+      alert(`Failed to place order: ${e instanceof Error ? e.message : "unknown"}`);
     } finally {
       setPlacing(false);
     }
@@ -49,7 +163,7 @@ export default function CheckoutPage() {
         </div>
         <h1 className="mt-8 text-4xl font-black text-paper">Order Placed!</h1>
         <p className="mt-3 text-paper/70">
-          Thanks for your order. We&apos;ll dispatch it within 24 hours.
+          Thanks for your order{user?.firstName ? `, ${user.firstName}` : ""}. We&apos;ll dispatch it within 24 hours.
         </p>
         <div className="mt-8 p-6 rounded-2xl bg-white/5 border border-white/10 text-left">
           <div className="flex justify-between text-sm mb-3">
@@ -57,12 +171,12 @@ export default function CheckoutPage() {
             <span className="font-bold text-paper">{placed.orderNumber}</span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-paper/60">Total Paid (COD)</span>
+            <span className="text-paper/60">Total {form.paymentMethod === "RAZORPAY" ? "Paid" : "(COD)"}</span>
             <span className="font-bold text-paper">{rupee(placed.totalAmount)}</span>
           </div>
         </div>
         <p className="mt-6 text-xs text-paper/50">
-          A confirmation has been sent to your email. Track your order anytime using the order number.
+          A confirmation has been sent to your email. Track your order anytime from your account.
         </p>
         <Link
           href="/shop"
@@ -94,9 +208,7 @@ export default function CheckoutPage() {
       </p>
 
       <form onSubmit={placeOrder} className="mt-10 grid lg:grid-cols-3 gap-10">
-        {/* Form */}
         <div className="lg:col-span-2 space-y-8">
-          {/* Contact */}
           <fieldset className="space-y-4">
             <legend className="text-xs uppercase tracking-widest text-brand-red font-semibold mb-3">
               Contact
@@ -107,7 +219,6 @@ export default function CheckoutPage() {
             </div>
           </fieldset>
 
-          {/* Shipping */}
           <fieldset className="space-y-4">
             <legend className="text-xs uppercase tracking-widest text-brand-red font-semibold mb-3">
               Shipping Address
@@ -124,42 +235,73 @@ export default function CheckoutPage() {
             </div>
           </fieldset>
 
-          {/* Payment */}
           <fieldset>
             <legend className="text-xs uppercase tracking-widest text-brand-red font-semibold mb-3">
               Payment Method
             </legend>
-            <div className="grid sm:grid-cols-3 gap-3">
-              {[
-                { v: "COD", l: "Cash on Delivery", desc: "Pay when delivered" },
-                { v: "UPI", l: "UPI", desc: "GPay, PhonePe, Paytm" },
-                { v: "CARD", l: "Card", desc: "Credit / Debit" },
-              ].map((p) => (
-                <label
-                  key={p.v}
-                  className={`cursor-pointer p-4 rounded-2xl border transition ${
-                    form.paymentMethod === p.v
-                      ? "bg-brand-red/10 border-brand-red"
-                      : "bg-white/5 border-white/10 hover:border-white/30"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value={p.v}
-                    checked={form.paymentMethod === p.v}
-                    onChange={(e) => setForm({ ...form, paymentMethod: e.target.value })}
-                    className="sr-only"
-                  />
-                  <p className="text-sm font-bold text-paper">{p.l}</p>
-                  <p className="text-xs text-paper/50 mt-0.5">{p.desc}</p>
-                </label>
-              ))}
+            <div className="space-y-3">
+              {/* COD */}
+              <label
+                className={`cursor-pointer p-4 rounded-2xl border transition flex items-start gap-3 ${
+                  form.paymentMethod === "COD"
+                    ? "bg-brand-red/10 border-brand-red"
+                    : "bg-white/5 border-white/10 hover:border-white/30"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="COD"
+                  checked={form.paymentMethod === "COD"}
+                  onChange={(e) => setForm({ ...form, paymentMethod: e.target.value })}
+                  className="mt-1 accent-brand-red"
+                />
+                <div>
+                  <p className="text-sm font-bold text-paper">Cash on Delivery</p>
+                  <p className="text-xs text-paper/50 mt-0.5">Pay in cash when your order arrives. Available pan-India.</p>
+                </div>
+              </label>
+
+              {/* Razorpay */}
+              <label
+                className={`cursor-pointer p-4 rounded-2xl border transition flex items-start gap-3 ${
+                  form.paymentMethod === "RAZORPAY"
+                    ? "bg-brand-red/10 border-brand-red"
+                    : "bg-white/5 border-white/10 hover:border-white/30"
+                } ${!razorpayAvailable ? "opacity-60 cursor-not-allowed" : ""}`}
+              >
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="RAZORPAY"
+                  checked={form.paymentMethod === "RAZORPAY"}
+                  onChange={(e) => setForm({ ...form, paymentMethod: e.target.value })}
+                  disabled={!razorpayAvailable}
+                  className="mt-1 accent-brand-red"
+                />
+                <div className="flex-1">
+                  <p className="text-sm font-bold text-paper flex items-center gap-2">
+                    <CreditCard className="w-4 h-4" />
+                    Online Payment
+                  </p>
+                  <p className="text-xs text-paper/50 mt-0.5">
+                    {razorpayAvailable
+                      ? "Pay via UPI, Credit/Debit Card, NetBanking, or Wallets (powered by Razorpay)."
+                      : "Online payments not configured on server. Set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET to enable."}
+                  </p>
+                  {razorpayAvailable && (
+                    <div className="mt-2 flex gap-1.5 flex-wrap">
+                      {["UPI", "VISA", "Mastercard", "Rupay", "Wallets"].map((m) => (
+                        <span key={m} className="text-[9px] uppercase tracking-widest px-2 py-0.5 bg-white/5 rounded text-paper/60">{m}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </label>
             </div>
           </fieldset>
         </div>
 
-        {/* Summary */}
         <div className="lg:col-span-1">
           <div className="sticky top-24 p-6 rounded-3xl bg-white/5 border border-white/10">
             <h2 className="text-sm uppercase tracking-widest text-paper/60 mb-5">Your Order</h2>
@@ -196,12 +338,18 @@ export default function CheckoutPage() {
             <button
               type="submit"
               disabled={placing}
-              className="mt-6 w-full bg-brand-red hover:bg-brand-red-soft disabled:opacity-50 transition text-paper text-sm font-bold uppercase tracking-widest py-4 rounded-full"
+              className="mt-6 w-full bg-brand-red hover:bg-brand-red-soft disabled:opacity-50 transition text-paper text-sm font-bold uppercase tracking-widest py-4 rounded-full flex items-center justify-center gap-2"
             >
-              {placing ? "Placing Order…" : `Place Order — ${rupee(total)}`}
+              {placing ? (
+                <><Loader2 className="w-4 h-4 animate-spin" /> Processing…</>
+              ) : form.paymentMethod === "RAZORPAY" ? (
+                <>Pay {rupee(total)} Online</>
+              ) : (
+                `Place Order — ${rupee(total)}`
+              )}
             </button>
             <p className="text-[10px] uppercase tracking-widest text-paper/40 text-center mt-3">
-              By placing order you agree to our T&Cs
+              🔒 By placing order you agree to our T&Cs
             </p>
           </div>
         </div>
