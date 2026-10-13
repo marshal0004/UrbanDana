@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+@theme {
+  /* UrbanDana brand palette — dark streetwear aesthetic, Snitch/Bewakoof-inspired */
+  --color-ink: #0a0a0a;
+  --color-paper: #fafaf7;
+  --color-brand-red: #c8102e;
+  --color-brand-red-soft: #e63946;
+  --color-brand-cream: #f4ecd8;
+  --color-brand-gold: #d4a017;
+  --color-brand-black: #0a0a0a;
+  --color-brand-dark: #141414;
+  --color-brand-muted: #6b6b6b;
+
+  --font-display: "Inter", "Helvetica Neue", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --radius-card: 14px;
+  --radius-pill: 999px;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html, body {
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-family: var(--font-body);
+}
+
+/* Custom scrollbar — minimal, premium */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.22); }
+
+/* Marquee animation */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 28s linear infinite;
+}
+
+/* Aurora glow background */
+@keyframes aurora {
+  0%, 100% { transform: translate(0,0) scale(1); opacity: 0.4; }
+  33% { transform: translate(3%, -3%) scale(1.05); opacity: 0.55; }
+  66% { transform: translate(-3%, 3%) scale(0.95); opacity: 0.45; }
+}
+.aurora-bg::before {
+  content: "";
+  position: fixed;
+  inset: -10%;
+  background:
+    radial-gradient(50% 40% at 20% 20%, rgba(200, 16, 46, 0.25), transparent 60%),
+    radial-gradient(40% 50% at 80% 30%, rgba(212, 160, 23, 0.18), transparent 60%),
+    radial-gradient(60% 50% at 50% 90%, rgba(230, 57, 70, 0.15), transparent 60%);
+  filter: blur(60px);
+  animation: aurora 18s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Reveal on scroll */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Letter reveal for hero */
+@keyframes letter-in {
+  0% { opacity: 0; transform: translateY(40px) rotate(-8deg); }
+  100% { opacity: 1; transform: translateY(0) rotate(0); }
+}
+.letter-reveal > span {
+  display: inline-block;
+  animation: letter-in 0.6s ease-out backwards;
+}
+
+/* Smooth scroll */
+html { scroll-behavior: smooth; }
+
+/* Hide horizontal scrollbar on chip rails */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Focus ring */
+:focus-visible {
+  outline: 2px solid var(--color-brand-red);
+  outline-offset: 2px;
+  border-radius: 4px;
+}

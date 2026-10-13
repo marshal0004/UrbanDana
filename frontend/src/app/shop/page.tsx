@@ -1,0 +1,139 @@
+"use client";
+import { useEffect, useState, useMemo, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { api, type Product } from "@/lib/api";
+import ProductCard from "@/components/ProductCard";
+import { cn } from "@/lib/utils";
+import { SlidersHorizontal } from "lucide-react";
+
+const CATEGORIES = ["All", "Bandana Caps", "Visors", "Limited Edition", "Bundles"];
+const SORTS = [
+  { v: "newest", l: "Newest" },
+  { v: "price-asc", l: "Price: Low to High" },
+  { v: "price-desc", l: "Price: High to Low" },
+  { v: "rating", l: "Top Rated" },
+];
+
+function ShopClient() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialCat = searchParams.get("category") || "All";
+
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [category, setCategory] = useState(initialCat);
+  const [sort, setSort] = useState("newest");
+
+  useEffect(() => {
+    setLoading(true);
+    api.listProducts(category === "All" ? {} : { category })
+      .then((res) => setProducts(res.items))
+      .catch((e) => console.error(e))
+      .finally(() => setLoading(false));
+  }, [category]);
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (category !== "All") params.set("category", category);
+    router.replace(`/shop${params.toString() ? `?${params}` : ""}`, { scroll: false });
+  }, [category, router]);
+
+  const sorted = useMemo(() => {
+    const arr = [...products];
+    if (sort === "price-asc") arr.sort((a, b) => a.price - b.price);
+    else if (sort === "price-desc") arr.sort((a, b) => b.price - a.price);
+    else if (sort === "rating") arr.sort((a, b) => b.rating - a.rating);
+    return arr;
+  }, [products, sort]);
+
+  return (
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+      <div className="mb-10">
+        <p className="text-xs uppercase tracking-[0.4em] text-brand-red mb-3 font-semibold">
+          The Shop
+        </p>
+        <h1 className="text-4xl md:text-6xl font-black tracking-tight text-paper">
+          {category === "All" ? "All Caps" : category}
+        </h1>
+        <p className="mt-3 text-paper/60">
+          {loading ? "Loading…" : `${sorted.length} ${sorted.length === 1 ? "cap" : "caps"} available`}
+        </p>
+      </div>
+
+      <div className="flex items-center justify-between gap-4 mb-8 pb-4 border-b border-white/10">
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+          {CATEGORIES.map((c) => (
+            <button
+              key={c}
+              onClick={() => setCategory(c)}
+              className={cn(
+                "px-4 py-2 text-xs uppercase tracking-widest rounded-full transition whitespace-nowrap",
+                category === c
+                  ? "bg-brand-red text-paper"
+                  : "bg-white/5 text-paper/60 hover:text-paper hover:bg-white/10"
+              )}
+            >
+              {c}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-3">
+          <button
+            className="lg:hidden p-2 text-paper/60 hover:text-paper"
+            aria-label="Filters"
+          >
+            <SlidersHorizontal className="w-4 h-4" />
+          </button>
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value)}
+            className="bg-white/5 border border-white/10 text-paper text-xs uppercase tracking-widest rounded-full px-4 py-2 focus:outline-none focus:border-brand-red cursor-pointer"
+          >
+            {SORTS.map((s) => (
+              <option key={s.v} value={s.v} className="bg-brand-dark text-paper">
+                {s.l}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-10">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i}>
+              <div className="aspect-[4/5] rounded-2xl bg-white/5 animate-pulse" />
+              <div className="mt-4 h-3 bg-white/5 rounded animate-pulse" />
+              <div className="mt-2 h-3 w-2/3 bg-white/5 rounded animate-pulse" />
+            </div>
+          ))}
+        </div>
+      ) : sorted.length === 0 ? (
+        <div className="py-20 text-center">
+          <p className="text-paper/60">No products in this category yet.</p>
+          <button
+            onClick={() => setCategory("All")}
+            className="mt-4 text-sm text-brand-red hover:underline"
+          >
+            View all caps
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-10">
+          {sorted.map((p) => (
+            <ProductCard key={p.id} product={p} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function ShopPage() {
+  return (
+    <Suspense fallback={<div className="py-20 text-center text-paper/60">Loading shop…</div>}>
+      <ShopClient />
+    </Suspense>
+  );
+}
