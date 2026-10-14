@@ -58,7 +58,7 @@ const MEGA_MENU = [
     ],
   },
   {
-    label: "TEES",
+    label: "T-SHIRTS",
     href: "/shop?category=T-Shirts",
     columns: [
       {

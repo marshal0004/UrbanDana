@@ -72,7 +72,7 @@ export default function Hero() {
       <div className="absolute inset-0 -z-10 opacity-30">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="https://images.unsplash.com/photo-1521369909029-2afed882baee?w=2000&q=80&auto=format&fit=crop"
+          src="/images/hero-bg.jpg"
           alt=""
           className="w-full h-full object-cover mix-blend-overlay"
         />

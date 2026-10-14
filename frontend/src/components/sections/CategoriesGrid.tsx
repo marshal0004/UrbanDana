@@ -4,41 +4,41 @@ import { useInView } from "@/hooks/useInView";
 import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
 
-// Snitch-style category grid — clickable image cards
+// Real product photos from frontend/public/images/
 const CATEGORIES = [
   {
     title: "Bandana Caps",
     desc: "The original 3-in-1",
     href: "/shop?category=Bandana Caps",
-    image: "https://images.unsplash.com/photo-1521369909029-2afed882baee?w=600&q=80&auto=format&fit=crop",
+    image: "/images/cat-caps.jpg",
     span: "lg:col-span-2 lg:row-span-2",
   },
   {
     title: "T-Shirts",
     desc: "Bandana-inspired tees",
     href: "/shop?category=T-Shirts",
-    image: "https://images.unsplash.com/photo-1503341504253-dff481547531?w=600&q=80&auto=format&fit=crop",
+    image: "/images/cat-tshirts.jpg",
     span: "",
   },
   {
     title: "Visors",
     desc: "Minimal everyday shade",
     href: "/shop?category=Visors",
-    image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&q=80&auto=format&fit=crop",
+    image: "/images/cat-visors.jpg",
     span: "",
   },
   {
     title: "Limited Edition",
     desc: "200-piece drops · No restocks",
     href: "/shop?category=Limited Edition",
-    image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80&auto=format&fit=crop",
+    image: "/images/cat-limited.jpg",
     span: "",
   },
   {
     title: "Bundles",
     desc: "Save up to ₹2,000",
     href: "/shop?category=Bundles",
-    image: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=600&q=80&auto=format&fit=crop",
+    image: "/images/cat-bundles.jpg",
     span: "",
   },
 ];

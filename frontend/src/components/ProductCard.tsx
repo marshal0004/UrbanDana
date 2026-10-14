@@ -43,7 +43,6 @@ export default function ProductCard({ product }: { product: Product }) {
   const discount = discountPct(product.price, product.oldPrice);
   const soldOut = product.stock === 0;
   const primaryImg = product.images?.[0]?.url;
-  const hoverImg = product.images?.[1]?.url;
 
   return (
     <article className="group relative flex flex-col">
@@ -54,24 +53,13 @@ export default function ProductCard({ product }: { product: Product }) {
           soldOut && "opacity-60"
         )}
       >
+        {/* Single image — zoom on hover only (no swap) */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={absUrl(primaryImg || "")}
           alt={product.title}
-          className={cn(
-            "absolute inset-0 w-full h-full object-cover transition-all duration-700",
-            "group-hover:scale-105",
-            hoverImg && "group-hover:opacity-0"
-          )}
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
-        {hoverImg && (
-          /* eslint-disable-next-line @next/next/no-img-element */
-          <img
-            src={absUrl(hoverImg)}
-            alt={`${product.title} alternate view`}
-            className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
-          />
-        )}
 
         <div className="absolute top-3 left-3 flex flex-col gap-1.5">
           {product.badge && (

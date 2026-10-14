@@ -6,7 +6,7 @@ import ProductCard from "@/components/ProductCard";
 import { cn } from "@/lib/utils";
 import { SlidersHorizontal } from "lucide-react";
 
-const CATEGORIES = ["All", "Bandana Caps", "Visors", "Limited Edition", "Bundles"];
+const CATEGORIES = ["All", "Bandana Caps", "T-Shirts", "Visors", "Limited Edition", "Bundles"];
 const SORTS = [
   { v: "newest", l: "Newest" },
   { v: "price-asc", l: "Price: Low to High" },
@@ -17,26 +17,43 @@ const SORTS = [
 function ShopClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const initialCat = searchParams.get("category") || "All";
+  const urlCategory = searchParams.get("category") || "All";
+  const urlQuery = searchParams.get("q") || "";
 
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [category, setCategory] = useState(initialCat);
+  const [category, setCategory] = useState(urlCategory);
   const [sort, setSort] = useState("newest");
 
+  // Sync category state when URL changes (e.g., user clicks a nav link)
+  useEffect(() => {
+    setCategory(urlCategory);
+  }, [urlCategory]);
+
+  // Fetch products when category or query changes
   useEffect(() => {
     setLoading(true);
-    api.listProducts(category === "All" ? {} : { category })
+    const params: Record<string, string> = {};
+    if (category !== "All") params.category = category;
+    if (urlQuery) params.q = urlQuery;
+    api.listProducts(params)
       .then((res) => setProducts(res.items))
       .catch((e) => console.error(e))
       .finally(() => setLoading(false));
-  }, [category]);
+  }, [category, urlQuery]);
 
+  // Update URL when category chip changes (local state → URL)
   useEffect(() => {
     const params = new URLSearchParams();
     if (category !== "All") params.set("category", category);
-    router.replace(`/shop${params.toString() ? `?${params}` : ""}`, { scroll: false });
-  }, [category, router]);
+    if (urlQuery) params.set("q", urlQuery);
+    const qs = params.toString();
+    const target = `/shop${qs ? `?${qs}` : ""}`;
+    // Only replace if different to avoid loops
+    if (window.location.pathname + window.location.search !== target) {
+      router.replace(target, { scroll: false });
+    }
+  }, [category, urlQuery, router]);
 
   const sorted = useMemo(() => {
     const arr = [...products];
@@ -53,10 +70,10 @@ function ShopClient() {
           The Shop
         </p>
         <h1 className="text-4xl md:text-6xl font-black tracking-tight text-paper">
-          {category === "All" ? "All Caps" : category}
+          {category === "All" ? (urlQuery ? `Search: "${urlQuery}"` : "All Products") : category}
         </h1>
         <p className="mt-3 text-paper/60">
-          {loading ? "Loading…" : `${sorted.length} ${sorted.length === 1 ? "cap" : "caps"} available`}
+          {loading ? "Loading…" : `${sorted.length} ${sorted.length === 1 ? "item" : "items"} available`}
         </p>
       </div>
 
@@ -111,12 +128,12 @@ function ShopClient() {
         </div>
       ) : sorted.length === 0 ? (
         <div className="py-20 text-center">
-          <p className="text-paper/60">No products in this category yet.</p>
+          <p className="text-paper/60">No products found.</p>
           <button
             onClick={() => setCategory("All")}
             className="mt-4 text-sm text-brand-red hover:underline"
           >
-            View all caps
+            View all products
           </button>
         </div>
       ) : (
