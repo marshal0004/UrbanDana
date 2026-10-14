@@ -94,7 +94,7 @@ describe("GET /api/products/meta/categories", () => {
     expect(res.body).toContain("Bandana Caps");
     expect(res.body).toContain("T-Shirts");
     expect(res.body).toContain("Limited Edition");
-    expect(res.body).toContain("Bundles");
+    expect(res.body).toContain("Combo");
   });
 
   it("does not duplicate categories", async () => {

@@ -33,6 +33,20 @@ router.get("/", async (req, res, next) => {
 router.post("/items", async (req, res, next) => {
   try {
     const { productId, quantity = 1, variant } = req.body;
+    // Validate productId — reject undefined/null/empty
+    if (!productId || typeof productId !== "string" || productId.trim() === "") {
+      return res.status(400).json({ error: "productId is required and must be a non-empty string" });
+    }
+    // Validate quantity
+    const qty = Number(quantity);
+    if (isNaN(qty) || qty < 1) {
+      return res.status(400).json({ error: "quantity must be a positive number" });
+    }
+    // Verify product exists before adding to cart
+    const product = await prisma.product.findUnique({ where: { id: productId } });
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
     const cart = await getOrCreateCart(req);
     const existing = await prisma.cartItem.findFirst({
       where: { cartId: cart.id, productId, variant: variant || null },
@@ -40,11 +54,11 @@ router.post("/items", async (req, res, next) => {
     if (existing) {
       await prisma.cartItem.update({
         where: { id: existing.id },
-        data: { quantity: existing.quantity + quantity },
+        data: { quantity: existing.quantity + qty },
       });
     } else {
       await prisma.cartItem.create({
-        data: { cartId: cart.id, productId, quantity, variant: variant || null },
+        data: { cartId: cart.id, productId, quantity: qty, variant: variant || null },
       });
     }
     const updated = await prisma.cart.findUnique({

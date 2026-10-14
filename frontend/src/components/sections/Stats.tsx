@@ -12,7 +12,7 @@ const STATS = [
 export default function Stats() {
   const { ref, inView } = useInView();
   return (
-    <section ref={ref} className="border-y border-white/10 bg-brand-dark/40 backdrop-blur-sm">
+    <section ref={ref} className="bg-white border-y border-brand-black/5">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {STATS.map((s, i) => (
@@ -24,10 +24,10 @@ export default function Stats() {
               )}
               style={{ transitionDelay: `${i * 80}ms` }}
             >
-              <div className="text-4xl md:text-5xl font-black text-paper tracking-tight">
+              <div className="text-4xl md:text-5xl font-black text-brand-red tracking-tight">
                 {s.num}
               </div>
-              <div className="mt-2 text-[10px] uppercase tracking-widest text-paper/50">
+              <div className="mt-2 text-[10px] uppercase tracking-widest text-brand-black/50 font-semibold">
                 {s.label}
               </div>
             </div>
