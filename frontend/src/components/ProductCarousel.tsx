@@ -33,6 +33,7 @@ export default function ProductCarousel({
   const scrollRef = useRef<HTMLDivElement>(null);
   const [paused, setPaused] = useState(false);
   const [wishlist, setWishlist] = useState<string[]>([]);
+  const [cardWidth, setCardWidth] = useState(600);
 
   useEffect(() => {
     try {
@@ -51,37 +52,47 @@ export default function ProductCarousel({
     return () => window.removeEventListener("wishlist-updated", onUpdate);
   }, []);
 
-  const toggleWishlist = (id: string) => {
-    setWishlist((prev) => {
-      const next = prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id];
-      localStorage.setItem(WISHLIST_KEY, JSON.stringify(next));
-      window.dispatchEvent(new Event("wishlist-updated"));
-      return next;
-    });
-  };
+  // Calculate card width — ~45% of viewport, so 2-3 cards visible
+  useEffect(() => {
+    const calcWidth = () => {
+      const vw = window.innerWidth;
+      // On desktop: ~45% of viewport (2 cards visible + partial 3rd)
+      // On tablet: ~60% (1.5 cards visible)
+      // On mobile: ~80% (1 card + peek)
+      let w;
+      if (vw >= 1024) w = Math.min(620, vw * 0.45);
+      else if (vw >= 640) w = vw * 0.6;
+      else w = vw * 0.8;
+      setCardWidth(Math.max(280, Math.floor(w)));
+    };
+    calcWidth();
+    window.addEventListener("resize", calcWidth);
+    return () => window.removeEventListener("resize", calcWidth);
+  }, []);
 
-  // Auto-scroll — 3 seconds (was 3.5)
+  // Auto-scroll — 3 seconds
   useEffect(() => {
     if (!autoScroll || paused || !scrollRef.current) return;
     const interval = setInterval(() => {
       const el = scrollRef.current;
       if (!el) return;
-      // Scroll by one card width (~320px + gap)
-      const cardWidth = 320 + 12;
+      const gap = 12;
+      const scrollAmount = cardWidth + gap;
       if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 10) {
         el.scrollTo({ left: 0, behavior: "smooth" });
       } else {
-        el.scrollBy({ left: cardWidth, behavior: "smooth" });
+        el.scrollBy({ left: scrollAmount, behavior: "smooth" });
       }
-    }, 3000); // 3 seconds
+    }, 3000);
     return () => clearInterval(interval);
-  }, [autoScroll, paused]);
+  }, [autoScroll, paused, cardWidth]);
 
   const scrollByDir = (dir: "left" | "right") => {
     const el = scrollRef.current;
     if (!el) return;
-    const cardWidth = 320 + 12;
-    el.scrollBy({ left: dir === "left" ? -cardWidth * 2 : cardWidth * 2, behavior: "smooth" });
+    const gap = 12;
+    const scrollAmount = (cardWidth + gap) * 1;
+    el.scrollBy({ left: dir === "left" ? -scrollAmount : scrollAmount, behavior: "smooth" });
   };
 
   if (!products.length) return null;
@@ -139,10 +150,10 @@ export default function ProductCarousel({
               <article
                 key={product.id}
                 className="group relative shrink-0 bg-white rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl"
-                style={{ width: "320px", scrollSnapAlign: "start" }}
+                style={{ width: `${cardWidth}px`, scrollSnapAlign: "start" }}
               >
-                {/* Image — large, full-bleed, square-ish aspect */}
-                <Link href={`/product/${product.slug}`} className="relative block aspect-square overflow-hidden bg-gray-50">
+                {/* Image — 4:5 portrait (taller), large and prominent */}
+                <Link href={`/product/${product.slug}`} className="relative block aspect-[4/5] overflow-hidden bg-gray-50">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={absUrl(primaryImg || "")}
@@ -150,11 +161,11 @@ export default function ProductCarousel({
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
 
-                  {/* Badges — top-left, minimal */}
-                  <div className="absolute top-2.5 left-2.5 flex flex-col gap-1">
+                  {/* Badges — top-left */}
+                  <div className="absolute top-3 left-3 flex flex-col gap-1.5">
                     {product.badge && (
                       <span className={cn(
-                        "text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded",
+                        "text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded",
                         BADGE_STYLES[product.badge] || "bg-white/90 text-brand-black"
                       )}>
                         {product.badge}
@@ -162,10 +173,10 @@ export default function ProductCarousel({
                     )}
                   </div>
 
-                  {/* Wishlist — top-right, subtle */}
+                  {/* Wishlist — top-right */}
                   <button
                     onClick={(e) => { e.preventDefault(); toggleWishlist(product.id); }}
-                    className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white/80 backdrop-blur-md flex items-center justify-center text-brand-black hover:bg-white transition"
+                    className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/80 backdrop-blur-md flex items-center justify-center text-brand-black hover:bg-white transition"
                     aria-label="Toggle wishlist"
                   >
                     <Heart className={cn("w-4 h-4", liked && "fill-brand-red text-brand-red")} />
@@ -173,45 +184,45 @@ export default function ProductCarousel({
 
                   {soldOut && (
                     <div className="absolute inset-0 flex items-center justify-center bg-white/60">
-                      <span className="bg-brand-black text-paper text-[10px] uppercase tracking-widest px-3 py-1.5 rounded-full">
+                      <span className="bg-brand-black text-paper text-[11px] uppercase tracking-widest px-4 py-2 rounded-full">
                         Sold Out
                       </span>
                     </div>
                   )}
 
-                  {/* Quick add — slides up on hover, Bewakoof-style */}
+                  {/* Quick add — slides up on hover */}
                   {!soldOut && (
                     <button
                       onClick={(e) => { e.preventDefault(); addToCart(product); }}
-                      className="absolute bottom-2.5 left-2.5 right-2.5 bg-brand-red text-paper text-[11px] font-bold uppercase tracking-widest py-2.5 rounded-lg opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 flex items-center justify-center gap-1.5 hover:bg-brand-black"
+                      className="absolute bottom-3 left-3 right-3 bg-brand-red text-paper text-xs font-bold uppercase tracking-widest py-3 rounded-lg opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 flex items-center justify-center gap-2 hover:bg-brand-black"
                     >
-                      <ShoppingBag className="w-3.5 h-3.5" />
+                      <ShoppingBag className="w-4 h-4" />
                       Add to Bag
                     </button>
                   )}
                 </Link>
 
-                {/* Info — minimal, clean, below image */}
-                <div className="p-3">
-                  <div className="flex items-center justify-between gap-1 mb-1">
-                    <span className="text-[9px] uppercase tracking-widest text-brand-black/40 font-semibold">
+                {/* Info — below image, fits properly */}
+                <div className="p-4">
+                  <div className="flex items-center justify-between gap-1 mb-1.5">
+                    <span className="text-[10px] uppercase tracking-widest text-brand-black/40 font-semibold">
                       {product.category}
                     </span>
-                    <span className="text-[9px] text-brand-black/40 flex items-center gap-0.5">
-                      <Star className="w-2.5 h-2.5 fill-brand-gold text-brand-gold" />
+                    <span className="text-[10px] text-brand-black/40 flex items-center gap-0.5">
+                      <Star className="w-3 h-3 fill-brand-gold text-brand-gold" />
                       {product.rating.toFixed(1)}
                     </span>
                   </div>
                   <Link href={`/product/${product.slug}`}>
-                    <h3 className="text-sm font-bold text-brand-black hover:text-brand-red transition line-clamp-1">
+                    <h3 className="text-base font-bold text-brand-black hover:text-brand-red transition line-clamp-1">
                       {product.title}
                     </h3>
                   </Link>
                   {product.subtitle && (
-                    <p className="text-[11px] text-brand-black/50 line-clamp-1 mt-0.5">{product.subtitle}</p>
+                    <p className="text-xs text-brand-black/50 line-clamp-1 mt-0.5">{product.subtitle}</p>
                   )}
-                  <div className="flex items-center gap-1.5 mt-1.5">
-                    <span className="text-lg font-black text-brand-red">{rupee(product.price)}</span>
+                  <div className="flex items-center gap-1.5 mt-2">
+                    <span className="text-xl font-black text-brand-red">{rupee(product.price)}</span>
                   </div>
                 </div>
               </article>

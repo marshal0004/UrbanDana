@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
-// Eye-catching promotional banners built with real product/model photos
+// Eye-catching promotional banners — fixed height, content fits properly
 const BANNERS = [
   {
     eyebrow: "LIMITED EDITION",
@@ -28,16 +28,17 @@ const BANNERS = [
 
 export default function PromoBanners() {
   return (
-    <section className="py-12 bg-brand-cream">
+    <section className="py-10 bg-white">
       <div className="mx-auto" style={{ maxWidth: "100%", padding: "0 12px" }}>
         <div className="grid md:grid-cols-2 gap-4">
           {BANNERS.map((b, i) => (
             <Link
               key={b.title}
               href={b.href}
-              className="group relative overflow-hidden rounded-3xl border-2 border-brand-black/10 hover:border-brand-red transition-all duration-300"
-              style={{ background: b.bg, minHeight: "320px" }}
+              className="group relative overflow-hidden rounded-2xl transition-all duration-300 hover:shadow-2xl"
+              style={{ background: b.bg, height: "380px" }}
             >
+              {/* Background image — fills the card */}
               <div className="absolute inset-0">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -45,16 +46,29 @@ export default function PromoBanners() {
                   alt={b.title}
                   className="w-full h-full object-cover opacity-70 group-hover:opacity-90 group-hover:scale-105 transition-all duration-700"
                 />
-                <div className="absolute inset-0" style={{ background: `linear-gradient(90deg, ${b.bg.replace("linear-gradient(135deg, ", "").replace(" 0%, ", ", ").replace(" 100%)", ")")} 0%, transparent 70%)` }} />
+                {/* Gradient overlay — left side dark for text readability */}
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background: `linear-gradient(90deg, rgba(10,10,10,0.85) 0%, rgba(10,10,10,0.5) 50%, rgba(10,10,10,0.2) 100%)`,
+                  }}
+                />
               </div>
-              <div className="relative h-full p-8 flex flex-col justify-center min-h-[320px]">
-                <p className="text-[10px] uppercase tracking-[0.4em] font-bold mb-3" style={{ color: b.accent }}>
+
+              {/* Content — left-aligned, vertically centered, fits within 380px height */}
+              <div className="relative h-full flex flex-col justify-center p-8 md:p-10 max-w-[60%]">
+                <p
+                  className="text-[11px] uppercase tracking-[0.4em] font-bold mb-3"
+                  style={{ color: b.accent }}
+                >
                   {b.eyebrow}
                 </p>
-                <h3 className="text-4xl md:text-5xl font-black text-paper mb-3 drop-shadow-lg">
+                <h3 className="text-3xl md:text-4xl font-black text-paper mb-3 drop-shadow-lg leading-tight">
                   {b.title}
                 </h3>
-                <p className="text-paper/80 max-w-sm mb-5 drop-shadow">{b.desc}</p>
+                <p className="text-paper/80 text-sm mb-5 drop-shadow leading-relaxed">
+                  {b.desc}
+                </p>
                 <div className="inline-flex items-center gap-2 text-paper text-xs font-bold uppercase tracking-widest group-hover:gap-3 transition-all">
                   <span
                     className="px-5 py-2.5 rounded-full"
