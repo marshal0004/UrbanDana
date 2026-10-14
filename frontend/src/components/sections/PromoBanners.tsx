@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
-// Eye-catching promotional banners — 550px height, background image fits properly
+// Promotional banners — 550px height, images fully visible via background-size: contain
 const BANNERS = [
   {
     eyebrow: "LIMITED EDITION",
@@ -10,9 +10,9 @@ const BANNERS = [
     desc: "Hand-drawn sun motif. Only 200 pieces. Numbered & authenticated.",
     cta: "Shop Limited Drops",
     href: "/shop?category=Limited Edition",
-    image: "/images/banner-model-1.jpg",
+    image: "/images/banner-limited.jpg",
     accent: "#d4a017",
-    bg: "linear-gradient(135deg, #1a1409 0%, #2a1f0a 100%)",
+    bg: "#1a1409",
   },
   {
     eyebrow: "COMBO PACKS",
@@ -20,9 +20,9 @@ const BANNERS = [
     desc: "Get the complete Urbandana look. 1 cap + 1 matching tee in a gift box.",
     cta: "Shop Combos",
     href: "/shop?category=Combo",
-    image: "/images/banner-combo-1.jpg",
+    image: "/images/banner-combo.jpg",
     accent: "#10b981",
-    bg: "linear-gradient(135deg, #0a1a14 0%, #0a2a1f 100%)",
+    bg: "#0a1a14",
   },
 ];
 
@@ -36,27 +36,25 @@ export default function PromoBanners() {
               key={b.title}
               href={b.href}
               className="group relative overflow-hidden rounded-2xl transition-all duration-300 hover:shadow-2xl"
-              style={{ background: b.bg, height: "550px" }}
+              style={{
+                height: "550px",
+                backgroundColor: b.bg,
+                backgroundImage: `url(${b.image})`,
+                backgroundSize: "contain",
+                backgroundPosition: "center center",
+                backgroundRepeat: "no-repeat",
+              }}
             >
-              {/* Background image — fills the entire card, scales on hover */}
-              <div className="absolute inset-0">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={b.image}
-                  alt={b.title}
-                  className="w-full h-full object-cover opacity-80 group-hover:opacity-95 group-hover:scale-105 transition-all duration-700"
-                />
-                {/* Gradient overlay — left side dark for text readability, right side shows image */}
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    background: `linear-gradient(90deg, rgba(10,10,10,0.9) 0%, rgba(10,10,10,0.6) 45%, rgba(10,10,10,0.2) 100%)`,
-                  }}
-                />
-              </div>
+              {/* Gradient overlay — only on left side for text readability, right side fully transparent so image is visible */}
+              <div
+                className="absolute inset-0"
+                style={{
+                  background: `linear-gradient(90deg, ${b.bg} 0%, ${b.bg}F5 25%, ${b.bg}99 50%, transparent 75%, transparent 100%)`,
+                }}
+              />
 
-              {/* Content — left-aligned, vertically centered, fits within 550px height with breathing room */}
-              <div className="relative h-full flex flex-col justify-center p-10 md:p-12 max-w-[65%]">
+              {/* Content — left-aligned, vertically centered */}
+              <div className="relative h-full flex flex-col justify-center p-10 md:p-12 max-w-[60%]">
                 <p
                   className="text-xs uppercase tracking-[0.4em] font-bold mb-4"
                   style={{ color: b.accent }}
