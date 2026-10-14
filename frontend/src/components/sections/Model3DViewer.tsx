@@ -56,7 +56,6 @@ const MODELS = [
 
 export default function Model3DViewer() {
   const [activeModel, setActiveModel] = useState(0);
-  const [show3D, setShow3D] = useState(false); // Load 3D only when user clicks
   const model = MODELS[activeModel];
 
   return (
@@ -89,7 +88,6 @@ export default function Model3DViewer() {
               key={m.id}
               onClick={() => {
                 setActiveModel(i);
-                setShow3D(false); // Reset when switching models
               }}
               className={cn(
                 "flex items-center gap-2 px-4 py-2.5 rounded-full text-xs uppercase tracking-widest font-semibold border-2 transition whitespace-nowrap",
@@ -104,54 +102,30 @@ export default function Model3DViewer() {
           ))}
         </div>
 
-        {/* 3D Viewer — lazy loaded for performance */}
+        {/* 3D Viewer — loads immediately, auto-rotates */}
         <div className="relative rounded-2xl overflow-hidden border-2 border-brand-black/10 shadow-lg" style={{ height: "500px", background: "linear-gradient(135deg, #f8f8f8 0%, #e8e8e8 100%)" }}>
-          {show3D ? (
-            // REAL 3D MODEL — React Three Fiber (lazy loaded)
-            <Suspense
-              fallback={
-                <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
-                  <div className="relative w-12 h-12 mb-4">
-                    <div className="absolute inset-0 rounded-full border-4 border-gray-200"></div>
-                    <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-brand-red animate-spin"></div>
-                  </div>
-                  <p className="text-xs uppercase tracking-widest text-brand-black/50 font-semibold flex items-center gap-2">
-                    <RotateCw className="w-3 h-3 animate-spin" />
-                    Loading 3D model…
-                  </p>
+          {/* REAL 3D MODEL — React Three Fiber (lazy loaded, shows immediately) */}
+          <Suspense
+            fallback={
+              <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
+                <div className="relative w-12 h-12 mb-4">
+                  <div className="absolute inset-0 rounded-full border-4 border-gray-200"></div>
+                  <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-brand-red animate-spin"></div>
                 </div>
-              }
-            >
-              <Canvas3D
-                key={model.id}
-                modelPath={model.modelPath}
-                scale={model.scale}
-                position={model.position}
-              />
-            </Suspense>
-          ) : (
-            // Click-to-load prompt (performance: don't load 3D until user wants it)
-            <button
-              onClick={() => setShow3D(true)}
-              className="absolute inset-0 flex flex-col items-center justify-center gap-4 group cursor-pointer"
-            >
-              <div className="w-20 h-20 rounded-full bg-brand-red/10 group-hover:bg-brand-red/20 flex items-center justify-center transition">
-                <Box className="w-10 h-10 text-brand-red" />
-              </div>
-              <div className="text-center">
-                <p className="text-sm font-bold uppercase tracking-widest text-brand-black">
-                  Click to view in 3D
-                </p>
-                <p className="text-xs text-brand-black/50 mt-1">
-                  {model.title} · Interactive 3D model
+                <p className="text-xs uppercase tracking-widest text-brand-black/50 font-semibold flex items-center gap-2">
+                  <RotateCw className="w-3 h-3 animate-spin" />
+                  Loading 3D model…
                 </p>
               </div>
-              <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-brand-black/40">
-                <RotateCw className="w-3 h-3" />
-                <span>Drag to rotate · Scroll to zoom</span>
-              </div>
-            </button>
-          )}
+            }
+          >
+            <Canvas3D
+              key={model.id}
+              modelPath={model.modelPath}
+              scale={model.scale}
+              position={model.position}
+            />
+          </Suspense>
 
           {/* Model info badge — bottom left */}
           <div className="absolute bottom-4 left-4 bg-brand-black/80 backdrop-blur-md rounded-xl px-4 py-2.5 z-20 pointer-events-none">
