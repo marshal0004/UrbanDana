@@ -160,8 +160,8 @@ export default function Navbar() {
       className={cn(
         "sticky top-0 z-40 transition-all duration-300",
         scrolled
-          ? "bg-white/95 backdrop-blur-xl border-b border-brand-black/10"
-          : "bg-white/80 backdrop-blur-md border-b border-brand-black/5"
+          ? "bg-brand-black/95 backdrop-blur-xl border-b border-white/10"
+          : "bg-brand-black/80 backdrop-blur-md border-b border-white/5"
       )}
       onMouseLeave={() => setHoveredTab(null)}
     >
@@ -195,7 +195,7 @@ export default function Navbar() {
                   href={tab.href}
                   className={cn(
                     "px-4 py-2 text-[12px] font-bold uppercase tracking-widest transition relative flex items-center gap-1",
-                    tab.accent ? "text-brand-red" : "text-brand-black/85 hover:text-brand-black",
+                    tab.accent ? "text-brand-red" : "text-paper/85 hover:text-paper",
                     hoveredTab === i && "text-brand-black"
                   )}
                 >
@@ -212,14 +212,14 @@ export default function Navbar() {
           <div className="flex items-center gap-1">
             <button
               onClick={() => setSearchOpen((v) => !v)}
-              className="p-2 text-brand-black/80 hover:text-paper transition"
+              className="p-2 text-paper/80 hover:text-paper transition"
               aria-label="Search"
             >
               <Search className="w-5 h-5" />
             </button>
             <Link
               href="/wishlist"
-              className="hidden sm:block p-2 text-brand-black/80 hover:text-paper transition"
+              className="hidden sm:block p-2 text-paper/80 hover:text-paper transition"
               aria-label="Wishlist"
             >
               <Heart className="w-5 h-5" />
@@ -230,7 +230,7 @@ export default function Navbar() {
               <div className="relative">
                 <button
                   onClick={() => setUserMenuOpen((v) => !v)}
-                  className="p-2 text-brand-black/80 hover:text-paper transition flex items-center gap-1"
+                  className="p-2 text-paper/80 hover:text-paper transition flex items-center gap-1"
                   aria-label="Account"
                 >
                   <User className="w-5 h-5" />
@@ -286,7 +286,7 @@ export default function Navbar() {
             ) : (
               <Link
                 href="/login"
-                className="p-2 text-brand-black/80 hover:text-paper transition"
+                className="p-2 text-paper/80 hover:text-paper transition"
                 aria-label="Login"
               >
                 <User className="w-5 h-5" />
@@ -295,7 +295,7 @@ export default function Navbar() {
 
             <button
               onClick={() => setCartOpen(true)}
-              className="relative p-2 text-brand-black/80 hover:text-paper transition"
+              className="relative p-2 text-paper/80 hover:text-paper transition"
               aria-label="Cart"
             >
               <ShoppingBag className="w-5 h-5" />
@@ -318,7 +318,7 @@ export default function Navbar() {
                 value={searchQ}
                 onChange={(e) => setSearchQ(e.target.value)}
                 placeholder="Search caps, tees, drops…"
-                className="w-full bg-white/5 border border-brand-black/10 rounded-full pl-11 pr-4 py-3 text-sm text-paper placeholder:text-brand-black/40 focus:outline-none focus:border-brand-red"
+                className="w-full text-paper bg-white/5 border border-white/10 rounded-full pl-11 pr-4 py-3 text-sm text-paper placeholder:text-brand-black/40 focus:outline-none focus:border-brand-red"
               />
             </form>
           </div>
@@ -328,7 +328,7 @@ export default function Navbar() {
       {/* Mega menu panel (desktop) */}
       {hoveredTab !== null && MEGA_MENU[hoveredTab].columns.length > 0 && (
         <div
-          className="absolute left-0 right-0 top-full bg-white/95 backdrop-blur-xl border-b border-brand-black/10 shadow-2xl"
+          className="absolute left-0 right-0 top-full bg-brand-dark/95 backdrop-blur-xl border-b border-white/10 shadow-2xl"
           onMouseEnter={() => setHoveredTab(hoveredTab)}
         >
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
