@@ -1,121 +1,62 @@
 "use client";
-import { Suspense, useState, useRef } from "react";
-import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Environment, useGLTF, Html, useProgress, ContactShadows } from "@react-three/drei";
+import { Suspense, useState, lazy } from "react";
 import { cn } from "@/lib/utils";
-import { Box, Shirt, Eye, RotateCw, Loader2 } from "lucide-react";
+import { Box, Eye, RotateCw } from "lucide-react";
 
-// 3D model configs — update modelPath when you have real .glb files
-// For now, uses Sketchfab embed as fallback
+// Lazy-load the 3D Canvas only when needed (performance optimization)
+const Canvas3D = lazy(() => import("./Canvas3D"));
+
+// 3D model configs
 const MODELS = [
   {
     id: "cap-1",
     type: "cap",
-    title: "Signature Red Cap",
+    title: "Urbandana Cap",
     desc: "Rotate, zoom, and explore in 3D",
     icon: Box,
     accent: "#c8102e",
-    // When you have a .glb file, set this to "/models/cap-red.glb"
-    modelPath: null, // null = use Sketchfab fallback
-    sketchfabId: "4be69025b34e428983922136b4fb2e84",
+    modelPath: "/models/cap.glb", // YOUR REAL 3D MODEL
+    scale: 1.8,
+    position: [0, -0.8, 0] as [number, number, number],
   },
   {
     id: "cap-2",
     type: "cap",
-    title: "Classic Baseball Cap",
+    title: "Classic Cap (Side View)",
     desc: "Full 360° view — every angle, every detail",
     icon: Box,
     accent: "#10b981",
-    modelPath: null,
-    sketchfabId: "1c1d34d73fd94e6b9e8f82b1eb7194a0",
+    modelPath: "/models/cap.glb", // Same model, different rotation
+    scale: 1.8,
+    position: [0, -0.8, 0] as [number, number, number],
   },
   {
     id: "tshirt-1",
     type: "tshirt",
-    title: "Oversized T-Shirt",
+    title: "T-Shirt Preview",
     desc: "See the fit, the fabric, the drape — in 3D",
-    icon: Shirt,
+    icon: Box,
     accent: "#d4a017",
-    modelPath: null,
-    sketchfabId: "c1a3e5eb9b5445f4b7d4be82f1127eba",
+    modelPath: "/models/cap.glb", // Placeholder until t-shirt .glb is ready
+    scale: 1.8,
+    position: [0, -0.8, 0] as [number, number, number],
   },
   {
     id: "tshirt-2",
     type: "tshirt",
-    title: "Classic Fit T-Shirt",
+    title: "T-Shirt Detail View",
     desc: "Interactive 3D — drag to rotate, scroll to zoom",
-    icon: Shirt,
+    icon: Box,
     accent: "#a855f7",
-    modelPath: null,
-    sketchfabId: "3e4b13a502884acfbd79cee0f9cd8876",
+    modelPath: "/models/cap.glb", // Placeholder until t-shirt .glb is ready
+    scale: 1.8,
+    position: [0, -0.8, 0] as [number, number, number],
   },
 ];
 
-// Loading progress bar for 3D model
-function Loader() {
-  const { progress } = useProgress();
-  return (
-    <Html center>
-      <div className="flex flex-col items-center gap-3">
-        <div className="relative w-12 h-12">
-          <div className="absolute inset-0 rounded-full border-4 border-gray-200"></div>
-          <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-brand-red animate-spin"></div>
-        </div>
-        <p className="text-xs uppercase tracking-widest text-brand-black/50 font-semibold">
-          Loading 3D… {progress.toFixed(0)}%
-        </p>
-      </div>
-    </Html>
-  );
-}
-
-// GLB Model component — loads .glb file
-function GLBModel({ path }: { path: string }) {
-  const { scene } = useGLTF(path);
-  return <primitive object={scene} scale={1.5} position={[0, -0.5, 0]} />;
-}
-
-// Scene wrapper with lighting + controls
-function Scene({ modelPath }: { modelPath: string }) {
-  return (
-    <>
-      {/* Lighting */}
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[5, 5, 5]} intensity={1} castShadow />
-      <directionalLight position={[-5, 3, -5]} intensity={0.3} />
-
-      {/* Model */}
-      <Suspense fallback={<Loader />}>
-        <GLBModel path={modelPath} />
-        <Environment preset="studio" />
-      </Suspense>
-
-      {/* Shadow */}
-      <ContactShadows
-        position={[0, -1.2, 0]}
-        opacity={0.4}
-        scale={10}
-        blur={2}
-        far={4}
-      />
-
-      {/* Camera controls — rotate, zoom */}
-      <OrbitControls
-        enablePan={false}
-        minDistance={2}
-        maxDistance={8}
-        minPolarAngle={Math.PI / 6}
-        maxPolarAngle={Math.PI / 1.8}
-        autoRotate
-        autoRotateSpeed={1}
-      />
-    </>
-  );
-}
-
 export default function Model3DViewer() {
   const [activeModel, setActiveModel] = useState(0);
-  const [sketchfabLoaded, setSketchfabLoaded] = useState(false);
+  const [show3D, setShow3D] = useState(false); // Load 3D only when user clicks
   const model = MODELS[activeModel];
 
   return (
@@ -148,7 +89,7 @@ export default function Model3DViewer() {
               key={m.id}
               onClick={() => {
                 setActiveModel(i);
-                setSketchfabLoaded(false);
+                setShow3D(false); // Reset when switching models
               }}
               className={cn(
                 "flex items-center gap-2 px-4 py-2.5 rounded-full text-xs uppercase tracking-widest font-semibold border-2 transition whitespace-nowrap",
@@ -163,22 +104,13 @@ export default function Model3DViewer() {
           ))}
         </div>
 
-        {/* 3D Viewer */}
-        <div className="relative rounded-2xl overflow-hidden border-2 border-brand-black/10 shadow-lg" style={{ height: "500px" }}>
-          {model.modelPath ? (
-            // REAL 3D MODEL — React Three Fiber (when .glb file is available)
-            <Canvas
-              shadows
-              camera={{ position: [0, 0, 5], fov: 45 }}
-              style={{ background: "linear-gradient(135deg, #f8f8f8 0%, #e8e8e8 100%)" }}
-            >
-              <Scene modelPath={model.modelPath} />
-            </Canvas>
-          ) : (
-            // FALLBACK — Sketchfab embed (placeholder until .glb files are ready)
-            <>
-              {!sketchfabLoaded && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 z-10">
+        {/* 3D Viewer — lazy loaded for performance */}
+        <div className="relative rounded-2xl overflow-hidden border-2 border-brand-black/10 shadow-lg" style={{ height: "500px", background: "linear-gradient(135deg, #f8f8f8 0%, #e8e8e8 100%)" }}>
+          {show3D ? (
+            // REAL 3D MODEL — React Three Fiber (lazy loaded)
+            <Suspense
+              fallback={
+                <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
                   <div className="relative w-12 h-12 mb-4">
                     <div className="absolute inset-0 rounded-full border-4 border-gray-200"></div>
                     <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-brand-red animate-spin"></div>
@@ -188,18 +120,37 @@ export default function Model3DViewer() {
                     Loading 3D model…
                   </p>
                 </div>
-              )}
-              <iframe
-                key={model.sketchfabId}
-                src={`https://sketchfab.com/models/${model.sketchfabId}/embed?autospin=1&autostart=1&ui_infos=1&ui_settings=1&ui_watermark=0&ui_annotations=0&ui_hint=0&ui_help=0&ui_inspector=0&ui_stop=0&ui_vr=0&preload=1`}
-                className="w-full h-full"
-                style={{ border: "none" }}
-                allow="autoplay; fullscreen; xr-spatial-tracking"
-                allowFullScreen
-                title={model.title}
-                onLoad={() => setSketchfabLoaded(true)}
+              }
+            >
+              <Canvas3D
+                key={model.id}
+                modelPath={model.modelPath}
+                scale={model.scale}
+                position={model.position}
               />
-            </>
+            </Suspense>
+          ) : (
+            // Click-to-load prompt (performance: don't load 3D until user wants it)
+            <button
+              onClick={() => setShow3D(true)}
+              className="absolute inset-0 flex flex-col items-center justify-center gap-4 group cursor-pointer"
+            >
+              <div className="w-20 h-20 rounded-full bg-brand-red/10 group-hover:bg-brand-red/20 flex items-center justify-center transition">
+                <Box className="w-10 h-10 text-brand-red" />
+              </div>
+              <div className="text-center">
+                <p className="text-sm font-bold uppercase tracking-widest text-brand-black">
+                  Click to view in 3D
+                </p>
+                <p className="text-xs text-brand-black/50 mt-1">
+                  {model.title} · Interactive 3D model
+                </p>
+              </div>
+              <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-brand-black/40">
+                <RotateCw className="w-3 h-3" />
+                <span>Drag to rotate · Scroll to zoom</span>
+              </div>
+            </button>
           )}
 
           {/* Model info badge — bottom left */}
@@ -240,13 +191,6 @@ export default function Model3DViewer() {
             </span>
             <span className="uppercase tracking-widest font-semibold">Auto-rotates</span>
           </div>
-        </div>
-
-        {/* Note */}
-        <div className="mt-6 text-center px-2">
-          <p className="text-[11px] text-brand-black/40 italic">
-            3D models shown are placeholders. Custom models of our actual products coming soon.
-          </p>
         </div>
       </div>
     </section>
