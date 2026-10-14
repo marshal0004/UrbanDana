@@ -161,26 +161,26 @@ export default function CheckoutPage() {
         <div className="w-20 h-20 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto">
           <Check className="w-10 h-10 text-emerald-400" />
         </div>
-        <h1 className="mt-8 text-4xl font-black text-paper">Order Placed!</h1>
-        <p className="mt-3 text-paper/70">
+        <h1 className="mt-8 text-4xl font-black text-brand-black">Order Placed!</h1>
+        <p className="mt-3 text-brand-black/70">
           Thanks for your order{user?.firstName ? `, ${user.firstName}` : ""}. We&apos;ll dispatch it within 24 hours.
         </p>
-        <div className="mt-8 p-6 rounded-2xl bg-white/5 border border-white/10 text-left">
+        <div className="mt-8 p-6 rounded-2xl bg-gray-50 border border-brand-black/10 text-left">
           <div className="flex justify-between text-sm mb-3">
-            <span className="text-paper/60">Order Number</span>
-            <span className="font-bold text-paper">{placed.orderNumber}</span>
+            <span className="text-brand-black/60">Order Number</span>
+            <span className="font-bold text-brand-black">{placed.orderNumber}</span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-paper/60">Total {form.paymentMethod === "RAZORPAY" ? "Paid" : "(COD)"}</span>
-            <span className="font-bold text-paper">{rupee(placed.totalAmount)}</span>
+            <span className="text-brand-black/60">Total {form.paymentMethod === "RAZORPAY" ? "Paid" : "(COD)"}</span>
+            <span className="font-bold text-brand-black">{rupee(placed.totalAmount)}</span>
           </div>
         </div>
-        <p className="mt-6 text-xs text-paper/50">
+        <p className="mt-6 text-xs text-brand-black/50">
           A confirmation has been sent to your email. Track your order anytime from your account.
         </p>
         <Link
           href="/shop"
-          className="mt-8 inline-flex items-center gap-2 bg-brand-red hover:bg-brand-red-soft transition text-paper text-sm font-bold uppercase tracking-widest px-8 py-3 rounded-full"
+          className="mt-8 inline-flex items-center gap-2 bg-brand-red hover:bg-brand-red-soft transition text-brand-black text-sm font-bold uppercase tracking-widest px-8 py-3 rounded-full"
         >
           Continue Shopping
           <ArrowRight className="w-4 h-4" />
@@ -192,7 +192,7 @@ export default function CheckoutPage() {
   if (!cart?.items?.length) {
     return (
       <div className="mx-auto max-w-2xl px-4 sm:px-6 py-20 text-center">
-        <h1 className="text-3xl font-black text-paper">Your bag is empty</h1>
+        <h1 className="text-3xl font-black text-brand-black">Your bag is empty</h1>
         <Link href="/shop" className="mt-6 inline-block text-brand-red hover:underline">
           ← Back to shop
         </Link>
@@ -202,8 +202,8 @@ export default function CheckoutPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-      <h1 className="text-4xl md:text-5xl font-black tracking-tight text-paper">Checkout</h1>
-      <p className="mt-2 text-paper/60 text-sm">
+      <h1 className="text-4xl md:text-5xl font-black tracking-tight text-brand-black">Checkout</h1>
+      <p className="mt-2 text-brand-black/60 text-sm">
         <Lock className="inline w-3 h-3 mr-1" /> Secure checkout · Your info is encrypted
       </p>
 
@@ -245,7 +245,7 @@ export default function CheckoutPage() {
                 className={`cursor-pointer p-4 rounded-2xl border transition flex items-start gap-3 ${
                   form.paymentMethod === "COD"
                     ? "bg-brand-red/10 border-brand-red"
-                    : "bg-white/5 border-white/10 hover:border-white/30"
+                    : "bg-gray-50 border-brand-black/10 hover:border-brand-black/30"
                 }`}
               >
                 <input
@@ -257,8 +257,8 @@ export default function CheckoutPage() {
                   className="mt-1 accent-brand-red"
                 />
                 <div>
-                  <p className="text-sm font-bold text-paper">Cash on Delivery</p>
-                  <p className="text-xs text-paper/50 mt-0.5">Pay in cash when your order arrives. Available pan-India.</p>
+                  <p className="text-sm font-bold text-brand-black">Cash on Delivery</p>
+                  <p className="text-xs text-brand-black/50 mt-0.5">Pay in cash when your order arrives. Available pan-India.</p>
                 </div>
               </label>
 
@@ -267,7 +267,7 @@ export default function CheckoutPage() {
                 className={`cursor-pointer p-4 rounded-2xl border transition flex items-start gap-3 ${
                   form.paymentMethod === "RAZORPAY"
                     ? "bg-brand-red/10 border-brand-red"
-                    : "bg-white/5 border-white/10 hover:border-white/30"
+                    : "bg-gray-50 border-brand-black/10 hover:border-brand-black/30"
                 } ${!razorpayAvailable ? "opacity-60 cursor-not-allowed" : ""}`}
               >
                 <input
@@ -280,11 +280,11 @@ export default function CheckoutPage() {
                   className="mt-1 accent-brand-red"
                 />
                 <div className="flex-1">
-                  <p className="text-sm font-bold text-paper flex items-center gap-2">
+                  <p className="text-sm font-bold text-brand-black flex items-center gap-2">
                     <CreditCard className="w-4 h-4" />
                     Online Payment
                   </p>
-                  <p className="text-xs text-paper/50 mt-0.5">
+                  <p className="text-xs text-brand-black/50 mt-0.5">
                     {razorpayAvailable
                       ? "Pay via UPI, Credit/Debit Card, NetBanking, or Wallets (powered by Razorpay)."
                       : "Online payments not configured on server. Set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET to enable."}
@@ -292,7 +292,7 @@ export default function CheckoutPage() {
                   {razorpayAvailable && (
                     <div className="mt-2 flex gap-1.5 flex-wrap">
                       {["UPI", "VISA", "Mastercard", "Rupay", "Wallets"].map((m) => (
-                        <span key={m} className="text-[9px] uppercase tracking-widest px-2 py-0.5 bg-white/5 rounded text-paper/60">{m}</span>
+                        <span key={m} className="text-[9px] uppercase tracking-widest px-2 py-0.5 bg-gray-50 rounded text-brand-black/60">{m}</span>
                       ))}
                     </div>
                   )}
@@ -303,42 +303,42 @@ export default function CheckoutPage() {
         </div>
 
         <div className="lg:col-span-1">
-          <div className="sticky top-24 p-6 rounded-3xl bg-white/5 border border-white/10">
-            <h2 className="text-sm uppercase tracking-widest text-paper/60 mb-5">Your Order</h2>
+          <div className="sticky top-24 p-6 rounded-3xl bg-gray-50 border border-brand-black/10">
+            <h2 className="text-sm uppercase tracking-widest text-brand-black/60 mb-5">Your Order</h2>
             <ul className="space-y-3 mb-5">
               {cart.items.map((item) => (
                 <li key={item.id} className="flex justify-between text-sm">
                   <div className="flex-1 min-w-0">
-                    <p className="text-paper truncate">{item.product.title}</p>
-                    <p className="text-xs text-paper/40">Qty {item.quantity}{item.variant ? ` · ${item.variant}` : ""}</p>
+                    <p className="text-brand-black truncate">{item.product.title}</p>
+                    <p className="text-xs text-brand-black/40">Qty {item.quantity}{item.variant ? ` · ${item.variant}` : ""}</p>
                   </div>
-                  <span className="text-paper font-semibold ml-3">
+                  <span className="text-brand-black font-semibold ml-3">
                     {rupee(item.product.price * item.quantity)}
                   </span>
                 </li>
               ))}
             </ul>
-            <div className="pt-4 border-t border-white/10 space-y-2 text-sm">
-              <div className="flex justify-between text-paper/70">
+            <div className="pt-4 border-t border-brand-black/10 space-y-2 text-sm">
+              <div className="flex justify-between text-brand-black/70">
                 <span>Subtotal</span>
-                <span className="text-paper font-semibold">{rupee(cartTotal)}</span>
+                <span className="text-brand-black font-semibold">{rupee(cartTotal)}</span>
               </div>
-              <div className="flex justify-between text-paper/70">
+              <div className="flex justify-between text-brand-black/70">
                 <span>Shipping</span>
-                <span className={shipping === 0 ? "text-emerald-400 font-semibold" : "text-paper font-semibold"}>
+                <span className={shipping === 0 ? "text-emerald-400 font-semibold" : "text-brand-black font-semibold"}>
                   {shipping === 0 ? "FREE" : rupee(shipping)}
                 </span>
               </div>
-              <div className="pt-3 border-t border-white/10 flex justify-between items-center">
-                <span className="text-paper/70">Total</span>
-                <span className="text-2xl font-black text-paper">{rupee(total)}</span>
+              <div className="pt-3 border-t border-brand-black/10 flex justify-between items-center">
+                <span className="text-brand-black/70">Total</span>
+                <span className="text-2xl font-black text-brand-black">{rupee(total)}</span>
               </div>
             </div>
 
             <button
               type="submit"
               disabled={placing}
-              className="mt-6 w-full bg-brand-red hover:bg-brand-red-soft disabled:opacity-50 transition text-paper text-sm font-bold uppercase tracking-widest py-4 rounded-full flex items-center justify-center gap-2"
+              className="mt-6 w-full bg-brand-red hover:bg-brand-red-soft disabled:opacity-50 transition text-brand-black text-sm font-bold uppercase tracking-widest py-4 rounded-full flex items-center justify-center gap-2"
             >
               {placing ? (
                 <><Loader2 className="w-4 h-4 animate-spin" /> Processing…</>
@@ -348,7 +348,7 @@ export default function CheckoutPage() {
                 `Place Order — ${rupee(total)}`
               )}
             </button>
-            <p className="text-[10px] uppercase tracking-widest text-paper/40 text-center mt-3">
+            <p className="text-[10px] uppercase tracking-widest text-brand-black/40 text-center mt-3">
               🔒 By placing order you agree to our T&Cs
             </p>
           </div>
@@ -369,7 +369,7 @@ function Input({
 }) {
   return (
     <label className="block">
-      <span className="block text-xs uppercase tracking-widest text-paper/50 mb-1.5">
+      <span className="block text-xs uppercase tracking-widest text-brand-black/50 mb-1.5">
         {label} {required && <span className="text-brand-red">*</span>}
       </span>
       <input
@@ -377,7 +377,7 @@ function Input({
         value={value}
         required={required}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-paper placeholder:text-paper/40 focus:outline-none focus:border-brand-red"
+        className="w-full bg-gray-50 border border-brand-black/10 rounded-lg px-3 py-2.5 text-sm text-brand-black placeholder:text-brand-black/40 focus:outline-none focus:border-brand-red"
       />
     </label>
   );

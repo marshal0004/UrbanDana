@@ -26,7 +26,7 @@ export default function AboutPage() {
           <p className="text-xs uppercase tracking-[0.4em] text-brand-red mb-4 font-semibold">
             Est. 2024 · India 🇮🇳
           </p>
-          <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-paper max-w-3xl">
+          <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-brand-black max-w-3xl">
             We didn&apos;t invent a cap.
             <br />
             We invented a <span className="text-brand-red">category</span>.
@@ -42,15 +42,15 @@ export default function AboutPage() {
 
       <section className="py-24 md:py-32 text-center">
         <div className="mx-auto max-w-3xl px-4 sm:px-6">
-          <h2 className="text-4xl md:text-6xl font-black tracking-tight text-paper">
+          <h2 className="text-4xl md:text-6xl font-black tracking-tight text-brand-black">
             Ready to find your cap?
           </h2>
-          <p className="mt-4 text-paper/60 text-lg">
+          <p className="mt-4 text-brand-black/60 text-lg">
             Join 700+ happy heads across India. Handcrafted. Limited. Original.
           </p>
           <Link
             href="/shop"
-            className="mt-8 inline-flex items-center gap-2 bg-brand-red hover:bg-brand-red-soft transition text-paper text-sm font-bold uppercase tracking-widest px-10 py-4 rounded-full"
+            className="mt-8 inline-flex items-center gap-2 bg-brand-red hover:bg-brand-red-soft transition text-brand-black text-sm font-bold uppercase tracking-widest px-10 py-4 rounded-full"
           >
             Shop the Drop
           </Link>

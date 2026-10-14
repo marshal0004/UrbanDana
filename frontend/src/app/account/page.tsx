@@ -45,19 +45,19 @@ export default function AccountPage() {
   }, [token]);
 
   if (loading) {
-    return <div className="py-20 text-center text-paper/60">Loading…</div>;
+    return <div className="py-20 text-center text-brand-black/60">Loading…</div>;
   }
 
   if (!user) {
     return (
       <div className="mx-auto max-w-md py-20 text-center px-4">
-        <h1 className="text-3xl font-black text-paper">Please sign in</h1>
-        <p className="mt-3 text-paper/60">You need an account to view your orders.</p>
+        <h1 className="text-3xl font-black text-brand-black">Please sign in</h1>
+        <p className="mt-3 text-brand-black/60">You need an account to view your orders.</p>
         <div className="mt-6 flex gap-3 justify-center">
-          <Link href="/login?redirect=/account" className="bg-brand-red hover:bg-brand-red-soft text-paper text-sm font-bold uppercase tracking-widest px-6 py-3 rounded-full">
+          <Link href="/login?redirect=/account" className="bg-brand-red hover:bg-brand-red-soft text-brand-black text-sm font-bold uppercase tracking-widest px-6 py-3 rounded-full">
             Sign In
           </Link>
-          <Link href="/signup?redirect=/account" className="border border-white/20 hover:border-white text-paper text-sm font-bold uppercase tracking-widest px-6 py-3 rounded-full">
+          <Link href="/signup?redirect=/account" className="border border-brand-black/20 hover:border-white text-brand-black text-sm font-bold uppercase tracking-widest px-6 py-3 rounded-full">
             Create Account
           </Link>
         </div>
@@ -74,10 +74,10 @@ export default function AccountPage() {
             <UserIcon className="w-6 h-6 text-brand-red" />
           </div>
           <div>
-            <h1 className="text-3xl font-black text-paper">
+            <h1 className="text-3xl font-black text-brand-black">
               {user.firstName} {user.lastName}
             </h1>
-            <p className="text-sm text-paper/60">{user.email}</p>
+            <p className="text-sm text-brand-black/60">{user.email}</p>
             {user.role === "ADMIN" && (
               <span className="inline-block mt-1 text-[10px] uppercase tracking-widest bg-brand-red/20 text-brand-red px-2 py-0.5 rounded">Admin</span>
             )}
@@ -85,7 +85,7 @@ export default function AccountPage() {
         </div>
         <button
           onClick={logout}
-          className="inline-flex items-center gap-2 border border-white/20 hover:border-white text-paper text-xs font-bold uppercase tracking-widest px-5 py-2.5 rounded-full"
+          className="inline-flex items-center gap-2 border border-brand-black/20 hover:border-white text-brand-black text-xs font-bold uppercase tracking-widest px-5 py-2.5 rounded-full"
         >
           <LogOut className="w-4 h-4" /> Sign Out
         </button>
@@ -93,14 +93,14 @@ export default function AccountPage() {
 
       {/* Orders */}
       <div>
-        <h2 className="text-xl font-black text-paper mb-6 flex items-center gap-2">
+        <h2 className="text-xl font-black text-brand-black mb-6 flex items-center gap-2">
           <Package className="w-5 h-5 text-brand-red" /> Your Orders
         </h2>
         {loadingOrders ? (
-          <div className="py-10 text-center text-paper/50">Loading orders…</div>
+          <div className="py-10 text-center text-brand-black/50">Loading orders…</div>
         ) : orders.length === 0 ? (
-          <div className="p-10 rounded-2xl bg-white/5 border border-white/10 text-center">
-            <p className="text-paper/60">No orders yet.</p>
+          <div className="p-10 rounded-2xl bg-gray-50 border border-brand-black/10 text-center">
+            <p className="text-brand-black/60">No orders yet.</p>
             <Link href="/shop" className="mt-4 inline-block text-brand-red hover:underline text-sm">
               Start shopping →
             </Link>
@@ -108,11 +108,11 @@ export default function AccountPage() {
         ) : (
           <ul className="space-y-4">
             {orders.map((o) => (
-              <li key={o.id} className="p-5 rounded-2xl bg-white/5 border border-white/10">
+              <li key={o.id} className="p-5 rounded-2xl bg-gray-50 border border-brand-black/10">
                 <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
                   <div>
-                    <p className="text-sm font-bold text-paper">{o.orderNumber}</p>
-                    <p className="text-xs text-paper/50">
+                    <p className="text-sm font-bold text-brand-black">{o.orderNumber}</p>
+                    <p className="text-xs text-brand-black/50">
                       {new Date(o.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
                     </p>
                   </div>
@@ -120,10 +120,10 @@ export default function AccountPage() {
                     <span className={`text-[10px] uppercase tracking-widest px-2 py-1 rounded border ${STATUS_COLORS[o.status] || STATUS_COLORS.PENDING}`}>
                       {o.status}
                     </span>
-                    <span className="text-sm font-bold text-paper">{rupee(o.totalAmount)}</span>
+                    <span className="text-sm font-bold text-brand-black">{rupee(o.totalAmount)}</span>
                   </div>
                 </div>
-                <ul className="text-xs text-paper/60 space-y-1">
+                <ul className="text-xs text-brand-black/60 space-y-1">
                   {o.items.map((it) => (
                     <li key={it.id}>
                       {it.quantity}× {it.title}{it.variant ? ` (${it.variant})` : ""} — {rupee(it.price * it.quantity)}

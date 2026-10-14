@@ -41,11 +41,11 @@ export default function ProductPage() {
     return (
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid lg:grid-cols-2 gap-12">
-          <div className="aspect-square rounded-3xl bg-white/5 animate-pulse" />
+          <div className="aspect-square rounded-3xl bg-gray-50 animate-pulse" />
           <div className="space-y-4">
-            <div className="h-8 bg-white/5 rounded animate-pulse" />
-            <div className="h-6 bg-white/5 rounded w-2/3 animate-pulse" />
-            <div className="h-24 bg-white/5 rounded animate-pulse" />
+            <div className="h-8 bg-gray-50 rounded animate-pulse" />
+            <div className="h-6 bg-gray-50 rounded w-2/3 animate-pulse" />
+            <div className="h-24 bg-gray-50 rounded animate-pulse" />
           </div>
         </div>
       </div>
@@ -55,7 +55,7 @@ export default function ProductPage() {
   if (!product) {
     return (
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 text-center">
-        <h1 className="text-3xl font-black text-paper">Cap not found</h1>
+        <h1 className="text-3xl font-black text-brand-black">Cap not found</h1>
         <Link href="/shop" className="mt-4 inline-block text-brand-red hover:underline">
           ← Back to shop
         </Link>
@@ -71,16 +71,16 @@ export default function ProductPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-xs text-paper/40 mb-6 flex-wrap">
-        <Link href="/" className="hover:text-paper transition">Home</Link>
+      <div className="flex items-center gap-2 text-xs text-brand-black/40 mb-6 flex-wrap">
+        <Link href="/" className="hover:text-brand-black transition">Home</Link>
         <span>/</span>
-        <Link href="/shop" className="hover:text-paper transition">Shop</Link>
+        <Link href="/shop" className="hover:text-brand-black transition">Shop</Link>
         <span>/</span>
-        <Link href={`/shop?category=${encodeURIComponent(product.category)}`} className="hover:text-paper transition">
+        <Link href={`/shop?category=${encodeURIComponent(product.category)}`} className="hover:text-brand-black transition">
           {product.category}
         </Link>
         <span>/</span>
-        <span className="text-paper/80">{product.title}</span>
+        <span className="text-brand-black/80">{product.title}</span>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-12">
@@ -104,7 +104,7 @@ export default function ProductPage() {
             </div>
           )}
 
-          <div className="flex-1 relative aspect-square rounded-3xl overflow-hidden bg-white/5">
+          <div className="flex-1 relative aspect-square rounded-3xl overflow-hidden bg-gray-50">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={absUrl(product.images[activeImg]?.url)}
@@ -112,12 +112,12 @@ export default function ProductPage() {
               className="w-full h-full object-cover"
             />
             {product.badge && (
-              <span className="absolute top-4 left-4 bg-brand-red text-paper text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">
+              <span className="absolute top-4 left-4 bg-brand-red text-brand-black text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">
                 {product.badge}
               </span>
             )}
             {discount && (
-              <span className="absolute top-4 right-4 bg-brand-black/70 text-brand-red text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">
+              <span className="absolute top-4 right-4 bg-white/70 text-brand-red text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">
                 Save {discount}%
               </span>
             )}
@@ -129,28 +129,28 @@ export default function ProductPage() {
           <p className="text-xs uppercase tracking-[0.4em] text-brand-red font-semibold">
             {product.category}
           </p>
-          <h1 className="mt-3 text-3xl md:text-5xl font-black tracking-tight text-paper">
+          <h1 className="mt-3 text-3xl md:text-5xl font-black tracking-tight text-brand-black">
             {product.title}
           </h1>
           {product.subtitle && (
-            <p className="mt-2 text-paper/60 text-lg">{product.subtitle}</p>
+            <p className="mt-2 text-brand-black/60 text-lg">{product.subtitle}</p>
           )}
 
           <div className="mt-4 flex items-center gap-3">
             <div className="flex items-center gap-1">
               {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} className={cn("w-4 h-4", i < Math.round(product.rating) ? "fill-brand-gold text-brand-gold" : "text-paper/20")} />
+                <Star key={i} className={cn("w-4 h-4", i < Math.round(product.rating) ? "fill-brand-gold text-brand-gold" : "text-brand-black/20")} />
               ))}
             </div>
-            <span className="text-sm text-paper/60">
+            <span className="text-sm text-brand-black/60">
               {product.rating.toFixed(1)} · {product.reviews} reviews
             </span>
           </div>
 
           <div className="mt-6 flex items-center gap-3 flex-wrap">
-            <span className="text-3xl font-black text-paper">{rupee(product.price)}</span>
+            <span className="text-3xl font-black text-brand-black">{rupee(product.price)}</span>
             {product.oldPrice && (
-              <span className="text-lg text-paper/40 line-through">{rupee(product.oldPrice)}</span>
+              <span className="text-lg text-brand-black/40 line-through">{rupee(product.oldPrice)}</span>
             )}
             {discount && (
               <span className="bg-brand-red/15 text-brand-red text-xs font-bold uppercase tracking-widest px-2 py-1 rounded-full">
@@ -158,14 +158,14 @@ export default function ProductPage() {
               </span>
             )}
           </div>
-          <p className="text-xs text-paper/40 mt-1">Inclusive of all taxes · Free shipping over ₹999</p>
+          <p className="text-xs text-brand-black/40 mt-1">Inclusive of all taxes · Free shipping over ₹999</p>
 
-          <p className="mt-6 text-paper/70 leading-relaxed">{product.description}</p>
+          <p className="mt-6 text-brand-black/70 leading-relaxed">{product.description}</p>
 
           {colors.length > 0 && (
             <div className="mt-8">
-              <p className="text-xs uppercase tracking-widest text-paper/50 mb-3">
-                Color: <span className="text-paper font-semibold">{selectedColor}</span>
+              <p className="text-xs uppercase tracking-widest text-brand-black/50 mb-3">
+                Color: <span className="text-brand-black font-semibold">{selectedColor}</span>
               </p>
               <div className="flex flex-wrap gap-2">
                 {colors.map((c) => (
@@ -175,8 +175,8 @@ export default function ProductPage() {
                     className={cn(
                       "px-4 py-2 text-xs uppercase tracking-widest rounded-full border transition",
                       selectedColor === c
-                        ? "bg-brand-red text-paper border-brand-red"
-                        : "bg-transparent text-paper/70 border-white/20 hover:border-white"
+                        ? "bg-brand-red text-brand-black border-brand-red"
+                        : "bg-transparent text-brand-black/70 border-brand-black/20 hover:border-brand-black/10"
                     )}
                   >
                     {c}
@@ -188,10 +188,10 @@ export default function ProductPage() {
 
           {sizes.length > 0 && (
             <div className="mt-6">
-              <p className="text-xs uppercase tracking-widest text-paper/50 mb-3">Size</p>
+              <p className="text-xs uppercase tracking-widest text-brand-black/50 mb-3">Size</p>
               <div className="flex flex-wrap gap-2">
                 {sizes.map((s) => (
-                  <span key={s} className="px-4 py-2 text-xs uppercase tracking-widest rounded-full bg-white/5 text-paper/70 border border-white/10">
+                  <span key={s} className="px-4 py-2 text-xs uppercase tracking-widest rounded-full bg-gray-50 text-brand-black/70 border border-brand-black/10">
                     {s}
                   </span>
                 ))}
@@ -209,18 +209,18 @@ export default function ProductPage() {
           )}
 
           <div className="mt-8 flex items-stretch gap-3">
-            <div className="flex items-center gap-1 bg-white/5 border border-white/10 rounded-full px-2">
+            <div className="flex items-center gap-1 bg-gray-50 border border-brand-black/10 rounded-full px-2">
               <button
                 onClick={() => setQty((q) => Math.max(1, q - 1))}
-                className="w-9 h-9 rounded-full text-paper/70 hover:bg-white/10 transition flex items-center justify-center"
+                className="w-9 h-9 rounded-full text-brand-black/70 hover:bg-gray-100 transition flex items-center justify-center"
                 aria-label="Decrease quantity"
               >
                 <Minus className="w-4 h-4" />
               </button>
-              <span className="w-8 text-center font-semibold text-paper">{qty}</span>
+              <span className="w-8 text-center font-semibold text-brand-black">{qty}</span>
               <button
                 onClick={() => setQty((q) => q + 1)}
-                className="w-9 h-9 rounded-full text-paper/70 hover:bg-white/10 transition flex items-center justify-center"
+                className="w-9 h-9 rounded-full text-brand-black/70 hover:bg-gray-100 transition flex items-center justify-center"
                 aria-label="Increase quantity"
               >
                 <Plus className="w-4 h-4" />
@@ -235,8 +235,8 @@ export default function ProductPage() {
               className={cn(
                 "flex-1 inline-flex items-center justify-center gap-2 text-sm font-bold uppercase tracking-widest py-4 rounded-full transition",
                 soldOut
-                  ? "bg-white/5 text-paper/40 cursor-not-allowed"
-                  : "bg-brand-red hover:bg-brand-red-soft text-paper"
+                  ? "bg-gray-50 text-brand-black/40 cursor-not-allowed"
+                  : "bg-brand-red hover:bg-brand-red-soft text-brand-black"
               )}
             >
               <ShoppingBag className="w-4 h-4" />
@@ -245,7 +245,7 @@ export default function ProductPage() {
 
             <button
               onClick={() => setLiked((v) => !v)}
-              className="w-14 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-paper/70 hover:text-brand-red transition"
+              className="w-14 bg-gray-50 border border-brand-black/10 rounded-full flex items-center justify-center text-brand-black/70 hover:text-brand-red transition"
               aria-label="Wishlist"
             >
               <Heart className={cn("w-5 h-5", liked && "fill-brand-red text-brand-red")} />
@@ -258,9 +258,9 @@ export default function ProductPage() {
               { icon: RefreshCw, label: "7-day returns" },
               { icon: Shield, label: "Secure checkout" },
             ].map((b) => (
-              <div key={b.label} className="p-3 rounded-xl bg-white/5 border border-white/10">
+              <div key={b.label} className="p-3 rounded-xl bg-gray-50 border border-brand-black/10">
                 <b.icon className="w-4 h-4 mx-auto text-brand-red" />
-                <p className="text-[10px] uppercase tracking-widest text-paper/60 mt-2">{b.label}</p>
+                <p className="text-[10px] uppercase tracking-widest text-brand-black/60 mt-2">{b.label}</p>
               </div>
             ))}
           </div>
@@ -270,7 +270,7 @@ export default function ProductPage() {
       {related.length > 0 && (
         <section className="mt-32">
           <div className="flex items-end justify-between gap-4 mb-10">
-            <h2 className="text-3xl md:text-4xl font-black tracking-tight text-paper">
+            <h2 className="text-3xl md:text-4xl font-black tracking-tight text-brand-black">
               You might also like
             </h2>
             <Link href="/shop" className="text-xs uppercase tracking-widest text-brand-red hover:underline">

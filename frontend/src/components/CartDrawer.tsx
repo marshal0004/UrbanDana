@@ -20,7 +20,7 @@ export default function CartDrawer() {
 
       {/* Drawer */}
       <aside
-        className={`fixed right-0 top-0 h-full w-full sm:w-[440px] bg-brand-dark border-l border-white/10 z-50 transition-transform duration-300 flex flex-col ${
+        className={`fixed right-0 top-0 h-full w-full sm:w-[440px] bg-gray-900 border-l border-white/10 z-50 transition-transform duration-300 flex flex-col ${
           cartOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >

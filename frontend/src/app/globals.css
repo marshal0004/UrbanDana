@@ -21,7 +21,7 @@
 }
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 * {
@@ -30,8 +30,8 @@
 }
 
 html, body {
-  background: var(--color-ink);
-  color: var(--color-paper);
+  background: #ffffff;
+  color: #0a0a0a;
   font-family: var(--font-body);
 }
 

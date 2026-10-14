@@ -69,15 +69,15 @@ function ShopClient() {
         <p className="text-xs uppercase tracking-[0.4em] text-brand-red mb-3 font-semibold">
           The Shop
         </p>
-        <h1 className="text-4xl md:text-6xl font-black tracking-tight text-paper">
+        <h1 className="text-4xl md:text-6xl font-black tracking-tight text-brand-black">
           {category === "All" ? (urlQuery ? `Search: "${urlQuery}"` : "All Products") : category}
         </h1>
-        <p className="mt-3 text-paper/60">
+        <p className="mt-3 text-brand-black/60">
           {loading ? "Loading…" : `${sorted.length} ${sorted.length === 1 ? "item" : "items"} available`}
         </p>
       </div>
 
-      <div className="flex items-center justify-between gap-4 mb-8 pb-4 border-b border-white/10">
+      <div className="flex items-center justify-between gap-4 mb-8 pb-4 border-b border-brand-black/10">
         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
           {CATEGORIES.map((c) => (
             <button
@@ -86,8 +86,8 @@ function ShopClient() {
               className={cn(
                 "px-4 py-2 text-xs uppercase tracking-widest rounded-full transition whitespace-nowrap",
                 category === c
-                  ? "bg-brand-red text-paper"
-                  : "bg-white/5 text-paper/60 hover:text-paper hover:bg-white/10"
+                  ? "bg-brand-red text-brand-black"
+                  : "bg-gray-50 text-brand-black/60 hover:text-brand-black hover:bg-gray-100"
               )}
             >
               {c}
@@ -97,7 +97,7 @@ function ShopClient() {
 
         <div className="flex items-center gap-3">
           <button
-            className="lg:hidden p-2 text-paper/60 hover:text-paper"
+            className="lg:hidden p-2 text-brand-black/60 hover:text-brand-black"
             aria-label="Filters"
           >
             <SlidersHorizontal className="w-4 h-4" />
@@ -105,10 +105,10 @@ function ShopClient() {
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value)}
-            className="bg-white/5 border border-white/10 text-paper text-xs uppercase tracking-widest rounded-full px-4 py-2 focus:outline-none focus:border-brand-red cursor-pointer"
+            className="bg-gray-50 border border-brand-black/10 text-brand-black text-xs uppercase tracking-widest rounded-full px-4 py-2 focus:outline-none focus:border-brand-red cursor-pointer"
           >
             {SORTS.map((s) => (
-              <option key={s.v} value={s.v} className="bg-brand-dark text-paper">
+              <option key={s.v} value={s.v} className="bg-brand-dark text-brand-black">
                 {s.l}
               </option>
             ))}
@@ -120,15 +120,15 @@ function ShopClient() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-10">
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i}>
-              <div className="aspect-[4/5] rounded-2xl bg-white/5 animate-pulse" />
-              <div className="mt-4 h-3 bg-white/5 rounded animate-pulse" />
-              <div className="mt-2 h-3 w-2/3 bg-white/5 rounded animate-pulse" />
+              <div className="aspect-[4/5] rounded-2xl bg-gray-50 animate-pulse" />
+              <div className="mt-4 h-3 bg-gray-50 rounded animate-pulse" />
+              <div className="mt-2 h-3 w-2/3 bg-gray-50 rounded animate-pulse" />
             </div>
           ))}
         </div>
       ) : sorted.length === 0 ? (
         <div className="py-20 text-center">
-          <p className="text-paper/60">No products found.</p>
+          <p className="text-brand-black/60">No products found.</p>
           <button
             onClick={() => setCategory("All")}
             className="mt-4 text-sm text-brand-red hover:underline"
@@ -149,7 +149,7 @@ function ShopClient() {
 
 export default function ShopPage() {
   return (
-    <Suspense fallback={<div className="py-20 text-center text-paper/60">Loading shop…</div>}>
+    <Suspense fallback={<div className="py-20 text-center text-brand-black/60">Loading shop…</div>}>
       <ShopClient />
     </Suspense>
   );

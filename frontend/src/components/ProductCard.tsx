@@ -9,10 +9,10 @@ import { useState, useEffect } from "react";
 const WISHLIST_KEY = "ud_wishlist";
 
 const BADGE_STYLES: Record<string, string> = {
-  Bestseller: "bg-brand-red text-paper",
+  Bestseller: "bg-brand-red text-brand-black",
   "Best Value": "bg-brand-gold text-brand-black",
   Limited: "bg-brand-black text-brand-cream border border-brand-cream/40",
-  New: "bg-emerald-500 text-paper",
+  New: "bg-emerald-500 text-brand-black",
   Collector: "bg-brand-cream text-brand-black",
 };
 
@@ -65,13 +65,13 @@ export default function ProductCard({ product }: { product: Product }) {
           {product.badge && (
             <span className={cn(
               "text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full",
-              BADGE_STYLES[product.badge] || "bg-white/10 text-paper"
+              BADGE_STYLES[product.badge] || "bg-white/10 text-brand-black"
             )}>
               {product.badge}
             </span>
           )}
           {discount && (
-            <span className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full bg-brand-red text-paper">
+            <span className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full bg-brand-red text-brand-black">
               -{discount}%
             </span>
           )}
@@ -79,7 +79,7 @@ export default function ProductCard({ product }: { product: Product }) {
 
         <button
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggle(product.id); }}
-          className="absolute top-3 right-3 w-9 h-9 rounded-full bg-brand-black/40 backdrop-blur-md flex items-center justify-center text-paper hover:bg-brand-black/60 transition"
+          className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/40 backdrop-blur-md flex items-center justify-center text-paper hover:bg-white/60 transition"
           aria-label="Toggle wishlist"
         >
           <Heart className={cn("w-4 h-4 transition", liked && "fill-brand-red text-brand-red")} />
@@ -87,7 +87,7 @@ export default function ProductCard({ product }: { product: Product }) {
 
         {soldOut && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="bg-brand-black/80 text-paper text-xs uppercase tracking-widest px-4 py-2 rounded-full">
+            <span className="bg-white/80 text-paper text-xs uppercase tracking-widest px-4 py-2 rounded-full">
               Sold Out
             </span>
           </div>
@@ -96,7 +96,7 @@ export default function ProductCard({ product }: { product: Product }) {
         {!soldOut && (
           <button
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); addToCart(product); }}
-            className="absolute bottom-3 left-3 right-3 bg-brand-black/85 backdrop-blur-md text-paper text-xs font-bold uppercase tracking-widest py-3 rounded-full opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 flex items-center justify-center gap-2 hover:bg-brand-red"
+            className="absolute bottom-3 left-3 right-3 bg-white/85 backdrop-blur-md text-paper text-xs font-bold uppercase tracking-widest py-3 rounded-full opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 flex items-center justify-center gap-2 hover:bg-brand-red"
           >
             <ShoppingBag className="w-4 h-4" />
             Add to Bag
@@ -106,10 +106,10 @@ export default function ProductCard({ product }: { product: Product }) {
 
       <div className="mt-4 flex flex-col gap-1">
         <div className="flex items-center justify-between gap-2">
-          <span className="text-[10px] uppercase tracking-widest text-paper/40">
+          <span className="text-[10px] uppercase tracking-widest text-brand-black/40">
             {product.category}
           </span>
-          <span className="text-[10px] text-paper/40 flex items-center gap-1">
+          <span className="text-[10px] text-brand-black/40 flex items-center gap-1">
             <Star className="w-3 h-3 fill-brand-gold text-brand-gold" />
             {product.rating.toFixed(1)}
             <span className="opacity-50">({product.reviews})</span>
@@ -121,12 +121,12 @@ export default function ProductCard({ product }: { product: Product }) {
           </h3>
         </Link>
         {product.subtitle && (
-          <p className="text-xs text-paper/50 line-clamp-1">{product.subtitle}</p>
+          <p className="text-xs text-brand-black/50 line-clamp-1">{product.subtitle}</p>
         )}
         <div className="flex items-center gap-2 mt-1">
-          <span className="text-base font-bold text-paper">{rupee(product.price)}</span>
+          <span className="text-base font-bold text-brand-black">{rupee(product.price)}</span>
           {product.oldPrice && (
-            <span className="text-xs text-paper/40 line-through">{rupee(product.oldPrice)}</span>
+            <span className="text-xs text-brand-black/40 line-through">{rupee(product.oldPrice)}</span>
           )}
         </div>
       </div>

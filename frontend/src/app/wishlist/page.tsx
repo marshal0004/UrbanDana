@@ -48,19 +48,19 @@ export default function WishlistPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-      <h1 className="text-4xl md:text-5xl font-black tracking-tight text-paper">Your Wishlist</h1>
-      <p className="mt-2 text-paper/60">
+      <h1 className="text-4xl md:text-5xl font-black tracking-tight text-brand-black">Your Wishlist</h1>
+      <p className="mt-2 text-brand-black/60">
         {loading ? "Loading…" : `${products.length} item${products.length === 1 ? "" : "s"} saved`}
       </p>
 
       {!loading && products.length === 0 ? (
-        <div className="mt-16 text-center py-20 border border-white/10 rounded-3xl bg-white/5">
-          <Heart className="w-16 h-16 mx-auto text-paper/20" />
-          <h2 className="mt-6 text-xl font-bold text-paper">No saved items yet</h2>
-          <p className="mt-2 text-paper/60 text-sm">Tap the heart icon on any product to save it here.</p>
+        <div className="mt-16 text-center py-20 border border-brand-black/10 rounded-3xl bg-gray-50">
+          <Heart className="w-16 h-16 mx-auto text-brand-black/20" />
+          <h2 className="mt-6 text-xl font-bold text-brand-black">No saved items yet</h2>
+          <p className="mt-2 text-brand-black/60 text-sm">Tap the heart icon on any product to save it here.</p>
           <Link
             href="/shop"
-            className="mt-6 inline-flex items-center gap-2 bg-brand-red hover:bg-brand-red-soft transition text-paper text-sm font-bold uppercase tracking-widest px-8 py-3 rounded-full"
+            className="mt-6 inline-flex items-center gap-2 bg-brand-red hover:bg-brand-red-soft transition text-brand-black text-sm font-bold uppercase tracking-widest px-8 py-3 rounded-full"
           >
             Browse Caps & Tees
           </Link>
@@ -72,7 +72,7 @@ export default function WishlistPage() {
               <ProductCard product={p} />
               <button
                 onClick={() => remove(p.id)}
-                className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-brand-red text-paper flex items-center justify-center hover:scale-110 transition z-10"
+                className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-brand-red text-brand-black flex items-center justify-center hover:scale-110 transition z-10"
                 aria-label="Remove from wishlist"
               >
                 ×
