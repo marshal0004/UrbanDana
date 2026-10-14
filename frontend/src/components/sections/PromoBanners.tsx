@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
-// Eye-catching promotional banners — fixed height, content fits properly
+// Eye-catching promotional banners — 550px height, background image fits properly
 const BANNERS = [
   {
     eyebrow: "LIMITED EDITION",
@@ -36,42 +36,42 @@ export default function PromoBanners() {
               key={b.title}
               href={b.href}
               className="group relative overflow-hidden rounded-2xl transition-all duration-300 hover:shadow-2xl"
-              style={{ background: b.bg, height: "380px" }}
+              style={{ background: b.bg, height: "550px" }}
             >
-              {/* Background image — fills the card */}
+              {/* Background image — fills the entire card, scales on hover */}
               <div className="absolute inset-0">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={b.image}
                   alt={b.title}
-                  className="w-full h-full object-cover opacity-70 group-hover:opacity-90 group-hover:scale-105 transition-all duration-700"
+                  className="w-full h-full object-cover opacity-80 group-hover:opacity-95 group-hover:scale-105 transition-all duration-700"
                 />
-                {/* Gradient overlay — left side dark for text readability */}
+                {/* Gradient overlay — left side dark for text readability, right side shows image */}
                 <div
                   className="absolute inset-0"
                   style={{
-                    background: `linear-gradient(90deg, rgba(10,10,10,0.85) 0%, rgba(10,10,10,0.5) 50%, rgba(10,10,10,0.2) 100%)`,
+                    background: `linear-gradient(90deg, rgba(10,10,10,0.9) 0%, rgba(10,10,10,0.6) 45%, rgba(10,10,10,0.2) 100%)`,
                   }}
                 />
               </div>
 
-              {/* Content — left-aligned, vertically centered, fits within 380px height */}
-              <div className="relative h-full flex flex-col justify-center p-8 md:p-10 max-w-[60%]">
+              {/* Content — left-aligned, vertically centered, fits within 550px height with breathing room */}
+              <div className="relative h-full flex flex-col justify-center p-10 md:p-12 max-w-[65%]">
                 <p
-                  className="text-[11px] uppercase tracking-[0.4em] font-bold mb-3"
+                  className="text-xs uppercase tracking-[0.4em] font-bold mb-4"
                   style={{ color: b.accent }}
                 >
                   {b.eyebrow}
                 </p>
-                <h3 className="text-3xl md:text-4xl font-black text-paper mb-3 drop-shadow-lg leading-tight">
+                <h3 className="text-4xl md:text-5xl font-black text-paper mb-4 drop-shadow-lg leading-tight">
                   {b.title}
                 </h3>
-                <p className="text-paper/80 text-sm mb-5 drop-shadow leading-relaxed">
+                <p className="text-paper/85 text-base mb-6 drop-shadow leading-relaxed">
                   {b.desc}
                 </p>
                 <div className="inline-flex items-center gap-2 text-paper text-xs font-bold uppercase tracking-widest group-hover:gap-3 transition-all">
                   <span
-                    className="px-5 py-2.5 rounded-full"
+                    className="px-6 py-3 rounded-full"
                     style={{ backgroundColor: b.accent }}
                   >
                     {b.cta}
