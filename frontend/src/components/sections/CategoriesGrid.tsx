@@ -35,9 +35,9 @@ const CATEGORIES = [
     span: "",
   },
   {
-    title: "Bundles",
-    desc: "Save up to ₹2,000",
-    href: "/shop?category=Bundles",
+    title: "Combo",
+    desc: "Cap + Tee packs",
+    href: "/shop?category=Combo",
     image: "/images/cat-bundles.jpg",
     span: "",
   },

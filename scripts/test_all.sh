@@ -91,7 +91,7 @@ CATS=$(echo "$RES" | python3 -c "import sys,json;d=json.load(sys.stdin);print(',
 assert_contains "$CATS" "Bandana Caps" "Categories includes Bandana Caps"
 assert_contains "$CATS" "T-Shirts" "Categories includes T-Shirts"
 assert_contains "$CATS" "Limited Edition" "Categories includes Limited Edition"
-assert_contains "$CATS" "Bundles" "Categories includes Bundles"
+assert_contains "$CATS" "Combo" "Categories includes Combo"
 
 RES=$(curl -s "$BACKEND/api/products?q=red")
 TOTAL=$(echo "$RES" | python3 -c "import sys,json;print(json.load(sys.stdin)['total'])")

@@ -97,15 +97,17 @@ const MEGA_MENU = [
     ],
   },
   {
-    label: "BUNDLES",
-    href: "/shop?category=Bundles",
+    label: "COMBO",
+    href: "/shop?category=Combo",
     columns: [
       {
-        title: "Save More",
+        title: "Combo Packs",
         links: [
-          { label: "All Bundles", href: "/shop?category=Bundles" },
-          { label: "Visor Duo Pack — Save ₹500", href: "/product/visor-duo-pack" },
-          { label: "Collector's Set — Save ₹2,000", href: "/product/collector-s-full-set" },
+          { label: "All Combos", href: "/shop?category=Combo" },
+          { label: "Cap + Tee Combo — Red", href: "/product/cap-tee-combo-red" },
+          { label: "Cap + Tee Combo — Black", href: "/product/cap-tee-combo-black" },
+          { label: "Cap + Tee Combo — Indigo", href: "/product/cap-tee-combo-indigo" },
+          { label: "Cap + Tee Combo — Cream", href: "/product/cap-tee-combo-cream" },
         ],
       },
     ],

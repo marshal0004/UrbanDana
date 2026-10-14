@@ -1,5 +1,5 @@
 "use client";
-// Snitch-style promo banner with offer cards
+// Promo banner with real prices (no fake strikethroughs)
 import Link from "next/link";
 import { useInView } from "@/hooks/useInView";
 import { cn } from "@/lib/utils";
@@ -7,31 +7,31 @@ import { ArrowRight } from "lucide-react";
 
 const PROMOS = [
   {
-    title: "BUY 2 CAPS",
-    subtitle: "SAVE ₹500",
-    desc: "Mix & match any 2 caps",
-    href: "/product/visor-duo-pack",
+    title: "CAPS",
+    subtitle: "₹249",
+    desc: "All bandana caps",
+    href: "/shop?category=Bandana Caps",
     accent: "#c8102e",
   },
   {
-    title: "BUNDLES FROM",
-    subtitle: "₹2,499",
-    desc: "Best value picks",
-    href: "/shop?category=Bundles",
+    title: "TEES",
+    subtitle: "₹299",
+    desc: "All t-shirts",
+    href: "/shop?category=T-Shirts",
     accent: "#d4a017",
   },
   {
-    title: "LIMITED EDITION",
-    subtitle: "200 PCS ONLY",
-    desc: "Once gone, forever gone",
-    href: "/shop?category=Limited Edition",
+    title: "COMBO",
+    subtitle: "₹548",
+    desc: "Cap + Tee pack",
+    href: "/shop?category=Combo",
     accent: "#10b981",
   },
   {
-    title: "TEE + CAP",
-    subtitle: "SAVE ₹400",
-    desc: "Complete the look",
-    href: "/shop?category=T-Shirts",
+    title: "LIMITED",
+    subtitle: "200 PCS",
+    desc: "Once gone, forever gone",
+    href: "/shop?category=Limited Edition",
     accent: "#a855f7",
   },
 ];
