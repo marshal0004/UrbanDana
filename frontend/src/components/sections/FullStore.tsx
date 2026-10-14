@@ -64,22 +64,22 @@ export default function FullStore() {
   }, [products, category]);
 
   return (
-    <section className="py-12 bg-brand-cream">
+    <section className="py-10 bg-white">
       <div className="mx-auto" style={{ maxWidth: "100%", padding: "0 12px" }}>
-        <div className="mb-8 px-2">
-          <p className="text-xs uppercase tracking-[0.4em] text-brand-red mb-2 font-semibold">
+        <div className="mb-6 px-2">
+          <p className="text-xs uppercase tracking-[0.4em] text-brand-red mb-1.5 font-semibold">
             The Full Store
           </p>
-          <h2 className="text-3xl md:text-5xl font-black tracking-tight text-brand-black">
+          <h2 className="text-3xl md:text-4xl font-black tracking-tight text-brand-black">
             All Products
           </h2>
-          <p className="mt-2 text-brand-black/60">
+          <p className="mt-1.5 text-brand-black/60 text-sm">
             {loading ? "Loading…" : `${filtered.length} products available`}
           </p>
         </div>
 
         {/* Category chips */}
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-3 mb-6 px-2">
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-3 mb-5 px-2">
           {CATEGORIES.map((c) => (
             <button
               key={c}
@@ -96,11 +96,11 @@ export default function FullStore() {
           ))}
         </div>
 
-        {/* Product grid — light theme, red/black borders, tight gap */}
+        {/* Product grid — pure white bg, square images, subtle shadow on hover */}
         {loading ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 px-2">
             {Array.from({ length: 10 }).map((_, i) => (
-              <div key={i} className="aspect-[4/5] rounded-2xl bg-white animate-pulse border-2 border-brand-black/5" />
+              <div key={i} className="aspect-square rounded-xl bg-gray-100 animate-pulse" />
             ))}
           </div>
         ) : (
@@ -112,12 +112,12 @@ export default function FullStore() {
               return (
                 <article
                   key={product.id}
-                  className="group relative bg-white rounded-2xl border-2 border-brand-red/20 hover:border-brand-red hover:shadow-lg hover:shadow-brand-red/20 transition-all duration-300 overflow-hidden"
+                  className="group relative bg-white rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl"
                 >
                   <Link
                     href={`/product/${product.slug}`}
                     className={cn(
-                      "relative block aspect-[4/5] overflow-hidden bg-brand-cream",
+                      "relative block aspect-square overflow-hidden bg-gray-50",
                       soldOut && "opacity-60"
                     )}
                   >
@@ -131,8 +131,8 @@ export default function FullStore() {
                     <div className="absolute top-2 left-2 flex flex-col gap-1">
                       {product.badge && (
                         <span className={cn(
-                          "text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full",
-                          BADGE_STYLES[product.badge] || "bg-white/80 text-brand-black"
+                          "text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded",
+                          BADGE_STYLES[product.badge] || "bg-white/90 text-brand-black"
                         )}>
                           {product.badge}
                         </span>
@@ -158,7 +158,7 @@ export default function FullStore() {
                     {!soldOut && (
                       <button
                         onClick={(e) => { e.preventDefault(); addToCart(product); }}
-                        className="absolute bottom-2 left-2 right-2 bg-brand-black/90 backdrop-blur-md text-paper text-[11px] font-bold uppercase tracking-widest py-2.5 rounded-full opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 flex items-center justify-center gap-1.5 hover:bg-brand-red"
+                        className="absolute bottom-2 left-2 right-2 bg-brand-red text-paper text-[11px] font-bold uppercase tracking-widest py-2.5 rounded-lg opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 flex items-center justify-center gap-1.5 hover:bg-brand-black"
                       >
                         <ShoppingBag className="w-3.5 h-3.5" />
                         Add to Bag
@@ -168,10 +168,10 @@ export default function FullStore() {
 
                   <div className="p-3">
                     <div className="flex items-center justify-between gap-1 mb-1">
-                      <span className="text-[9px] uppercase tracking-widest text-brand-black/50 font-semibold">
+                      <span className="text-[9px] uppercase tracking-widest text-brand-black/40 font-semibold">
                         {product.category}
                       </span>
-                      <span className="text-[9px] text-brand-black/50 flex items-center gap-0.5">
+                      <span className="text-[9px] text-brand-black/40 flex items-center gap-0.5">
                         <Star className="w-2.5 h-2.5 fill-brand-gold text-brand-gold" />
                         {product.rating.toFixed(1)}
                       </span>
@@ -182,10 +182,10 @@ export default function FullStore() {
                       </h3>
                     </Link>
                     {product.subtitle && (
-                      <p className="text-[11px] text-brand-black/60 line-clamp-1 mt-0.5">{product.subtitle}</p>
+                      <p className="text-[11px] text-brand-black/50 line-clamp-1 mt-0.5">{product.subtitle}</p>
                     )}
-                    <div className="flex items-center gap-1.5 mt-2">
-                      <span className="text-base font-black text-brand-red">{rupee(product.price)}</span>
+                    <div className="flex items-center gap-1.5 mt-1.5">
+                      <span className="text-lg font-black text-brand-red">{rupee(product.price)}</span>
                     </div>
                   </div>
                 </article>

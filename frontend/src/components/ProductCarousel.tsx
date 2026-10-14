@@ -34,7 +34,6 @@ export default function ProductCarousel({
   const [paused, setPaused] = useState(false);
   const [wishlist, setWishlist] = useState<string[]>([]);
 
-  // Load wishlist
   useEffect(() => {
     try {
       setWishlist(JSON.parse(localStorage.getItem(WISHLIST_KEY) || "[]"));
@@ -61,28 +60,27 @@ export default function ProductCarousel({
     });
   };
 
-  // Auto-scroll
+  // Auto-scroll — 3 seconds (was 3.5)
   useEffect(() => {
     if (!autoScroll || paused || !scrollRef.current) return;
     const interval = setInterval(() => {
       const el = scrollRef.current;
       if (!el) return;
-      // Scroll by one card width (~280px + gap)
-      const cardWidth = 280 + 16;
+      // Scroll by one card width (~320px + gap)
+      const cardWidth = 320 + 12;
       if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 10) {
-        // Loop back to start
         el.scrollTo({ left: 0, behavior: "smooth" });
       } else {
         el.scrollBy({ left: cardWidth, behavior: "smooth" });
       }
-    }, 3500);
+    }, 3000); // 3 seconds
     return () => clearInterval(interval);
   }, [autoScroll, paused]);
 
   const scrollByDir = (dir: "left" | "right") => {
     const el = scrollRef.current;
     if (!el) return;
-    const cardWidth = 280 + 16;
+    const cardWidth = 320 + 12;
     el.scrollBy({ left: dir === "left" ? -cardWidth * 2 : cardWidth * 2, behavior: "smooth" });
   };
 
@@ -90,21 +88,21 @@ export default function ProductCarousel({
 
   return (
     <section
-      className="py-12 bg-brand-cream"
+      className="py-10 bg-white"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
       <div className="mx-auto" style={{ maxWidth: "100%", padding: "0 12px" }}>
         {(title || eyebrow) && (
-          <div className="flex items-end justify-between gap-4 mb-6 px-2">
+          <div className="flex items-end justify-between gap-4 mb-5 px-2">
             <div>
               {eyebrow && (
-                <p className="text-xs uppercase tracking-[0.4em] text-brand-red mb-2 font-semibold">
+                <p className="text-xs uppercase tracking-[0.4em] text-brand-red mb-1.5 font-semibold">
                   {eyebrow}
                 </p>
               )}
               {title && (
-                <h2 className="text-3xl md:text-5xl font-black tracking-tight text-brand-black">
+                <h2 className="text-3xl md:text-4xl font-black tracking-tight text-brand-black">
                   {title}
                 </h2>
               )}
@@ -112,14 +110,14 @@ export default function ProductCarousel({
             <div className="flex gap-2">
               <button
                 onClick={() => scrollByDir("left")}
-                className="w-10 h-10 rounded-full bg-brand-black/10 hover:bg-brand-red hover:text-paper text-brand-black transition flex items-center justify-center"
+                className="w-9 h-9 rounded-full bg-brand-black/5 hover:bg-brand-red hover:text-paper text-brand-black transition flex items-center justify-center"
                 aria-label="Scroll left"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
               <button
                 onClick={() => scrollByDir("right")}
-                className="w-10 h-10 rounded-full bg-brand-black/10 hover:bg-brand-red hover:text-paper text-brand-black transition flex items-center justify-center"
+                className="w-9 h-9 rounded-full bg-brand-black/5 hover:bg-brand-red hover:text-paper text-brand-black transition flex items-center justify-center"
                 aria-label="Scroll right"
               >
                 <ChevronRight className="w-5 h-5" />
@@ -130,7 +128,7 @@ export default function ProductCarousel({
 
         <div
           ref={scrollRef}
-          className="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth pb-2"
+          className="flex gap-3 overflow-x-auto no-scrollbar scroll-smooth pb-2"
           style={{ scrollSnapType: "x mandatory", scrollbarWidth: "none" }}
         >
           {products.map((product) => {
@@ -140,11 +138,11 @@ export default function ProductCarousel({
             return (
               <article
                 key={product.id}
-                className="group relative shrink-0 bg-white rounded-2xl border-2 border-brand-red/20 hover:border-brand-red hover:shadow-lg hover:shadow-brand-red/20 transition-all duration-300 overflow-hidden"
-                style={{ width: "280px", scrollSnapAlign: "start" }}
+                className="group relative shrink-0 bg-white rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl"
+                style={{ width: "320px", scrollSnapAlign: "start" }}
               >
-                {/* Image */}
-                <Link href={`/product/${product.slug}`} className="relative block aspect-[4/5] overflow-hidden bg-brand-cream">
+                {/* Image — large, full-bleed, square-ish aspect */}
+                <Link href={`/product/${product.slug}`} className="relative block aspect-square overflow-hidden bg-gray-50">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={absUrl(primaryImg || "")}
@@ -152,22 +150,22 @@ export default function ProductCarousel({
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
 
-                  {/* Badges */}
-                  <div className="absolute top-2 left-2 flex flex-col gap-1">
+                  {/* Badges — top-left, minimal */}
+                  <div className="absolute top-2.5 left-2.5 flex flex-col gap-1">
                     {product.badge && (
                       <span className={cn(
-                        "text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full",
-                        BADGE_STYLES[product.badge] || "bg-white/80 text-brand-black"
+                        "text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded",
+                        BADGE_STYLES[product.badge] || "bg-white/90 text-brand-black"
                       )}>
                         {product.badge}
                       </span>
                     )}
                   </div>
 
-                  {/* Wishlist */}
+                  {/* Wishlist — top-right, subtle */}
                   <button
                     onClick={(e) => { e.preventDefault(); toggleWishlist(product.id); }}
-                    className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/80 backdrop-blur-md flex items-center justify-center text-brand-black hover:bg-white transition"
+                    className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white/80 backdrop-blur-md flex items-center justify-center text-brand-black hover:bg-white transition"
                     aria-label="Toggle wishlist"
                   >
                     <Heart className={cn("w-4 h-4", liked && "fill-brand-red text-brand-red")} />
@@ -181,11 +179,11 @@ export default function ProductCarousel({
                     </div>
                   )}
 
-                  {/* Quick add */}
+                  {/* Quick add — slides up on hover, Bewakoof-style */}
                   {!soldOut && (
                     <button
                       onClick={(e) => { e.preventDefault(); addToCart(product); }}
-                      className="absolute bottom-2 left-2 right-2 bg-brand-black/90 backdrop-blur-md text-paper text-[11px] font-bold uppercase tracking-widest py-2.5 rounded-full opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 flex items-center justify-center gap-1.5 hover:bg-brand-red"
+                      className="absolute bottom-2.5 left-2.5 right-2.5 bg-brand-red text-paper text-[11px] font-bold uppercase tracking-widest py-2.5 rounded-lg opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 flex items-center justify-center gap-1.5 hover:bg-brand-black"
                     >
                       <ShoppingBag className="w-3.5 h-3.5" />
                       Add to Bag
@@ -193,13 +191,13 @@ export default function ProductCarousel({
                   )}
                 </Link>
 
-                {/* Info */}
+                {/* Info — minimal, clean, below image */}
                 <div className="p-3">
                   <div className="flex items-center justify-between gap-1 mb-1">
-                    <span className="text-[9px] uppercase tracking-widest text-brand-black/50 font-semibold">
+                    <span className="text-[9px] uppercase tracking-widest text-brand-black/40 font-semibold">
                       {product.category}
                     </span>
-                    <span className="text-[9px] text-brand-black/50 flex items-center gap-0.5">
+                    <span className="text-[9px] text-brand-black/40 flex items-center gap-0.5">
                       <Star className="w-2.5 h-2.5 fill-brand-gold text-brand-gold" />
                       {product.rating.toFixed(1)}
                     </span>
@@ -210,10 +208,10 @@ export default function ProductCarousel({
                     </h3>
                   </Link>
                   {product.subtitle && (
-                    <p className="text-[11px] text-brand-black/60 line-clamp-1 mt-0.5">{product.subtitle}</p>
+                    <p className="text-[11px] text-brand-black/50 line-clamp-1 mt-0.5">{product.subtitle}</p>
                   )}
-                  <div className="flex items-center gap-1.5 mt-2">
-                    <span className="text-base font-black text-brand-red">{rupee(product.price)}</span>
+                  <div className="flex items-center gap-1.5 mt-1.5">
+                    <span className="text-lg font-black text-brand-red">{rupee(product.price)}</span>
                   </div>
                 </div>
               </article>
