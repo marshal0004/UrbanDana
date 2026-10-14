@@ -5,6 +5,11 @@ import Hero from "@/components/sections/Hero";
 import ProductCarousel from "@/components/ProductCarousel";
 import PromoBanners from "@/components/sections/PromoBanners";
 import FullStore from "@/components/sections/FullStore";
+import Stats from "@/components/sections/Stats";
+import ThreeStyles from "@/components/sections/ThreeStyles";
+import Features from "@/components/sections/Features";
+import Founder from "@/components/sections/Founder";
+import Testimonials from "@/components/sections/Testimonials";
 
 export default function HomePage() {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
@@ -22,9 +27,6 @@ export default function HomePage() {
     p.category === "Bandana Caps" || p.category === "Combo"
   );
   const tees = allProducts.filter((p) => p.category === "T-Shirts");
-  const limited = allProducts.filter((p) =>
-    p.category === "Limited Edition" || p.category === "Visors"
-  );
 
   return (
     <>
@@ -53,8 +55,15 @@ export default function HomePage() {
         />
       )}
 
-      {/* Full store — all products with category filter */}
+      {/* Full store — all products with infinite scroll loader */}
       <FullStore />
+
+      {/* Restored sections — after all products */}
+      <Stats />
+      <ThreeStyles />
+      <Features />
+      <Founder />
+      <Testimonials />
     </>
   );
 }
