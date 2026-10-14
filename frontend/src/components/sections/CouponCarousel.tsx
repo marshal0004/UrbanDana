@@ -2,9 +2,9 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { Tag, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight, Percent } from "lucide-react";
 
-// Full-width coupon banners — 1 per screen, auto-scrolling
+// Full-width coupon banners — ticket/coupon style with side notches + hourglass middle
 // Based on real product prices: caps ₹249, tees ₹299, combos ₹548
 const COUPONS = [
   {
@@ -15,9 +15,10 @@ const COUPONS = [
     code: "TEE2",
     desc: "Mix & match any 2 t-shirts. Auto-applied at checkout.",
     href: "/shop?category=T-Shirts",
-    bg: "linear-gradient(135deg, #0a0a0a 0%, #1a0507 50%, #2a0a10 100%)",
+    leftBg: "#0a0a0a",
+    rightBg: "#c8102e",
     accent: "#c8102e",
-    ticketBg: "#c8102e",
+    textColor: "#ffffff",
   },
   {
     eyebrow: "CAP OFFER",
@@ -27,9 +28,10 @@ const COUPONS = [
     code: "CAP3",
     desc: "Any 3 bandana caps. Save ₹148. Auto-applied at checkout.",
     href: "/shop?category=Bandana Caps",
-    bg: "linear-gradient(135deg, #0a0a0a 0%, #0a1a14 50%, #0a2a1f 100%)",
+    leftBg: "#0a0a0a",
+    rightBg: "#10b981",
     accent: "#10b981",
-    ticketBg: "#10b981",
+    textColor: "#ffffff",
   },
   {
     eyebrow: "COMBO DEAL",
@@ -39,9 +41,10 @@ const COUPONS = [
     code: "COMBO49",
     desc: "1 cap + 1 matching tee. Save ₹49. Complete the Urbandana look.",
     href: "/shop?category=Combo",
-    bg: "linear-gradient(135deg, #0a0a0a 0%, #1a1409 50%, #2a1f0a 100%)",
+    leftBg: "#0a0a0a",
+    rightBg: "#d4a017",
     accent: "#d4a017",
-    ticketBg: "#d4a017",
+    textColor: "#0a0a0a",
   },
   {
     eyebrow: "LIMITED EDITION",
@@ -51,9 +54,10 @@ const COUPONS = [
     code: "LIMITED50",
     desc: "On all Limited Edition caps. Only 200 pieces. Once gone, forever gone.",
     href: "/shop?category=Limited Edition",
-    bg: "linear-gradient(135deg, #0a0a0a 0%, #0f0a1a 50%, #1a0a2a 100%)",
+    leftBg: "#0a0a0a",
+    rightBg: "#a855f7",
     accent: "#a855f7",
-    ticketBg: "#a855f7",
+    textColor: "#ffffff",
   },
 ];
 
@@ -120,10 +124,10 @@ export default function CouponCarousel() {
           </div>
         </div>
 
-        {/* Full-width coupon carousel — 1 per screen */}
+        {/* Full-width coupon carousel — 1 per screen, ticket-style */}
         <div
           ref={scrollRef}
-          className="flex overflow-x-auto no-scrollbar scroll-smooth rounded-2xl"
+          className="flex overflow-x-auto no-scrollbar scroll-smooth"
           style={{ scrollSnapType: "x mandatory", scrollbarWidth: "none" }}
         >
           {COUPONS.map((c, i) => (
@@ -134,77 +138,117 @@ export default function CouponCarousel() {
             >
               <Link
                 href={c.href}
-                className="group relative block overflow-hidden rounded-2xl"
-                style={{ background: c.bg, minHeight: "260px" }}
+                className="group relative block"
+                style={{ height: "220px" }}
               >
-                <div className="flex items-stretch">
-                  {/* Left side — offer text */}
-                  <div className="flex-1 p-8 md:p-12 flex flex-col justify-center">
+                {/* Ticket-shaped container with side notches via CSS */}
+                <div
+                  className="relative w-full h-full flex"
+                  style={{
+                    // Ticket shape: semicircle notches on left & right edges
+                    // Using radial-gradient to create notch cutouts
+                    WebkitMaskImage: `radial-gradient(circle 12px at 0 50%, transparent 98%, #000 100%), radial-gradient(circle 12px at 100% 50%, transparent 98%, #000 100%), linear-gradient(#000, #000)`,
+                    WebkitMaskComposite: "source-in",
+                    maskImage: `radial-gradient(circle 12px at 0 50%, transparent 98%, #000 100%), radial-gradient(circle 12px at 100% 50%, transparent 98%, #000 100%), linear-gradient(#000, #000)`,
+                    maskComposite: "intersect",
+                  }}
+                >
+                  {/* Left section — dark background, offer text */}
+                  <div
+                    className="flex-1 p-8 md:p-10 flex flex-col justify-center relative"
+                    style={{ backgroundColor: c.leftBg }}
+                  >
                     <p
-                      className="text-xs uppercase tracking-[0.4em] font-bold mb-3"
+                      className="text-xs uppercase tracking-[0.4em] font-bold mb-2"
                       style={{ color: c.accent }}
                     >
                       {c.eyebrow}
                     </p>
-                    <h3 className="text-3xl md:text-5xl font-black text-paper mb-2 leading-tight">
+                    <h3 className="text-2xl md:text-4xl font-black text-white mb-2 leading-tight">
                       {c.title}
                     </h3>
-                    <div className="flex items-baseline gap-3 mb-3">
-                      <span className="text-4xl md:text-5xl font-black" style={{ color: c.accent }}>
+                    <div className="flex items-baseline gap-3">
+                      <span className="text-3xl md:text-4xl font-black" style={{ color: c.accent }}>
                         {c.price}
                       </span>
-                      <span className="text-lg text-paper/50 line-through">
+                      <span className="text-base text-white/50 line-through">
                         {c.originalPrice}
                       </span>
                     </div>
-                    <p className="text-paper/70 text-sm mb-5 max-w-md">{c.desc}</p>
-                    <div className="inline-flex items-center gap-2 text-paper text-xs font-bold uppercase tracking-widest group-hover:gap-3 transition-all">
-                      <span
-                        className="px-5 py-2.5 rounded-full"
-                        style={{ backgroundColor: c.accent }}
-                      >
-                        Shop Now
-                      </span>
-                      <ArrowRight className="w-4 h-4" />
-                    </div>
                   </div>
 
-                  {/* Right side — coupon ticket */}
-                  <div className="relative flex items-center pr-8 md:pr-12" style={{ minWidth: "200px" }}>
-                    {/* Dotted divider */}
+                  {/* Middle — hourglass divider (2 semicircles facing each other) */}
+                  <div className="relative flex items-center" style={{ width: "40px" }}>
+                    {/* Left semicircle (cut from left section) */}
                     <div
-                      className="absolute left-0 top-0 bottom-0 flex flex-col justify-between py-4"
-                      style={{ borderLeft: "2px dashed rgba(255,255,255,0.2)" }}
-                    >
-                      <div className="w-4 h-4 rounded-full -ml-2.5 bg-white" />
-                      <div className="w-4 h-4 rounded-full -ml-2.5 bg-white" />
-                    </div>
-                    {/* Ticket */}
+                      className="absolute left-0 top-1/2 -translate-y-1/2 w-8 h-16 rounded-r-full"
+                      style={{ backgroundColor: c.rightBg, left: "-4px" }}
+                    />
+                    {/* Right semicircle (cut from right section) */}
                     <div
-                      className="ml-6 p-5 rounded-xl text-center"
-                      style={{ backgroundColor: c.ticketBg }}
-                    >
-                      <Tag className="w-6 h-6 text-paper mx-auto mb-2" />
-                      <p className="text-[10px] uppercase tracking-widest text-paper/80 mb-1">Use Code</p>
-                      <p className="text-2xl font-black text-paper tracking-wider">{c.code}</p>
-                      <p className="text-[10px] uppercase tracking-widest text-paper/80 mt-1">
-                        at checkout
-                      </p>
+                      className="absolute right-0 top-1/2 -translate-y-1/2 w-8 h-16 rounded-l-full"
+                      style={{ backgroundColor: c.leftBg, right: "-4px" }}
+                    />
+                    {/* Dashed line in middle */}
+                    <div
+                      className="absolute top-4 bottom-4 left-1/2 -translate-x-1/2"
+                      style={{
+                        borderLeft: "2px dashed rgba(255,255,255,0.3)",
+                      }}
+                    />
+                  </div>
+
+                  {/* Right section — colored background, coupon code + message */}
+                  <div
+                    className="flex-1 p-6 md:p-8 flex flex-col items-center justify-center text-center"
+                    style={{ backgroundColor: c.rightBg }}
+                  >
+                    {/* Decorative % tags */}
+                    <div className="flex gap-2 mb-3">
+                      <div
+                        className="w-10 h-10 rounded-full flex items-center justify-center"
+                        style={{ backgroundColor: c.textColor === "#ffffff" ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.15)" }}
+                      >
+                        <Percent className="w-5 h-5" style={{ color: c.textColor }} />
+                      </div>
+                      <div
+                        className="w-10 h-10 rounded-full flex items-center justify-center"
+                        style={{ backgroundColor: c.textColor === "#ffffff" ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.15)" }}
+                      >
+                        <Percent className="w-5 h-5" style={{ color: c.textColor }} />
+                      </div>
                     </div>
+                    <p
+                      className="text-[11px] uppercase tracking-widest mb-1 font-semibold"
+                      style={{ color: c.textColor, opacity: 0.8 }}
+                    >
+                      Use Code
+                    </p>
+                    <p
+                      className="text-2xl md:text-3xl font-black tracking-wider mb-2"
+                      style={{ color: c.textColor }}
+                    >
+                      {c.code}
+                    </p>
+                    <p
+                      className="text-[11px] uppercase tracking-widest"
+                      style={{ color: c.textColor, opacity: 0.7 }}
+                    >
+                      Offer auto-applies at checkout
+                    </p>
                   </div>
                 </div>
 
                 {/* Slide indicators */}
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
+                <div className="flex justify-center gap-1.5 mt-4">
                   {COUPONS.map((_, idx) => (
                     <button
                       key={idx}
-                      onClick={(e) => { e.preventDefault(); setActive(idx); }}
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); setActive(idx); }}
                       className={cn(
                         "h-1.5 rounded-full transition-all",
-                        active === idx ? "w-6" : "w-1.5 bg-white/30"
+                        active === idx ? "w-6 bg-brand-red" : "w-1.5 bg-brand-black/20"
                       )}
-                      style={active === idx ? { backgroundColor: c.accent } : {}}
                       aria-label={`Go to coupon ${idx + 1}`}
                     />
                   ))}
