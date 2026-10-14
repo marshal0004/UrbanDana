@@ -3,7 +3,6 @@ import Link from "next/link";
 import { useEffect, useState, useCallback } from "react";
 import { ArrowRight, Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { absUrl, type Product } from "@/lib/api";
 
 const SLIDES = [
   {
@@ -16,8 +15,9 @@ const SLIDES = [
     subtitle: "One cap. Three looks. Wear it forward, backward, or fold it low. Handcrafted in India. No restocks. No rules.",
     primaryCta: { href: "/shop", label: "Shop the Drop" },
     secondaryCta: { href: "/about", label: "The Urbandana Story" },
-    bg: "linear-gradient(135deg, #0a0a0a 0%, #1a0507 50%, #2a0a10 100%)",
+    bgImage: "/images/hero-cap-red.jpg",
     accent: "#c8102e",
+    overlay: "linear-gradient(90deg, rgba(10,10,10,0.85) 0%, rgba(10,10,10,0.5) 60%, rgba(10,10,10,0.3) 100%)",
   },
   {
     pill: "LIMITED — 200 PIECES ONLY",
@@ -29,21 +29,23 @@ const SLIDES = [
     subtitle: "Sunset Art Cap — hand-drawn sun motif in golden orange against deep indigo. Numbered authenticity tag. Only 200 made.",
     primaryCta: { href: "/product/sunset-art-cap", label: "Get the Sunset Art Cap" },
     secondaryCta: { href: "/shop?category=Limited Edition", label: "All Limited Drops" },
-    bg: "linear-gradient(135deg, #0a0a0a 0%, #1a0f05 50%, #2a1f0a 100%)",
+    bgImage: "/images/hero-cap-sunset.jpg",
     accent: "#d4a017",
+    overlay: "linear-gradient(90deg, rgba(10,10,10,0.85) 0%, rgba(10,10,10,0.5) 60%, rgba(10,10,10,0.3) 100%)",
   },
   {
-    pill: "BEST VALUE — SAVE ₹2,000",
+    pill: "BEST VALUE — COMBO PACKS",
     pillIcon: Sparkles,
     eyebrow: "The complete collection",
     title: "SIX CAPS.",
     titleAccent: "ONE",
     titleEnd: "BOX.",
     subtitle: "All 6 signature colourways in a premium wooden gift box with numbered certificate. The ultimate Urbandana collector's item.",
-    primaryCta: { href: "/product/collector-s-full-set", label: "Get the Collector's Set" },
-    secondaryCta: { href: "/shop?category=Bundles", label: "All Bundles" },
-    bg: "linear-gradient(135deg, #0a0a0a 0%, #0f1a1a 50%, #0a2a2a 100%)",
+    primaryCta: { href: "/shop?category=Combo", label: "Get Combo Packs" },
+    secondaryCta: { href: "/shop", label: "Shop All" },
+    bgImage: "/images/hero-cap-green.jpg",
     accent: "#10b981",
+    overlay: "linear-gradient(90deg, rgba(10,10,10,0.85) 0%, rgba(10,10,10,0.5) 60%, rgba(10,10,10,0.3) 100%)",
   },
 ];
 
@@ -67,15 +69,16 @@ export default function Hero() {
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      {/* Background — animated gradient */}
-      <div className="absolute inset-0 -z-10 transition-all duration-1000" style={{ background: slide.bg }} />
-      <div className="absolute inset-0 -z-10 opacity-30">
+      {/* Background — real Urbandana cap photo, changes per slide */}
+      <div className="absolute inset-0 -z-10 transition-all duration-1000">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/images/hero-bg.jpg"
+          key={slide.bgImage}
+          src={slide.bgImage}
           alt=""
-          className="w-full h-full object-cover mix-blend-overlay"
+          className="w-full h-full object-cover"
         />
+        <div className="absolute inset-0" style={{ background: slide.overlay }} />
       </div>
 
       {/* Slide indicators (right side) */}
@@ -88,7 +91,7 @@ export default function Hero() {
             aria-label={`Slide ${i + 1}`}
           >
             <span
-              className={cn("absolute inset-0 bg-paper transition-all", active === i ? "h-full" : "h-0")}
+              className={cn("absolute inset-0 transition-all", active === i ? "h-full" : "h-0")}
               style={{ backgroundColor: slide.accent }}
             />
           </button>
@@ -129,12 +132,12 @@ export default function Hero() {
           <p className="text-xs uppercase tracking-[0.4em] mb-5 font-semibold" style={{ color: slide.accent }}>
             {slide.eyebrow}
           </p>
-          <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter text-paper leading-[0.9]">
+          <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter text-paper leading-[0.9] drop-shadow-2xl">
             {slide.title}
             <br />
             <span style={{ color: slide.accent }}>{slide.titleAccent}</span> {slide.titleEnd}
           </h1>
-          <p className="mt-8 text-lg text-paper/70 max-w-xl leading-relaxed">
+          <p className="mt-8 text-lg text-paper/90 max-w-xl leading-relaxed drop-shadow-lg">
             {slide.subtitle}
           </p>
 
@@ -155,10 +158,10 @@ export default function Hero() {
             </Link>
           </div>
 
-          <div className="mt-14 flex flex-wrap items-center gap-x-8 gap-y-3 text-[11px] uppercase tracking-widest text-paper/50">
+          <div className="mt-14 flex flex-wrap items-center gap-x-8 gap-y-3 text-[11px] uppercase tracking-widest text-paper/60">
             <span>★ 4.8/5 from 700+ reviews</span>
             <span className="opacity-40">|</span>
-            <span>Free shipping over ₹999</span>
+            <span>Caps ₹249 · Tees ₹299</span>
             <span className="opacity-40">|</span>
             <span>7-day easy returns</span>
             <span className="opacity-40">|</span>
