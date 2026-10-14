@@ -161,7 +161,7 @@ export default function Hero() {
           <div className="mt-14 flex flex-wrap items-center gap-x-8 gap-y-3 text-[11px] uppercase tracking-widest text-paper/60">
             <span>★ 4.8/5 from 700+ reviews</span>
             <span className="opacity-40">|</span>
-            <span>Caps ₹249 · Tees ₹299</span>
+            <span>Caps ₹249 · T-Shirts ₹299</span>
             <span className="opacity-40">|</span>
             <span>7-day easy returns</span>
             <span className="opacity-40">|</span>

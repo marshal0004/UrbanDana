@@ -19,7 +19,7 @@ const MEGA_MENU = [
         links: [
           { label: "All New Arrivals", href: "/shop?filter=new" },
           { label: "New Caps", href: "/shop?category=Bandana Caps&filter=new" },
-          { label: "New Tees", href: "/shop?category=T-Shirts&filter=new" },
+          { label: "New T-Shirts", href: "/shop?category=T-Shirts&filter=new" },
           { label: "Limited Drops", href: "/shop?category=Limited Edition" },
         ],
       },
@@ -64,17 +64,17 @@ const MEGA_MENU = [
       {
         title: "T-Shirts",
         links: [
-          { label: "All Tees", href: "/shop?category=T-Shirts" },
-          { label: "Oversized Tees", href: "/shop?category=T-Shirts&fit=oversized" },
-          { label: "Graphic Tees", href: "/shop?category=T-Shirts&type=graphic" },
+          { label: "All T-Shirts", href: "/shop?category=T-Shirts" },
+          { label: "Oversized T-Shirts", href: "/shop?category=T-Shirts&fit=oversized" },
+          { label: "Graphic T-Shirts", href: "/shop?category=T-Shirts&type=graphic" },
         ],
       },
       {
         title: "Bandana-Inspired",
         links: [
-          { label: "Paisley Oversized Tee", href: "/product/paisley-oversized-tee" },
-          { label: "Tiger Stripe Tee", href: "/product/tiger-stripe-tee" },
-          { label: "Sunset Horizon Tee", href: "/product/sunset-horizon-tee" },
+          { label: "Paisley Oversized T-Shirt", href: "/product/paisley-oversized-tee" },
+          { label: "Tiger Stripe T-Shirt", href: "/product/tiger-stripe-tee" },
+          { label: "Sunset Horizon T-Shirt", href: "/product/sunset-horizon-tee" },
         ],
       },
     ],
@@ -104,10 +104,10 @@ const MEGA_MENU = [
         title: "Combo Packs",
         links: [
           { label: "All Combos", href: "/shop?category=Combo" },
-          { label: "Cap + Tee Combo — Red", href: "/product/cap-tee-combo-red" },
-          { label: "Cap + Tee Combo — Black", href: "/product/cap-tee-combo-black" },
-          { label: "Cap + Tee Combo — Indigo", href: "/product/cap-tee-combo-indigo" },
-          { label: "Cap + Tee Combo — Cream", href: "/product/cap-tee-combo-cream" },
+          { label: "Cap + T-Shirt Combo — Red", href: "/product/cap-tee-combo-red" },
+          { label: "Cap + T-Shirt Combo — Black", href: "/product/cap-tee-combo-black" },
+          { label: "Cap + T-Shirt Combo — Indigo", href: "/product/cap-tee-combo-indigo" },
+          { label: "Cap + T-Shirt Combo — Cream", href: "/product/cap-tee-combo-cream" },
         ],
       },
     ],
@@ -317,7 +317,7 @@ export default function Navbar() {
                 autoFocus
                 value={searchQ}
                 onChange={(e) => setSearchQ(e.target.value)}
-                placeholder="Search caps, tees, drops…"
+                placeholder="Search caps, t-shirts, drops…"
                 className="w-full text-paper bg-white/5 border border-white/10 rounded-full pl-11 pr-4 py-3 text-sm text-paper placeholder:text-paper/40 focus:outline-none focus:border-brand-red"
               />
             </form>

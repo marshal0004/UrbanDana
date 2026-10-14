@@ -62,7 +62,7 @@ export default function WishlistPage() {
             href="/shop"
             className="mt-6 inline-flex items-center gap-2 bg-brand-red hover:bg-brand-red-soft transition text-brand-black text-sm font-bold uppercase tracking-widest px-8 py-3 rounded-full"
           >
-            Browse Caps & Tees
+            Browse Caps & T-Shirts
           </Link>
         </div>
       ) : (

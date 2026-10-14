@@ -11,7 +11,7 @@ import { ArrowRight } from "lucide-react";
 const CHIPS = [
   { v: "ALL", label: "All", filter: (_p: Product) => true },
   { v: "CAPS", label: "Caps", filter: (p: Product) => p.category === "Bandana Caps" || p.category === "Visors" },
-  { v: "TEES", label: "T-Shirts", filter: (p: Product) => p.category === "T-Shirts" },
+  { v: "T-SHIRTS", label: "T-Shirts", filter: (p: Product) => p.category === "T-Shirts" },
   { v: "LIMITED", label: "Limited", filter: (p: Product) => p.category === "Limited Edition" },
   { v: "BUNDLES", label: "Bundles", filter: (p: Product) => p.category === "Bundles" },
   { v: "BESTSELLER", label: "Bestsellers", filter: (p: Product) => p.badge === "Bestseller" || p.badge === "Best Value" },

@@ -5,11 +5,11 @@ import { cn } from "@/lib/utils";
 import { ArrowRight, ChevronLeft, ChevronRight, Percent } from "lucide-react";
 
 // Full-width coupon banners — ticket/coupon style with side notches + hourglass middle
-// Based on real product prices: caps ₹249, tees ₹299, combos ₹548
+// Based on real product prices: caps ₹249, t-shirts ₹299, combos ₹548
 const COUPONS = [
   {
     eyebrow: "T-SHIRT OFFER",
-    title: "BUY 2 TEES",
+    title: "BUY 2 T-SHIRTS",
     price: "₹549",
     originalPrice: "₹598",
     code: "TEE2",
@@ -35,11 +35,11 @@ const COUPONS = [
   },
   {
     eyebrow: "COMBO DEAL",
-    title: "CAP + TEE",
+    title: "CAP + T-SHIRT",
     price: "₹499",
     originalPrice: "₹548",
     code: "COMBO49",
-    desc: "1 cap + 1 matching tee. Save ₹49. Complete the Urbandana look.",
+    desc: "1 cap + 1 matching t-shirt. Save ₹49. Complete the Urbandana look.",
     href: "/shop?category=Combo",
     leftBg: "#0a0a0a",
     rightBg: "#d4a017",

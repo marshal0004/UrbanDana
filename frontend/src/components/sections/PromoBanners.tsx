@@ -16,8 +16,8 @@ const BANNERS = [
   },
   {
     eyebrow: "COMBO PACKS",
-    title: "Cap + Tee",
-    desc: "Get the complete Urbandana look. 1 cap + 1 matching tee in a gift box.",
+    title: "Cap + T-Shirt",
+    desc: "Get the complete Urbandana look. 1 cap + 1 matching t-shirt in a gift box.",
     cta: "Shop Combos",
     href: "/shop?category=Combo",
     image: "/images/banner-combo.jpg",

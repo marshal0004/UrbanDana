@@ -14,7 +14,7 @@ const PROMOS = [
     accent: "#c8102e",
   },
   {
-    title: "TEES",
+    title: "T-SHIRTS",
     subtitle: "₹299",
     desc: "All t-shirts",
     href: "/shop?category=T-Shirts",
@@ -23,7 +23,7 @@ const PROMOS = [
   {
     title: "COMBO",
     subtitle: "₹548",
-    desc: "Cap + Tee pack",
+    desc: "Cap + T-Shirt pack",
     href: "/shop?category=Combo",
     accent: "#10b981",
   },

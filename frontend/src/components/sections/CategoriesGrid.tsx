@@ -15,7 +15,7 @@ const CATEGORIES = [
   },
   {
     title: "T-Shirts",
-    desc: "Bandana-inspired tees",
+    desc: "Bandana-inspired t-shirts",
     href: "/shop?category=T-Shirts",
     image: "/images/cat-tshirts.jpg",
     span: "",
@@ -36,7 +36,7 @@ const CATEGORIES = [
   },
   {
     title: "Combo",
-    desc: "Cap + Tee packs",
+    desc: "Cap + T-Shirt packs",
     href: "/shop?category=Combo",
     image: "/images/cat-bundles.jpg",
     span: "",

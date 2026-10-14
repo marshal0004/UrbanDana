@@ -9,11 +9,11 @@ import CartDrawer from "@/components/CartDrawer";
 export const metadata: Metadata = {
   title: "URBANDANA — India's Original Bandana Cap | Style That Never Stops",
   description:
-    "Shop India's original 3-in-1 bandana cap + premium graphic tees. Handcrafted in India. Wear it forward, backward, or folded low. Free shipping over ₹999. 7-day returns.",
+    "Shop India's original 3-in-1 bandana cap + premium graphic t-shirts. Handcrafted in India. Wear it forward, backward, or folded low. Free shipping over ₹999. 7-day returns.",
   keywords: ["bandana cap", "urbandana", "indian streetwear", "handcrafted caps", "oversized t-shirts", "visor", "limited drops"],
   openGraph: {
     title: "URBANDANA — India's Original Bandana Cap",
-    description: "Style That Never Stops. Handcrafted in India 🇮🇳. Caps + Tees.",
+    description: "Style That Never Stops. Handcrafted in India 🇮🇳. Caps + T-Shirts.",
     type: "website",
   },
 };
