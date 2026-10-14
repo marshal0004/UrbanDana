@@ -1,11 +1,5 @@
 /**
- * UrbanDana — Database seed (v3 — with classified image folders)
- * Image structure:
- *   backend/uploads/products/caps/      ← 298 bandana cap images
- *   backend/uploads/products/tshirts/   ← 2 t-shirt images (rest of tees borrow from caps)
- *
- * Cap products get images from /caps/
- * T-shirt products get the 2 tshirt images + borrow some cap photos as lifestyle shots
+ * UrbanDana — Database seed (v4 — real tshirt images + model shots)
  */
 import prisma from "./lib/prisma.js";
 import fs from "node:fs";
@@ -25,9 +19,9 @@ function listImages(subfolder) {
 const CAPS_IMGS = listImages("caps");
 const TSHIRTS_IMGS = listImages("tshirts");
 const MODELS_IMGS = listImages("models");
-const LIFESTYLE_IMGS = listImages("lifestyle");
+const COMBOS_IMGS = listImages("combos");
 
-console.log(`Image pools: caps=${CAPS_IMGS.length}, tshirts=${TSHIRTS_IMGS.length}, models=${MODELS_IMGS.length}, lifestyle=${LIFESTYLE_IMGS.length}`);
+console.log(`Image pools: caps=${CAPS_IMGS.length}, tshirts=${TSHIRTS_IMGS.length}, models=${MODELS_IMGS.length}, combos=${COMBOS_IMGS.length}`);
 
 const CAP_PRODUCTS = [
   { title: "Signature Red Paisley", subtitle: "The cap that started it all",
@@ -148,7 +142,7 @@ function slugify(s) {
 }
 
 async function main() {
-  console.log("🌱 Seeding UrbanDana v3 (classified image folders)...");
+  console.log("Seeding UrbanDana v4 (real tshirt images + model shots)...");
 
   await prisma.wishlist.deleteMany();
   await prisma.cartItem.deleteMany();
@@ -160,7 +154,7 @@ async function main() {
   await prisma.product.deleteMany();
   await prisma.user.deleteMany();
   await prisma.cmsContent.deleteMany();
-  console.log("   ✓ Cleared existing data");
+  console.log("   Cleared existing data");
 
   const bcrypt = (await import("bcryptjs")).default;
   const adminPass = await bcrypt.hash("admin123", 10);
@@ -170,14 +164,15 @@ async function main() {
       firstName: "Vikram", lastName: "Kumar", role: "ADMIN", phone: "+91 98765 43210",
     },
   });
-  console.log("   ✓ Admin: admin@urbandana.in / admin123");
+  console.log("   Admin: admin@urbandana.in / admin123");
 
-  // Split cap images across cap products (298 caps / 10 cap products ≈ 30 per product)
   const capImgsPerProduct = Math.max(1, Math.floor(CAPS_IMGS.length / CAP_PRODUCTS.length));
-
   for (let i = 0; i < CAP_PRODUCTS.length; i++) {
     const p = CAP_PRODUCTS[i];
     const imgs = CAPS_IMGS.slice(i * capImgsPerProduct, (i + 1) * capImgsPerProduct);
+    if (COMBOS_IMGS.length > 0) {
+      imgs.push(COMBOS_IMGS[i % COMBOS_IMGS.length]);
+    }
     await prisma.product.create({
       data: {
         slug: slugify(p.title),
@@ -197,21 +192,22 @@ async function main() {
         },
       },
     });
-    console.log(`   ✓ [CAP] ${p.title}  (${imgs.length} images from /caps/)`);
+    console.log(`   [CAP] ${p.title}  (${imgs.length} images)`);
   }
 
-  // T-shirt products: only 2 real tshirt photos. Cycle them, plus borrow some cap photos
-  // as lifestyle shots (a person wearing a cap also works for "lifestyle tee" imagery)
+  const tshirtsPerProduct = Math.max(1, Math.floor(TSHIRTS_IMGS.length / TSHIRT_PRODUCTS.length));
+  const modelsPerProduct = Math.max(1, Math.floor(MODELS_IMGS.length / TSHIRT_PRODUCTS.length));
   for (let i = 0; i < TSHIRT_PRODUCTS.length; i++) {
     const p = TSHIRT_PRODUCTS[i];
-    // Use the 2 tshirt images + 3 cap images as lifestyle (5 total per tshirt product)
-    const tshirtImgs = TSHIRTS_IMGS.length > 0
-      ? [TSHIRTS_IMGS[i % TSHIRTS_IMGS.length], TSHIRTS_IMGS[(i + 1) % TSHIRTS_IMGS.length]]
-      : [];
-    // Borrow 3 cap photos per tshirt product (offset to vary)
-    const borrowStart = (i * 3) % Math.max(1, CAPS_IMGS.length - 3);
-    const borrowedCaps = CAPS_IMGS.slice(borrowStart, borrowStart + 3);
-    const imgs = [...tshirtImgs, ...borrowedCaps];
+    const productShots = TSHIRTS_IMGS.slice(i * tshirtsPerProduct, (i + 1) * tshirtsPerProduct);
+    const modelShots = MODELS_IMGS.slice(i * modelsPerProduct, (i + 1) * modelsPerProduct);
+    const tshirtImgs = productShots.length > 0
+      ? productShots
+      : [TSHIRTS_IMGS[i % TSHIRTS_IMGS.length], TSHIRTS_IMGS[(i + 1) % TSHIRTS_IMGS.length]].filter(Boolean);
+    const modelImgs = modelShots.length > 0
+      ? modelShots
+      : [MODELS_IMGS[i % MODELS_IMGS.length]].filter(Boolean);
+    const imgs = [...tshirtImgs, ...modelImgs];
 
     await prisma.product.create({
       data: {
@@ -222,7 +218,9 @@ async function main() {
         rating: p.rating, reviews: p.reviews, stock: p.stock,
         isFeatured: p.isFeatured, isLimited: p.isLimited,
         images: {
-          create: imgs.map((url, idx) => ({ url, alt: `${p.title} — view ${idx + 1}`, position: idx })),
+          create: imgs.map((url, idx) => ({
+            url, alt: `${p.title} — ${idx < tshirtImgs.length ? "product" : "model"} view ${idx + 1}`, position: idx
+          })),
         },
         variants: {
           create: [
@@ -232,7 +230,7 @@ async function main() {
         },
       },
     });
-    console.log(`   ✓ [TEE] ${p.title}  (${imgs.length} images — ${tshirtImgs.length} from /tshirts/ + ${borrowedCaps.length} from /caps/)`);
+    console.log(`   [TEE] ${p.title}  (${tshirtImgs.length} product + ${modelImgs.length} model = ${imgs.length} images)`);
   }
 
   await prisma.cmsContent.create({
@@ -252,12 +250,12 @@ async function main() {
       value: JSON.stringify({ name: "URBANDANA", tagline: "Style That Never Stops", country: "India", established: "2024" }),
     },
   });
-  console.log("   ✓ CMS content");
+  console.log("   CMS content");
 
-  console.log(`\n🎉 Seed v3 complete!`);
-  console.log(`   → ${CAP_PRODUCTS.length} cap products + ${TSHIRT_PRODUCTS.length} t-shirt products = ${CAP_PRODUCTS.length + TSHIRT_PRODUCTS.length} total`);
-  console.log(`   → Image folders: caps (${CAPS_IMGS.length}), tshirts (${TSHIRTS_IMGS.length}), models (${MODELS_IMGS.length}), lifestyle (${LIFESTYLE_IMGS.length})`);
-  console.log("   → Admin login: admin@urbandana.in / admin123");
+  console.log(`\nSeed v4 complete!`);
+  console.log(`  ${CAP_PRODUCTS.length} cap products + ${TSHIRT_PRODUCTS.length} t-shirt products = ${CAP_PRODUCTS.length + TSHIRT_PRODUCTS.length} total`);
+  console.log(`  Image folders: caps (${CAPS_IMGS.length}), tshirts (${TSHIRTS_IMGS.length}), models (${MODELS_IMGS.length}), combos (${COMBOS_IMGS.length})`);
+  console.log("  Admin login: admin@urbandana.in / admin123");
 }
 
 main()

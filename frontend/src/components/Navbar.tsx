@@ -1,4 +1,5 @@
 "use client";
+// Snitch-style mega menu, Bewakoof-style nav tabs — cleaner, more minimal
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -7,10 +8,9 @@ import { useAuth } from "@/context/AuthContext";
 import { Menu, ShoppingBag, Search, X, Heart, User, ChevronDown, LogOut, Package } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// Snitch-style mega menu, Bewakoof-style nav tabs
 const MEGA_MENU = [
   {
-    label: "NEW ARRIVALS",
+    label: "NEW",
     href: "/shop?filter=new",
     accent: true,
     columns: [
@@ -48,14 +48,6 @@ const MEGA_MENU = [
         ],
       },
       {
-        title: "By Fit",
-        links: [
-          { label: "Oversized", href: "/shop?category=Bandana Caps&fit=oversized" },
-          { label: "Classic", href: "/shop?category=Bandana Caps&fit=classic" },
-          { label: "Drop-Shoulder", href: "/shop?category=Bandana Caps&fit=drop-shoulder" },
-        ],
-      },
-      {
         title: "Visors",
         links: [
           { label: "All Visors", href: "/shop?category=Visors" },
@@ -66,7 +58,7 @@ const MEGA_MENU = [
     ],
   },
   {
-    label: "T-SHIRTS",
+    label: "TEES",
     href: "/shop?category=T-Shirts",
     columns: [
       {
@@ -75,23 +67,14 @@ const MEGA_MENU = [
           { label: "All Tees", href: "/shop?category=T-Shirts" },
           { label: "Oversized Tees", href: "/shop?category=T-Shirts&fit=oversized" },
           { label: "Graphic Tees", href: "/shop?category=T-Shirts&type=graphic" },
-          { label: "Plain Tees", href: "/shop?category=T-Shirts&type=plain" },
         ],
       },
       {
         title: "Bandana-Inspired",
         links: [
           { label: "Paisley Oversized Tee", href: "/product/paisley-oversized-tee" },
-          { label: "Café Culture Graphic Tee", href: "/product/cafe-culture-graphic-tee" },
           { label: "Tiger Stripe Tee", href: "/product/tiger-stripe-tee" },
           { label: "Sunset Horizon Tee", href: "/product/sunset-horizon-tee" },
-        ],
-      },
-      {
-        title: "Packs",
-        links: [
-          { label: "Buy 2 Save ₹300", href: "/shop?category=T-Shirts&filter=pack" },
-          { label: "Buy 3 Save ₹600", href: "/shop?category=T-Shirts&filter=pack" },
         ],
       },
     ],
@@ -111,14 +94,6 @@ const MEGA_MENU = [
           { label: "Monkey Folk Art", href: "/product/monkey-folk-art" },
         ],
       },
-      {
-        title: "Why Limited?",
-        links: [
-          { label: "Numbered & authenticated", href: "/about" },
-          { label: "No restocks — ever", href: "/about" },
-          { label: "Hand-finished", href: "/about" },
-        ],
-      },
     ],
   },
   {
@@ -130,13 +105,13 @@ const MEGA_MENU = [
         links: [
           { label: "All Bundles", href: "/shop?category=Bundles" },
           { label: "Visor Duo Pack — Save ₹500", href: "/product/visor-duo-pack" },
-          { label: "Collector's Full Set — Save ₹2,000", href: "/product/collector-s-full-set" },
+          { label: "Collector's Set — Save ₹2,000", href: "/product/collector-s-full-set" },
         ],
       },
     ],
   },
   {
-    label: "OUR STORY",
+    label: "STORY",
     href: "/about",
     columns: [
       {
@@ -144,7 +119,7 @@ const MEGA_MENU = [
         links: [
           { label: "The Urbandana Story", href: "/about" },
           { label: "Founder — Vikram Kumar", href: "/about" },
-          { label: "Made in India 🇮🇳", href: "/about" },
+          { label: "Made in India", href: "/about" },
           { label: "3-in-1 Cap Concept", href: "/about" },
         ],
       },
@@ -183,8 +158,8 @@ export default function Navbar() {
       className={cn(
         "sticky top-0 z-40 transition-all duration-300",
         scrolled
-          ? "bg-brand-black/90 backdrop-blur-xl border-b border-white/10"
-          : "bg-brand-black/70 backdrop-blur-md border-b border-white/5"
+          ? "bg-brand-black/95 backdrop-blur-xl border-b border-white/10"
+          : "bg-brand-black/80 backdrop-blur-md border-b border-white/5"
       )}
       onMouseLeave={() => setHoveredTab(null)}
     >
@@ -206,7 +181,7 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Center: nav tabs (desktop) — Bewakoof-style */}
+          {/* Center: nav tabs (desktop) — minimal, airy like Snitch */}
           <nav className="hidden lg:flex items-center gap-1">
             {MEGA_MENU.map((tab, i) => (
               <div
@@ -217,7 +192,7 @@ export default function Navbar() {
                 <Link
                   href={tab.href}
                   className={cn(
-                    "px-3.5 py-2 text-[12px] font-bold uppercase tracking-widest transition relative flex items-center gap-1",
+                    "px-4 py-2 text-[12px] font-bold uppercase tracking-widest transition relative flex items-center gap-1",
                     tab.accent ? "text-brand-red" : "text-paper/85 hover:text-paper",
                     hoveredTab === i && "text-paper"
                   )}
@@ -231,7 +206,7 @@ export default function Navbar() {
             ))}
           </nav>
 
-          {/* Right: search + wishlist + cart + user */}
+          {/* Right: search + wishlist + cart + user — minimal icon row */}
           <div className="flex items-center gap-1">
             <button
               onClick={() => setSearchOpen((v) => !v)}
@@ -348,7 +323,7 @@ export default function Navbar() {
         )}
       </div>
 
-      {/* Mega menu panel (desktop) — Snitch-style wide dropdown */}
+      {/* Mega menu panel (desktop) */}
       {hoveredTab !== null && MEGA_MENU[hoveredTab].columns.length > 0 && (
         <div
           className="absolute left-0 right-0 top-full bg-brand-dark/95 backdrop-blur-xl border-b border-white/10 shadow-2xl"

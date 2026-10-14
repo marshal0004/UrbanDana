@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ShopProvider } from "@/context/ShopContext";
 import { AuthProvider } from "@/context/AuthContext";
-import TopBar from "@/components/TopBar";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
@@ -25,7 +24,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-screen bg-brand-black text-paper antialiased">
         <AuthProvider>
           <ShopProvider>
-            <TopBar />
             <Navbar />
             <main className="relative z-10 min-h-[60vh]">{children}</main>
             <Footer />
