@@ -5,6 +5,7 @@ import Hero from "@/components/sections/Hero";
 import ProductCarousel from "@/components/ProductCarousel";
 import PromoBanners from "@/components/sections/PromoBanners";
 import FullStore from "@/components/sections/FullStore";
+import CouponCarousel from "@/components/sections/CouponCarousel";
 import Stats from "@/components/sections/Stats";
 import ThreeStyles from "@/components/sections/ThreeStyles";
 import Features from "@/components/sections/Features";
@@ -54,6 +55,9 @@ export default function HomePage() {
           autoScroll={true}
         />
       )}
+
+      {/* Full-width coupon carousel — 1 per screen, auto-scrolling */}
+      <CouponCarousel />
 
       {/* Full store — all products with infinite scroll loader */}
       <FullStore />
