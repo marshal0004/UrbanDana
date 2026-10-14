@@ -1,4 +1,5 @@
 "use client";
+import { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Environment, useGLTF, Html, useProgress, ContactShadows } from "@react-three/drei";
 import { MeshoptDecoder } from "meshopt-decoder";
