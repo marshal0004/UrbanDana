@@ -12,7 +12,7 @@ const STATS = [
 export default function Stats() {
   const { ref, inView } = useInView();
   return (
-    <section ref={ref} className="bg-white border-y border-brand-black/5">
+    <section ref={ref} className="bg-brand-cream border-y border-brand-black/5">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {STATS.map((s, i) => (

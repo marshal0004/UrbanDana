@@ -50,6 +50,11 @@ export function ShopProvider({ children }: { children: ReactNode }) {
   const addToCart = useCallback(
     async (p: Product, variant?: string) => {
       if (!sessionId) return;
+      // Guard: verify product has a valid ID before making API call
+      if (!p || !p.id || typeof p.id !== "string") {
+        console.error("addToCart: product.id is missing or invalid", p);
+        return;
+      }
       try {
         const updated = await api.addToCart(p.id, 1, variant, sessionId);
         setCart(updated);

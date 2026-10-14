@@ -29,7 +29,7 @@ const FEATURES = [
 export default function Features() {
   const { ref, inView } = useInView();
   return (
-    <section ref={ref} className="py-16 bg-white border-t border-brand-black/5">
+    <section ref={ref} className="py-16 bg-brand-cream border-t border-brand-black/5">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
           {FEATURES.map((f, i) => (

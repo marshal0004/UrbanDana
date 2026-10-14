@@ -26,7 +26,7 @@ const STYLES = [
 export default function ThreeStyles() {
   const { ref, inView } = useInView();
   return (
-    <section ref={ref} className="py-16 md:py-24 bg-white">
+    <section ref={ref} className="py-16 md:py-24 bg-brand-cream">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className={cn("max-w-2xl transition-all duration-700", inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6")}>
           <p className="text-xs uppercase tracking-[0.4em] text-brand-red mb-3 font-semibold">
