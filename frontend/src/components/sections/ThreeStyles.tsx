@@ -7,19 +7,19 @@ const STYLES = [
     n: "01",
     title: "Forward",
     desc: "The classic. Visor front, knot at the back. Clean everyday look that pairs with everything.",
-    img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80&auto=format&fit=crop",
+    img: "/images/style-forward.jpg",
   },
   {
     n: "02",
     title: "Backward",
     desc: "Flip it. Knot up front. Bold street energy. The visor frames the back of your head.",
-    img: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=800&q=80&auto=format&fit=crop",
+    img: "/images/style-backward.jpg",
   },
   {
     n: "03",
     title: "Folded Low",
     desc: "Fold the bandana into a low band. Minimal. Retro. Ultra-breathable for hot days.",
-    img: "https://images.unsplash.com/photo-1488161628813-04466f872be2?w=800&q=80&auto=format&fit=crop",
+    img: "/images/style-folded.jpg",
   },
 ];
 

@@ -23,7 +23,7 @@ export default function Founder() {
             <div className="relative aspect-[4/5] rounded-3xl overflow-hidden bg-white/5">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1000&q=80&auto=format&fit=crop"
+                src="/images/founder.jpg"
                 alt={data?.name || "Founder"}
                 className="w-full h-full object-cover"
               />
