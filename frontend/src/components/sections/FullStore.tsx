@@ -132,14 +132,14 @@ export default function FullStore() {
 
         {/* Product grid — loads 12 at a time, infinite scroll */}
         {loading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 px-2">
-            {Array.from({ length: 10 }).map((_, i) => (
-              <div key={i} className="aspect-square rounded-xl bg-gray-100 animate-pulse" />
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 px-2">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="aspect-[4/5] rounded-xl bg-gray-100 animate-pulse" />
             ))}
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 px-2">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 px-2">
               {visibleProducts.map((product) => {
                 const liked = wishlist.includes(product.id);
                 const soldOut = product.stock === 0;
@@ -152,7 +152,7 @@ export default function FullStore() {
                     <Link
                       href={`/product/${product.slug}`}
                       className={cn(
-                        "relative block aspect-square overflow-hidden bg-gray-50",
+                        "relative block aspect-[4/5] overflow-hidden bg-gray-50",
                         soldOut && "opacity-60"
                       )}
                     >
