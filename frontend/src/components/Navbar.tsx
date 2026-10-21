@@ -54,7 +54,7 @@ export default function Navbar() {
       )}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between gap-4">
+        <div className="flex h-24 items-center justify-between gap-4">
           {/* Left: mobile menu + logo */}
           <div className="flex items-center gap-3">
             <button
@@ -69,7 +69,7 @@ export default function Navbar() {
               <img
                 src="/images/logo.png"
                 alt="URBANDANA"
-                className="h-10 w-auto object-contain"
+                className="h-20 w-auto object-contain"
               />
             </Link>
           </div>
@@ -214,7 +214,7 @@ export default function Navbar() {
           <div className="absolute left-0 top-0 h-full w-[85%] max-w-sm bg-brand-dark border-r border-white/10 overflow-y-auto">
             <div className="flex items-center justify-between p-5 border-b border-white/10 sticky top-0 bg-brand-dark z-10">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/images/logo.png" alt="URBANDANA" className="h-8 w-auto object-contain" />
+              <img src="/images/logo.png" alt="URBANDANA" className="h-16 w-auto object-contain" />
               <button onClick={() => setMobileOpen(false)} className="text-paper/70 hover:text-paper">
                 <X className="w-5 h-5" />
               </button>
