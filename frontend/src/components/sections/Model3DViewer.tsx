@@ -8,6 +8,15 @@ import { Box, RotateCw } from "lucide-react";
 
 const Canvas3D = lazy(() => import("./Canvas3D"));
 
+// Preload BOTH models immediately on page load (not on scroll)
+// This eliminates the 2-3 second delay when switching sections
+import { useGLTF } from "@react-three/drei";
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
+const draco = new DRACOLoader();
+draco.setDecoderPath("https://www.gstatic.com/draco/v1/decoders/");
+useGLTF.preload("/models/cap-3d.glb", true, (loader: any) => loader.setDRACOLoader(draco));
+useGLTF.preload("/models/tshirt-3d.glb", true, (loader: any) => loader.setDRACOLoader(draco));
+
 // 4 scroll sections — Selene-style pinned scroll with 3D models
 const SECTIONS = [
   {
@@ -17,7 +26,7 @@ const SECTIONS = [
     subtitle: "Earth-Tone Floral",
     price: "₹249",
     accent: "#c8102e",
-    scale: 3.5,
+    scale: 3,
   },
   {
     modelPath: "/models/tshirt-3d.glb",
@@ -26,7 +35,7 @@ const SECTIONS = [
     subtitle: "Black & White Print",
     price: "₹299",
     accent: "#d4a017",
-    scale: 2.5,
+    scale: 2,
   },
   {
     modelPath: "/models/cap-3d.glb",
@@ -35,7 +44,7 @@ const SECTIONS = [
     subtitle: "Tropical Edition",
     price: "₹249",
     accent: "#10b981",
-    scale: 3.5,
+    scale: 3,
   },
   {
     modelPath: "/models/tshirt-3d.glb",
@@ -44,11 +53,11 @@ const SECTIONS = [
     subtitle: "African Folk Art",
     price: "₹299",
     accent: "#a855f7",
-    scale: 2.5,
+    scale: 2,
   },
 ];
 
-const STAGE_VH = 200; // Reduced from 400 to 200 — 50vh per section (faster transitions)
+const STAGE_VH = 160; // 40vh per section — instant transitions
 
 export default function Model3DViewer() {
   const rootRef = useRef<HTMLElement>(null);
