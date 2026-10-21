@@ -1,4 +1,4 @@
-// /home/z/project/UrbanDana/frontend/src/components/sections/Model3DViewer.tsx
+// /home/z/my-project/UrbanDana/frontend/src/components/sections/Model3DViewer.tsx
 "use client";
 import { useEffect, useRef, useState, lazy, Suspense } from "react";
 import { RotateCw } from "lucide-react";
@@ -12,7 +12,6 @@ draco.setDecoderPath("https://www.gstatic.com/draco/v1/decoders/");
 useGLTF.preload("/models/cap-3d.glb", true, (loader: any) => loader.setDRACOLoader(draco));
 useGLTF.preload("/models/tshirt-3d.glb", true, (loader: any) => loader.setDRACOLoader(draco));
 
-// 4 models — spotlight carousel with 3D perspective transforms
 const MODELS = [
   { modelPath: "/models/cap-3d.glb", bgImage: "/images/3d-bg-1.jpg", scale: 2.4 },
   { modelPath: "/models/tshirt-3d.glb", bgImage: "/images/3d-bg-2.jpg", scale: 1.8 },
@@ -21,49 +20,6 @@ const MODELS = [
 ];
 
 const CYCLE_INTERVAL = 4500;
-
-// Position config for each card relative to active index
-// offset 0 = active (center, big), 1 = next (right, small), -1 = prev (left, small)
-function getCardStyle(offset: number) {
-  if (offset === 0) {
-    // ACTIVE — center, full size, no rotation
-    return {
-      transform: "translateX(0) scale(1) rotateY(0deg)",
-      opacity: 1,
-      zIndex: 10,
-      width: "60%",
-      left: "20%",
-    };
-  }
-  if (offset === 1) {
-    // NEXT — right side, smaller, angled
-    return {
-      transform: "translateX(120%) scale(0.5) rotateY(-25deg)",
-      opacity: 0.5,
-      zIndex: 5,
-      width: "40%",
-      left: "30%",
-    };
-  }
-  if (offset === -1) {
-    // PREV — left side, smaller, angled (exiting)
-    return {
-      transform: "translateX(-120%) scale(0.5) rotateY(25deg)",
-      opacity: 0,
-      zIndex: 1,
-      width: "40%",
-      left: "30%",
-    };
-  }
-  // Hidden
-  return {
-    transform: "translateX(200%) scale(0.3) rotateY(0deg)",
-    opacity: 0,
-    zIndex: 0,
-    width: "40%",
-    left: "30%",
-  };
-}
 
 export default function Model3DViewer() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -82,7 +38,6 @@ export default function Model3DViewer() {
     return () => obs.disconnect();
   }, []);
 
-  // Auto-cycle
   useEffect(() => {
     if (!visible) return;
     const interval = setInterval(() => {
@@ -92,7 +47,6 @@ export default function Model3DViewer() {
     return () => clearInterval(interval);
   }, [visible]);
 
-  // Preload backgrounds
   useEffect(() => {
     MODELS.forEach((m) => {
       const img = new Image();
@@ -102,7 +56,7 @@ export default function Model3DViewer() {
 
   return (
     <section ref={sectionRef} className="relative h-screen overflow-hidden bg-black">
-      {/* Background — crossfade with current model */}
+      {/* Background */}
       {MODELS.map((m, i) => (
         <div
           key={`bg-${i}`}
@@ -116,52 +70,57 @@ export default function Model3DViewer() {
         />
       ))}
 
-      {/* Gradient overlay */}
+      {/* Gradient */}
       <div
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse at center, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.35) 50%, rgba(0,0,0,0.65) 100%)",
+            "radial-gradient(ellipse at 30% 50%, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.6) 100%)",
         }}
       />
 
-      {/* 3D Perspective container */}
+      {/* 3D Models — only 2 canvases max: ACTIVE (left) + NEXT (right) */}
       {visible && (
-        <div
-          className="absolute inset-0 flex items-center justify-center"
-          style={{ perspective: "1200px", transformStyle: "preserve-3d" }}
-        >
-          {MODELS.map((model, i) => {
-            // Calculate offset from active index
-            let offset = i - activeIndex;
-            // Handle wrap-around (e.g., active=3, i=0 → offset=1)
-            if (offset > 2) offset -= MODELS.length;
-            if (offset < -2) offset += MODELS.length;
+        <>
+          {/* ACTIVE model — positioned left-center, large */}
+          <div
+            className="absolute top-0 bottom-0 transition-all duration-700 ease-out"
+            style={{
+              left: "0%",
+              width: "65%",
+              opacity: modelReady ? 1 : 0,
+              transform: "translateX(0)",
+            }}
+          >
+            <Suspense fallback={null}>
+              <Canvas3D
+                key={`active-${activeIndex}`}
+                modelPath={MODELS[activeIndex].modelPath}
+                scale={MODELS[activeIndex].scale}
+                onReady={() => setModelReady(true)}
+              />
+            </Suspense>
+          </div>
 
-            const style = getCardStyle(offset);
-            const isActive = offset === 0;
-
-            return (
-              <div
-                key={i}
-                className="absolute h-[80vh] transition-all duration-700 ease-out"
-                style={{
-                  ...style,
-                  transformStyle: "preserve-3d",
-                }}
-              >
-                <Suspense fallback={null}>
-                  <Canvas3D
-                    key={`model-${i}-${isActive ? "active" : "inactive"}`}
-                    modelPath={model.modelPath}
-                    scale={isActive ? model.scale : model.scale * 0.6}
-                    onReady={isActive ? () => setModelReady(true) : undefined}
-                  />
-                </Suspense>
-              </div>
-            );
-          })}
-        </div>
+          {/* NEXT model — positioned right, medium size, preview */}
+          <div
+            className="absolute top-0 bottom-0 transition-all duration-700 ease-out"
+            style={{
+              right: "0%",
+              width: "45%",
+              opacity: 0.6,
+              transform: "translateX(0)",
+            }}
+          >
+            <Suspense fallback={null}>
+              <Canvas3D
+                key={`next-${(activeIndex + 1) % MODELS.length}`}
+                modelPath={MODELS[(activeIndex + 1) % MODELS.length].modelPath}
+                scale={MODELS[(activeIndex + 1) % MODELS.length].scale * 0.7}
+              />
+            </Suspense>
+          </div>
+        </>
       )}
 
       {/* Loader */}
