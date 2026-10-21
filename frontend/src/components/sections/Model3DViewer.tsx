@@ -17,7 +17,7 @@ const SECTIONS = [
     subtitle: "Earth-Tone Floral",
     price: "₹249",
     accent: "#c8102e",
-    scale: 5,
+    scale: 3.5,
   },
   {
     modelPath: "/models/tshirt-3d.glb",
@@ -26,7 +26,7 @@ const SECTIONS = [
     subtitle: "Black & White Print",
     price: "₹299",
     accent: "#d4a017",
-    scale: 4,
+    scale: 2.5,
   },
   {
     modelPath: "/models/cap-3d.glb",
@@ -35,7 +35,7 @@ const SECTIONS = [
     subtitle: "Tropical Edition",
     price: "₹249",
     accent: "#10b981",
-    scale: 5,
+    scale: 3.5,
   },
   {
     modelPath: "/models/tshirt-3d.glb",
@@ -44,11 +44,11 @@ const SECTIONS = [
     subtitle: "African Folk Art",
     price: "₹299",
     accent: "#a855f7",
-    scale: 4,
+    scale: 2.5,
   },
 ];
 
-const STAGE_VH = 400; // 4 × 100vh
+const STAGE_VH = 200; // Reduced from 400 to 200 — 50vh per section (faster transitions)
 
 export default function Model3DViewer() {
   const rootRef = useRef<HTMLElement>(null);
@@ -104,15 +104,17 @@ export default function Model3DViewer() {
   return (
     <section ref={rootRef} aria-label="3D Product Showcase" className="relative" style={{ height: `${STAGE_VH}vh` }}>
       <div className="sticky top-0 h-screen overflow-hidden bg-black">
-        {/* Background — crossfade between 4 images */}
+        {/* Background — crossfade between 4 images (contain = no cropping) */}
         {SECTIONS.map((s, i) => (
           <div
             key={`bg-${i}`}
-            className="absolute inset-0 transition-opacity duration-700"
+            className="absolute inset-0 transition-opacity duration-500"
             style={{
               backgroundImage: `url(${s.bgImage})`,
-              backgroundSize: "cover",
+              backgroundSize: "contain",
               backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+              backgroundColor: "#0a0a0a",
               opacity: activeSection === i ? 1 : 0,
             }}
           />
