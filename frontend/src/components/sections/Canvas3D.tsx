@@ -20,6 +20,14 @@ function GLBModel({ path, scale, onReady }: { path: string; scale: number; onRea
   const { scene } = useGLTF(path, true, (loader) => setupDraco(loader));
   const cloned = useMemo(() => scene.clone(), [scene]);
 
+  // Dispose model when unmounted — frees GPU memory
+  useEffect(() => {
+    return () => {
+      // Clear the cached GLTF to free memory
+      useGLTF.clear(path);
+    };
+  }, [path]);
+
   useEffect(() => {
     if (onReady) onReady();
   }, [onReady]);
@@ -60,7 +68,6 @@ export default function Canvas3D({
       <ambientLight intensity={1.8} />
       <directionalLight position={[5, 5, 5]} intensity={2.5} />
       <directionalLight position={[-5, 3, -5]} intensity={0.6} />
-      <directionalLight position={[0, -5, 0]} intensity={0.3} />
 
       <Suspense fallback={null}>
         <GLBModel path={modelPath} scale={scale} onReady={onReady} />

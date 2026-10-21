@@ -11,10 +11,9 @@ import { useGLTF } from "@react-three/drei";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 const draco = new DRACOLoader();
 draco.setDecoderPath("https://www.gstatic.com/draco/v1/decoders/");
+// Only preload the FIRST model — others load on demand when selected
+// Preloading all 4 = 49MB in GPU memory = 2.8GB RAM. Preloading 1 = ~700MB.
 useGLTF.preload("/models/cap-3d.glb", true, (loader: any) => loader.setDRACOLoader(draco));
-useGLTF.preload("/models/tshirt-3d.glb", true, (loader: any) => loader.setDRACOLoader(draco));
-useGLTF.preload("/models/cap-3d-v2.glb", true, (loader: any) => loader.setDRACOLoader(draco));
-useGLTF.preload("/models/tshirt-3d-v2.glb", true, (loader: any) => loader.setDRACOLoader(draco));
 
 // 4 models — each matches its background image
 // Section 1: earth-tone cap → cap-3d.glb (original cap)
