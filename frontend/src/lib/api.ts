@@ -61,15 +61,30 @@ export function absUrl(path: string): string {
 }
 
 async function fetchJSON<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_URL}${path}`, {
-    ...init,
-    headers: { "Content-Type": "application/json", ...(init?.headers || {}) },
-  });
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`API ${res.status}: ${text}`);
+  try {
+    const res = await fetch(`${API_URL}${path}`, {
+      ...init,
+      headers: { "Content-Type": "application/json", ...(init?.headers || {}) },
+    });
+    if (!res.ok) {
+      const text = await res.text().catch(() => "");
+      throw new Error(`API ${res.status}: ${text}`);
+    }
+    return res.json() as Promise<T>;
+  } catch (err) {
+    // Network error (backend not running) — return empty data gracefully
+    if (err instanceof TypeError && err.message === "Failed to fetch") {
+      console.warn(`Backend not reachable at ${API_URL} — returning empty data`);
+      // Return type-appropriate empty data
+      if (path.includes("/api/products")) return { items: [], total: 0, page: 1, limit: 50 } as unknown as T;
+      if (path.includes("/api/cart")) return { id: "", items: [] } as unknown as T;
+      if (path.includes("/api/orders")) return [] as unknown as T;
+      if (path.includes("/api/cms")) return {} as unknown as T;
+      if (path.includes("/api/payments")) return { razorpay: false, mode: "COD_ONLY" } as unknown as T;
+      return {} as unknown as T;
+    }
+    throw err;
   }
-  return res.json() as Promise<T>;
 }
 
 export const api = {

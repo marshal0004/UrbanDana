@@ -26,7 +26,7 @@ const SECTIONS = [
     subtitle: "Earth-Tone Floral",
     price: "₹249",
     accent: "#c8102e",
-    scale: 3,
+    scale: 2.4,  // 3.0 × 0.8 = 20% reduction
   },
   {
     modelPath: "/models/tshirt-3d.glb",
@@ -35,7 +35,7 @@ const SECTIONS = [
     subtitle: "Black & White Print",
     price: "₹299",
     accent: "#d4a017",
-    scale: 2,
+    scale: 1.8,  // 2.0 × 0.9 = 10% reduction
   },
   {
     modelPath: "/models/cap-3d.glb",
@@ -44,7 +44,7 @@ const SECTIONS = [
     subtitle: "Tropical Edition",
     price: "₹249",
     accent: "#10b981",
-    scale: 3,
+    scale: 2.4,  // 3.0 × 0.8 = 20% reduction
   },
   {
     modelPath: "/models/tshirt-3d.glb",
@@ -53,7 +53,7 @@ const SECTIONS = [
     subtitle: "African Folk Art",
     price: "₹299",
     accent: "#a855f7",
-    scale: 2,
+    scale: 1.8,  // 2.0 × 0.9 = 10% reduction
   },
 ];
 

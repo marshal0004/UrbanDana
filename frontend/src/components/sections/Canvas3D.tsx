@@ -83,9 +83,7 @@ export default function Canvas3D({ modelPath, scale = 4 }: { modelPath: string; 
 
       <OrbitControls
         enablePan={false}
-        enableZoom={true}
-        minDistance={3}
-        maxDistance={10}
+        enableZoom={false}
         enableDamping
         dampingFactor={0.15}
       />
