@@ -1,13 +1,11 @@
 // /home/z/my-project/UrbanDana/frontend/src/components/sections/Model3DViewer.tsx
 "use client";
 import { useEffect, useRef, useState, lazy, Suspense } from "react";
-import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { startScroll, onFrame } from "@/lib/scroll";
-import { clamp, easeOutCubic, lerp, pinProgress, range } from "@/lib/math";
 import { RotateCw } from "lucide-react";
 
 const Canvas3D = lazy(() => import("./Canvas3D"));
 
+// Preload models
 import { useGLTF } from "@react-three/drei";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 const draco = new DRACOLoader();
@@ -15,121 +13,156 @@ draco.setDecoderPath("https://www.gstatic.com/draco/v1/decoders/");
 useGLTF.preload("/models/cap-3d.glb", true, (loader: any) => loader.setDRACOLoader(draco));
 useGLTF.preload("/models/tshirt-3d.glb", true, (loader: any) => loader.setDRACOLoader(draco));
 
-const SECTIONS = [
+// 4 models cycle: big (left) → exits, small (right) → becomes big, new → small
+const MODELS = [
   { modelPath: "/models/cap-3d.glb", bgImage: "/images/3d-bg-1.jpg", scale: 2.4 },
   { modelPath: "/models/tshirt-3d.glb", bgImage: "/images/3d-bg-2.jpg", scale: 1.8 },
   { modelPath: "/models/cap-3d.glb", bgImage: "/images/3d-bg-3.jpg", scale: 2.4 },
   { modelPath: "/models/tshirt-3d.glb", bgImage: "/images/3d-bg-4.jpg", scale: 1.8 },
 ];
 
-const STAGE_VH = 400; // 4 × 100vh
+const CYCLE_INTERVAL = 5000; // 5 seconds per model
 
 export default function Model3DViewer() {
-  const rootRef = useRef<HTMLElement>(null);
-  const [activeSection, setActiveSection] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0); // big (left)
+  const [nextIndex, setNextIndex] = useState(1); // small (right)
+  const [transitioning, setTransitioning] = useState(false);
   const [visible, setVisible] = useState(false);
   const [modelReady, setModelReady] = useState(false);
-  const reduced = useReducedMotion();
+  const sectionRef = useRef<HTMLElement>(null);
 
+  // Only mount when section enters viewport
   useEffect(() => {
-    const cleanup = startScroll(reduced);
-    return cleanup;
-  }, [reduced]);
-
-  // Only mount canvas when section enters viewport
-  useEffect(() => {
-    const el = rootRef.current;
+    const el = sectionRef.current;
     if (!el) return;
     const obs = new IntersectionObserver(
-      ([entry]) => {
-        setVisible(entry.isIntersecting);
-        if (entry.isIntersecting) setModelReady(false);
-      },
-      { threshold: 0.05 }
+      ([entry]) => setVisible(entry.isIntersecting),
+      { threshold: 0.1 }
     );
     obs.observe(el);
     return () => obs.disconnect();
   }, []);
 
-  // Track active section
+  // Auto-cycle: every 5 seconds, advance to next model
   useEffect(() => {
-    let lastSection = -1;
-    return onFrame(() => {
-      if (!visible) return;
-      const root = rootRef.current;
-      if (!root) return;
-      const { p, rect } = pinProgress(root);
-      if (rect.bottom < 0 || rect.top > window.innerHeight) return;
-      const sectionIndex = Math.min(3, Math.floor(p * 4));
-      if (sectionIndex !== lastSection) {
-        lastSection = sectionIndex;
-        setActiveSection(sectionIndex);
-        setModelReady(false);
-      }
-    });
+    if (!visible) return;
+    const interval = setInterval(() => {
+      setTransitioning(true);
+      setModelReady(false);
+
+      // After transition animation (800ms), swap indices
+      setTimeout(() => {
+        setCurrentIndex((prev) => (prev + 1) % MODELS.length);
+        setNextIndex((prev) => (prev + 1) % MODELS.length);
+        setTransitioning(false);
+      }, 800);
+    }, CYCLE_INTERVAL);
+
+    return () => clearInterval(interval);
   }, [visible]);
 
   // Preload background images
   useEffect(() => {
-    SECTIONS.forEach((s) => {
+    MODELS.forEach((m) => {
       const img = new Image();
-      img.src = s.bgImage;
+      img.src = m.bgImage;
     });
   }, []);
 
+  const currentModel = MODELS[currentIndex];
+  const nextModel = MODELS[nextIndex];
+
   return (
-    <section ref={rootRef} className="relative" style={{ height: `${STAGE_VH}vh` }}>
-      <div className="sticky top-0 h-screen overflow-hidden bg-black">
-        {/* Background — cover, crossfade */}
-        {SECTIONS.map((s, i) => (
+    <section ref={sectionRef} className="relative h-screen overflow-hidden bg-black">
+      {/* Background — changes with current model */}
+      <div
+        className="absolute inset-0 transition-all duration-700"
+        style={{
+          backgroundImage: `url(${currentModel.bgImage})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          opacity: transitioning ? 0.5 : 1,
+        }}
+      />
+
+      {/* Dark gradient overlay */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse at 35% 50%, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.7) 100%)",
+        }}
+      />
+
+      {/* 3D Models — 2 at a time: BIG left, SMALL right */}
+      {visible && (
+        <div className="absolute inset-0 flex items-center">
+          {/* LEFT: Big focused model */}
           <div
-            key={`bg-${i}`}
-            className="absolute inset-0 transition-opacity duration-500"
+            className="flex-1 flex items-center justify-center transition-all duration-700 ease-out"
             style={{
-              backgroundImage: `url(${s.bgImage})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              opacity: activeSection === i ? 1 : 0,
+              opacity: transitioning ? 0 : 1,
+              transform: transitioning ? "translateX(-30%) scale(0.7)" : "translateX(0) scale(1)",
+            }}
+          >
+            <div className="w-full h-full">
+              <Suspense fallback={null}>
+                <Canvas3D
+                  key={`big-${currentIndex}`}
+                  modelPath={currentModel.modelPath}
+                  scale={currentModel.scale}
+                  onReady={() => setModelReady(true)}
+                />
+              </Suspense>
+            </div>
+          </div>
+
+          {/* RIGHT: Small preview model */}
+          <div
+            className="w-[25%] md:w-[20%] shrink-0 flex items-center justify-center transition-all duration-700 ease-out"
+            style={{
+              opacity: transitioning ? 0 : 0.5,
+              transform: transitioning ? "translateX(50%) scale(0.3)" : "translateX(0) scale(1)",
+            }}
+          >
+            <div className="w-full h-full">
+              <Suspense fallback={null}>
+                <Canvas3D
+                  key={`small-${nextIndex}`}
+                  modelPath={nextModel.modelPath}
+                  scale={nextModel.scale * 0.5}
+                />
+              </Suspense>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Rotating loader — shows while big model loads */}
+      {visible && !modelReady && !transitioning && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center z-20 pointer-events-none">
+          <div className="relative w-12 h-12 mb-3">
+            <div className="absolute inset-0 rounded-full border-4 border-white/15" />
+            <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-brand-red animate-spin" />
+          </div>
+          <p className="text-xs uppercase tracking-widest text-white/50 font-semibold">
+            Loading 3D…
+          </p>
+        </div>
+      )}
+
+      {/* Progress dots — bottom center */}
+      <div className="absolute bottom-8 inset-x-0 flex justify-center gap-2 z-20">
+        {MODELS.map((_, i) => (
+          <div
+            key={i}
+            className="h-1.5 rounded-full transition-all duration-500"
+            style={{
+              width: i === currentIndex ? "32px" : "8px",
+              backgroundColor: i === currentIndex ? "#c8102e" : "rgba(255,255,255,0.25)",
             }}
           />
         ))}
-
-        {/* Dark gradient overlay */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(ellipse at center, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.45) 60%, rgba(0,0,0,0.75) 100%)",
-          }}
-        />
-
-        {/* SINGLE 3D Canvas — swaps model, no flickering, no multiple WebGL contexts */}
-        {visible && (
-          <div className="absolute inset-0 z-10">
-            <Suspense fallback={null}>
-              <Canvas3D
-                key={activeSection}
-                modelPath={SECTIONS[activeSection].modelPath}
-                scale={SECTIONS[activeSection].scale}
-                onReady={() => setModelReady(true)}
-              />
-            </Suspense>
-          </div>
-        )}
-
-        {/* Rotating loader — shows while model loads */}
-        {visible && !modelReady && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center z-20 pointer-events-none">
-            <div className="relative w-14 h-14 mb-4">
-              <div className="absolute inset-0 rounded-full border-4 border-white/15" />
-              <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-brand-red animate-spin" />
-            </div>
-            <p className="text-xs uppercase tracking-widest text-white/50 font-semibold flex items-center gap-2">
-              <RotateCw className="w-3 h-3 animate-spin" />
-              Loading 3D…
-            </p>
-          </div>
-        )}
       </div>
     </section>
   );
