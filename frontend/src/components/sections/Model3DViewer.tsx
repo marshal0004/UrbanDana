@@ -79,23 +79,36 @@ export default function Model3DViewer() {
       const newActiveIdx = activeSlot === "A" ? slotB.modelIdx : slotA.modelIdx;
       setActiveIndex(newActiveIdx);
 
-      // Step 2: After transition, the exited slot loads new model + enters from right
+      // Step 2: After transition, the exited slot JUMPS to off-screen RIGHT (no transition)
+      // then animates IN from the right
       setTimeout(() => {
         const newModelIdx = (newActiveIdx + 1) % MODELS.length;
+        // First: JUMP to hidden-right (no transition, off-screen right)
         if (activeSlot === "A") {
-          setSlotA({ modelIdx: newModelIdx, role: "entering" });
+          setSlotA({ modelIdx: newModelIdx, role: "hidden-right" });
         } else {
-          setSlotB({ modelIdx: newModelIdx, role: "entering" });
+          setSlotB({ modelIdx: newModelIdx, role: "hidden-right" });
         }
 
-        // Step 3: After entering animation, set to "next"
-        setTimeout(() => {
-          if (activeSlot === "A") {
-            setSlotA((prev) => ({ ...prev, role: "next" }));
-          } else {
-            setSlotB((prev) => ({ ...prev, role: "next" }));
-          }
-        }, TRANSITION_MS);
+        // Next frame: animate IN from right (with transition)
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            if (activeSlot === "A") {
+              setSlotA((prev) => ({ ...prev, role: "entering" }));
+            } else {
+              setSlotB((prev) => ({ ...prev, role: "entering" }));
+            }
+
+            // After entering animation, set to "next"
+            setTimeout(() => {
+              if (activeSlot === "A") {
+                setSlotA((prev) => ({ ...prev, role: "next" }));
+              } else {
+                setSlotB((prev) => ({ ...prev, role: "next" }));
+              }
+            }, TRANSITION_MS);
+          });
+        });
       }, TRANSITION_MS);
     };
 
@@ -107,15 +120,19 @@ export default function Model3DViewer() {
   function getRoleStyle(role: string) {
     switch (role) {
       case "active":
-        return { left: "0%", width: "65%", opacity: 1, transform: "translateX(0)", zIndex: 10 };
+        return { left: "0%", width: "65%", opacity: 1, transform: "translateX(0)", zIndex: 10, transition: "all 800ms ease-out" };
       case "next":
-        return { left: "55%", width: "45%", opacity: 0.6, transform: "translateX(0)", zIndex: 5 };
+        return { left: "55%", width: "45%", opacity: 0.6, transform: "translateX(0)", zIndex: 5, transition: "all 800ms ease-out" };
       case "exiting":
-        return { left: "0%", width: "65%", opacity: 0, transform: "translateX(-100%)", zIndex: 1 };
+        return { left: "0%", width: "65%", opacity: 0, transform: "translateX(-100%)", zIndex: 1, transition: "all 800ms ease-out" };
+      case "hidden-right":
+        // NO transition — JUMP to off-screen right instantly
+        return { left: "100%", width: "45%", opacity: 0, transform: "translateX(0)", zIndex: 0, transition: "none" };
       case "entering":
-        return { left: "55%", width: "45%", opacity: 0.6, transform: "translateX(0)", zIndex: 5 };
+        // Animate IN from off-screen right → right position
+        return { left: "55%", width: "45%", opacity: 0.6, transform: "translateX(0)", zIndex: 5, transition: "all 800ms ease-out" };
       default:
-        return { left: "100%", width: "45%", opacity: 0, transform: "translateX(100%)", zIndex: 0 };
+        return { left: "100%", width: "45%", opacity: 0, transform: "translateX(0)", zIndex: 0, transition: "none" };
     }
   }
 
@@ -149,11 +166,8 @@ export default function Model3DViewer() {
         <>
           {/* Slot A */}
           <div
-            className="absolute top-0 bottom-0 transition-all ease-out"
-            style={{
-              ...getRoleStyle(slotA.role),
-              transitionDuration: `${TRANSITION_MS}ms`,
-            }}
+            className="absolute top-0 bottom-0"
+            style={getRoleStyle(slotA.role)}
           >
             <Suspense fallback={null}>
               <Canvas3D
@@ -165,11 +179,8 @@ export default function Model3DViewer() {
 
           {/* Slot B */}
           <div
-            className="absolute top-0 bottom-0 transition-all ease-out"
-            style={{
-              ...getRoleStyle(slotB.role),
-              transitionDuration: `${TRANSITION_MS}ms`,
-            }}
+            className="absolute top-0 bottom-0"
+            style={getRoleStyle(slotB.role)}
           >
             <Suspense fallback={null}>
               <Canvas3D
