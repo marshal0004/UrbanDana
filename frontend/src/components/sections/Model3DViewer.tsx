@@ -1,39 +1,50 @@
 // /home/z/my-project/UrbanDana/frontend/src/components/sections/Model3DViewer.tsx
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState, lazy, Suspense } from "react";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { startScroll, onFrame } from "@/lib/scroll";
 import { clamp, easeOutCubic, lerp, pinProgress, range } from "@/lib/math";
 import { absUrl } from "@/lib/api";
-import { Box, Eye } from "lucide-react";
+import { Box, Eye, RotateCw } from "lucide-react";
 
-/**
- * Lightweight scroll-driven 3D product showcase.
- * NO Three.js, NO WebGL — uses CSS parallax transforms only.
- * Inspired by the Selene template's scroll technique.
- *
- * Layout: A pinned section where product images (cap + t-shirt) parallax
- * in from different directions as you scroll. Super performant — zero lag.
- */
+// Lazy-load 3D Canvas ONLY when section is visible
+const Canvas3D = lazy(() => import("./Canvas3D"));
 
-const STAGE_VH = 300; // Total scroll height in viewport heights
+const STAGE_VH = 300;
 
-// Product images — fetched from backend
+// Use product images for parallax + actual 3D model for the cap
 const CAP_IMG = absUrl("/uploads/products/caps/caps-001.jpg");
 const TSHIRT_IMG = absUrl("/uploads/products/tshirts/tshirt-001.jpg");
-const CAP_IMG_2 = absUrl("/uploads/products/caps/caps-100.jpg");
-const TSHIRT_IMG_2 = absUrl("/uploads/products/tshirts/tshirt-005.jpg");
 
 export default function Model3DViewer() {
   const rootRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
-  const capRef = useRef<HTMLDivElement>(null);
-  const teeRef = useRef<HTMLDivElement>(null);
-  const cap2Ref = useRef<HTMLDivElement>(null);
-  const tee2Ref = useRef<HTMLDivElement>(null);
+  const model3dRef = useRef<HTMLDivElement>(null);
+  const productRef = useRef<HTMLDivElement>(null);
   const bgRef = useRef<HTMLDivElement>(null);
   const hudRef = useRef<HTMLDivElement>(null);
+  const [show3D, setShow3D] = useState(false);
+  const [inView, setInView] = useState(false);
   const reduced = useReducedMotion();
+
+  // Only load 3D when section scrolls into view (IntersectionObserver)
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShow3D(true);
+          setInView(true);
+        } else {
+          setInView(false);
+        }
+      },
+      { threshold: 0.1 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
 
   useEffect(() => {
     const cleanup = startScroll(reduced);
@@ -43,81 +54,62 @@ export default function Model3DViewer() {
   useEffect(() => {
     let lastP = -1;
     return onFrame(() => {
+      if (!inView) return; // Skip all calculations when not visible
       const root = rootRef.current;
       if (!root) return;
       const { p, rect } = pinProgress(root);
-      if (rect.bottom < 0) return;
+      if (rect.bottom < 0 || rect.top > window.innerHeight) return;
       if (Math.abs(p - lastP) < 0.0005) return;
       lastP = p;
 
-      // Background parallax — slow drift
+      // Background
       if (bgRef.current) {
-        bgRef.current.style.transform = `translate3d(0, ${lerp(0, -15, p)}vh, 0) scale(${lerp(1.1, 1, p)})`;
-        bgRef.current.style.opacity = String(1 - range(p, 0.7, 1) * 0.5);
+        bgRef.current.style.transform = `translate3d(0, ${lerp(0, -10, p)}vh, 0) scale(${lerp(1.05, 1, p)})`;
       }
 
-      // Title: fades in then fades out
+      // Title
       const tIn = easeOutCubic(range(p, 0.02, 0.12));
-      const tOut = range(p, 0.4, 0.5);
+      const tOut = range(p, 0.35, 0.45);
       if (titleRef.current) {
         titleRef.current.style.opacity = String(tIn * (1 - tOut));
         titleRef.current.style.letterSpacing = `${lerp(0.4, 0.1, tIn)}em`;
-        titleRef.current.style.transform = `translate3d(0, ${-p * 4}vh, 0)`;
       }
 
-      // Cap 1: slides in from left, rotates slightly
-      const capIn = easeOutCubic(range(p, 0.1, 0.3));
-      const capOut = range(p, 0.5, 0.65);
-      if (capRef.current) {
-        capRef.current.style.transform = `translate3d(${lerp(-60, 0, capIn)}vw, ${lerp(10, 0, capIn)}vh, 0) rotate(${lerp(-15, 0, capIn)}deg) scale(${lerp(0.8, 1, capIn)})`;
-        capRef.current.style.opacity = String(capIn * (1 - capOut));
+      // 3D model container — scales and moves
+      const modelIn = easeOutCubic(range(p, 0.05, 0.2));
+      const modelOut = range(p, 0.4, 0.55);
+      if (model3dRef.current) {
+        model3dRef.current.style.opacity = String(modelIn * (1 - modelOut));
+        model3dRef.current.style.transform = `translate3d(0, ${lerp(20, 0, modelIn)}vh, 0) scale(${lerp(0.8, 1, modelIn)})`;
       }
 
-      // T-shirt 1: slides in from right
-      const teeIn = easeOutCubic(range(p, 0.15, 0.35));
-      const teeOut = range(p, 0.5, 0.65);
-      if (teeRef.current) {
-        teeRef.current.style.transform = `translate3d(${lerp(60, 0, teeIn)}vw, ${lerp(10, 0, teeIn)}vh, 0) rotate(${lerp(15, 0, teeIn)}deg) scale(${lerp(0.8, 1, teeIn)})`;
-        teeRef.current.style.opacity = String(teeIn * (1 - teeOut));
-      }
-
-      // Cap 2: slides in from bottom-left (second wave)
-      const cap2In = easeOutCubic(range(p, 0.35, 0.55));
-      const cap2Out = range(p, 0.7, 0.85);
-      if (cap2Ref.current) {
-        cap2Ref.current.style.transform = `translate3d(${lerp(-40, 0, cap2In)}vw, ${lerp(30, 0, cap2In)}vh, 0) scale(${lerp(0.7, 1, cap2In)})`;
-        cap2Ref.current.style.opacity = String(cap2In * (1 - cap2Out));
-      }
-
-      // T-shirt 2: slides in from bottom-right
-      const tee2In = easeOutCubic(range(p, 0.4, 0.6));
-      const tee2Out = range(p, 0.7, 0.85);
-      if (tee2Ref.current) {
-        tee2Ref.current.style.transform = `translate3d(${lerp(40, 0, tee2In)}vw, ${lerp(30, 0, tee2In)}vh, 0) scale(${lerp(0.7, 1, tee2In)})`;
-        tee2Ref.current.style.opacity = String(tee2In * (1 - tee2Out));
+      // T-shirt product card — slides in from right
+      const prodIn = easeOutCubic(range(p, 0.2, 0.4));
+      const prodOut = range(p, 0.55, 0.7);
+      if (productRef.current) {
+        productRef.current.style.transform = `translate3d(${lerp(50, 0, prodIn)}vw, 0, 0)`;
+        productRef.current.style.opacity = String(prodIn * (1 - prodOut));
       }
 
       // HUD
       if (hudRef.current) {
-        hudRef.current.style.opacity = String(range(p, 0.02, 0.08) * (1 - range(p, 0.85, 0.95)));
+        hudRef.current.style.opacity = String(range(p, 0.02, 0.08) * (1 - range(p, 0.8, 0.9)));
       }
     });
-  }, []);
+  }, [inView]);
 
   return (
     <section ref={rootRef} aria-label="3D Product Showcase" className="relative" style={{ height: `${STAGE_VH}vh` }}>
       <div className="sticky top-0 h-screen overflow-hidden bg-white">
-        {/* Parallax background — subtle gradient */}
+        {/* Parallax background */}
         <div
           ref={bgRef}
           className="absolute inset-0 will-change-transform"
-          style={{
-            background: "linear-gradient(180deg, #f5f5f5 0%, #ebebeb 50%, #f5f5f5 100%)",
-          }}
+          style={{ background: "linear-gradient(180deg, #f5f5f5 0%, #ebebeb 50%, #f5f5f5 100%)" }}
         />
 
         {/* Title */}
-        <div ref={titleRef} className="pointer-events-none absolute inset-x-0 top-[18%] text-center" style={{ opacity: 0 }}>
+        <div ref={titleRef} className="pointer-events-none absolute inset-x-0 top-[12%] text-center" style={{ opacity: 0 }}>
           <div className="inline-flex items-center gap-3 mb-3">
             <div className="w-10 h-10 rounded-xl bg-brand-red/10 flex items-center justify-center">
               <Eye className="w-5 h-5 text-brand-red" />
@@ -127,27 +119,46 @@ export default function Model3DViewer() {
             Interactive 3D
           </p>
           <h2 className="text-5xl md:text-7xl font-black tracking-tighter text-brand-black">
-            View Products in 3D
+            View in 3D
           </h2>
-          <p className="mt-3 text-sm text-brand-black/50 uppercase tracking-widest">
-            Scroll to explore · Drag to rotate
-          </p>
         </div>
 
-        {/* Product 1: Cap — left side */}
+        {/* LEFT: Actual 3D model (cap.glb) — lazy loaded, only renders when in view */}
         <div
-          ref={capRef}
-          className="absolute left-[8%] top-[25%] w-[35%] md:w-[28%] will-change-transform"
+          ref={model3dRef}
+          className="absolute left-[5%] md:left-[10%] top-[30%] w-[40%] md:w-[35%] will-change-transform"
           style={{ opacity: 0 }}
         >
-          <div className="relative rounded-2xl overflow-hidden shadow-2xl border-2 border-brand-black/10">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={CAP_IMG} alt="Urbandana Cap" className="w-full aspect-square object-cover" />
-            <div className="absolute bottom-3 left-3 bg-brand-black/80 backdrop-blur-md rounded-lg px-3 py-2">
+          <div className="relative rounded-2xl overflow-hidden shadow-2xl border-2 border-brand-black/10 bg-gradient-to-br from-gray-50 to-gray-200" style={{ height: "350px" }}>
+            {show3D && inView ? (
+              <Suspense
+                fallback={
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <div className="relative w-10 h-10 mb-3">
+                      <div className="absolute inset-0 rounded-full border-4 border-gray-200" />
+                      <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-brand-red animate-spin" />
+                    </div>
+                    <p className="text-xs uppercase tracking-widest text-brand-black/50 font-semibold flex items-center gap-1">
+                      <RotateCw className="w-3 h-3 animate-spin" /> Loading 3D…
+                    </p>
+                  </div>
+                }
+              >
+                <Canvas3D modelPath="/models/cap.glb" />
+              </Suspense>
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={CAP_IMG} alt="Cap preview" className="w-full h-full object-cover" />
+              </div>
+            )}
+            {/* Info badge */}
+            <div className="absolute bottom-3 left-3 bg-brand-black/80 backdrop-blur-md rounded-lg px-3 py-2 z-20 pointer-events-none">
               <p className="text-sm font-bold text-paper">Urbandana Cap</p>
-              <p className="text-[10px] text-paper/60">₹249 · 3-in-1 design</p>
+              <p className="text-[10px] text-paper/60">₹249 · Drag to rotate</p>
             </div>
-            <div className="absolute top-3 right-3 bg-brand-red rounded-full px-2.5 py-1">
+            {/* 3D badge */}
+            <div className="absolute top-3 right-3 bg-brand-red rounded-full px-2.5 py-1 z-20 pointer-events-none">
               <p className="text-[10px] font-bold uppercase tracking-widest text-paper flex items-center gap-1">
                 <Box className="w-3 h-3" /> 3D
               </p>
@@ -155,60 +166,28 @@ export default function Model3DViewer() {
           </div>
         </div>
 
-        {/* Product 2: T-Shirt — right side */}
+        {/* RIGHT: T-Shirt product card — slides in from right */}
         <div
-          ref={teeRef}
-          className="absolute right-[8%] top-[25%] w-[35%] md:w-[28%] will-change-transform"
+          ref={productRef}
+          className="absolute right-[5%] md:right-[10%] top-[30%] w-[40%] md:w-[35%] will-change-transform"
           style={{ opacity: 0 }}
         >
-          <div className="relative rounded-2xl overflow-hidden shadow-2xl border-2 border-brand-black/10">
+          <div className="relative rounded-2xl overflow-hidden shadow-2xl border-2 border-brand-black/10 bg-white" style={{ height: "350px" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={TSHIRT_IMG} alt="Urbandana T-Shirt" className="w-full aspect-square object-cover" />
-            <div className="absolute bottom-3 left-3 bg-brand-black/80 backdrop-blur-md rounded-lg px-3 py-2">
+            <img src={TSHIRT_IMG} alt="Urbandana T-Shirt" className="w-full h-full object-cover" />
+            <div className="absolute bottom-3 left-3 bg-brand-black/80 backdrop-blur-md rounded-lg px-3 py-2 z-20">
               <p className="text-sm font-bold text-paper">Urbandana T-Shirt</p>
               <p className="text-[10px] text-paper/60">₹299 · Bandana-inspired</p>
             </div>
-            <div className="absolute top-3 right-3 bg-brand-red rounded-full px-2.5 py-1">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-paper flex items-center gap-1">
-                <Box className="w-3 h-3" /> 3D
+            <div className="absolute top-3 right-3 bg-brand-gold rounded-full px-2.5 py-1 z-20">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-brand-black flex items-center gap-1">
+                <Box className="w-3 h-3" /> NEW
               </p>
             </div>
           </div>
         </div>
 
-        {/* Product 3: Cap variant — bottom left */}
-        <div
-          ref={cap2Ref}
-          className="absolute left-[15%] bottom-[15%] w-[30%] md:w-[22%] will-change-transform"
-          style={{ opacity: 0 }}
-        >
-          <div className="relative rounded-2xl overflow-hidden shadow-2xl border-2 border-brand-black/10">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={CAP_IMG_2} alt="Urbandana Cap Variant" className="w-full aspect-square object-cover" />
-            <div className="absolute bottom-3 left-3 bg-brand-black/80 backdrop-blur-md rounded-lg px-3 py-2">
-              <p className="text-sm font-bold text-paper">Limited Edition</p>
-              <p className="text-[10px] text-paper/60">₹249 · Only 200 pcs</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Product 4: T-Shirt variant — bottom right */}
-        <div
-          ref={tee2Ref}
-          className="absolute right-[15%] bottom-[15%] w-[30%] md:w-[22%] will-change-transform"
-          style={{ opacity: 0 }}
-        >
-          <div className="relative rounded-2xl overflow-hidden shadow-2xl border-2 border-brand-black/10">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={TSHIRT_IMG_2} alt="Urbandana T-Shirt Variant" className="w-full aspect-square object-cover" />
-            <div className="absolute bottom-3 left-3 bg-brand-black/80 backdrop-blur-md rounded-lg px-3 py-2">
-              <p className="text-sm font-bold text-paper">Oversized T-Shirt</p>
-              <p className="text-[10px] text-paper/60">₹299 · 240 GSM cotton</p>
-            </div>
-          </div>
-        </div>
-
-        {/* HUD — scroll indicator */}
+        {/* HUD */}
         <div ref={hudRef} className="pointer-events-none absolute inset-x-0 bottom-8 text-center" style={{ opacity: 0 }}>
           <p className="text-xs uppercase tracking-widest text-brand-black/40 font-semibold animate-bounce">
             ↓ Scroll to explore
