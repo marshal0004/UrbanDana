@@ -2,12 +2,12 @@
 "use client";
 import { useEffect, useRef, useState, lazy, Suspense } from "react";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { startScroll } from "@/lib/scroll";
-import { clamp, easeOutCubic, lerp, range } from "@/lib/math";
+import { startScroll, onFrame } from "@/lib/scroll";
+import { clamp, easeOutCubic, lerp, pinProgress, range } from "@/lib/math";
+import { RotateCw } from "lucide-react";
 
 const Canvas3D = lazy(() => import("./Canvas3D"));
 
-// Preload BOTH models at module level (cached by useGLTF)
 import { useGLTF } from "@react-three/drei";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 const draco = new DRACOLoader();
@@ -15,7 +15,6 @@ draco.setDecoderPath("https://www.gstatic.com/draco/v1/decoders/");
 useGLTF.preload("/models/cap-3d.glb", true, (loader: any) => loader.setDRACOLoader(draco));
 useGLTF.preload("/models/tshirt-3d.glb", true, (loader: any) => loader.setDRACOLoader(draco));
 
-// 4 separate full-screen sections — each has its own 3D model + background
 const SECTIONS = [
   { modelPath: "/models/cap-3d.glb", bgImage: "/images/3d-bg-1.jpg", scale: 2.4 },
   { modelPath: "/models/tshirt-3d.glb", bgImage: "/images/3d-bg-2.jpg", scale: 1.8 },
@@ -23,7 +22,13 @@ const SECTIONS = [
   { modelPath: "/models/tshirt-3d.glb", bgImage: "/images/3d-bg-4.jpg", scale: 1.8 },
 ];
 
+const STAGE_VH = 400; // 4 × 100vh
+
 export default function Model3DViewer() {
+  const rootRef = useRef<HTMLElement>(null);
+  const [activeSection, setActiveSection] = useState(0);
+  const [visible, setVisible] = useState(false);
+  const [modelReady, setModelReady] = useState(false);
   const reduced = useReducedMotion();
 
   useEffect(() => {
@@ -31,119 +36,101 @@ export default function Model3DViewer() {
     return cleanup;
   }, [reduced]);
 
-  return (
-    <>
-      {SECTIONS.map((s, i) => (
-        <Section3D key={i} index={i} {...s} />
-      ))}
-    </>
-  );
-}
-
-function Section3D({
-  index,
-  modelPath,
-  bgImage,
-  scale,
-}: {
-  index: number;
-  modelPath: string;
-  bgImage: string;
-  scale: number;
-}) {
-  const ref = useRef<HTMLElement>(null);
-  const bgRef = useRef<HTMLDivElement>(null);
-  const modelRef = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-
-  // Load 3D only when this section enters viewport
+  // Only mount canvas when section enters viewport
   useEffect(() => {
-    const el = ref.current;
+    const el = rootRef.current;
     if (!el) return;
     const obs = new IntersectionObserver(
-      ([entry]) => setVisible(entry.isIntersecting),
-      { threshold: 0.05, rootMargin: "100px" }
+      ([entry]) => {
+        setVisible(entry.isIntersecting);
+        if (entry.isIntersecting) setModelReady(false);
+      },
+      { threshold: 0.05 }
     );
     obs.observe(el);
     return () => obs.disconnect();
   }, []);
 
-  // Parallax scroll effect for background + model
+  // Track active section
   useEffect(() => {
-    let raf = 0;
-    const onScroll = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        const el = ref.current;
-        if (!el) return;
-        const rect = el.getBoundingClientRect();
-        const vh = window.innerHeight;
-        // Progress: 0 when section enters from bottom, 1 when section exits from top
-        const progress = clamp((vh - rect.top) / (vh + rect.height));
-        // Background parallax — slow drift
-        if (bgRef.current) {
-          const y = lerp(0, -8, progress);
-          bgRef.current.style.transform = `translate3d(0, ${y}vh, 0) scale(1.1)`;
-        }
-        // Model — fade in from bottom, fade out at top
-        if (modelRef.current) {
-          const fadeIn = easeOutCubic(range(progress, 0.05, 0.25));
-          const fadeOut = range(progress, 0.75, 0.95);
-          const yMove = lerp(8, 0, fadeIn) - fadeOut * 6;
-          const opacity = fadeIn * (1 - fadeOut);
-          modelRef.current.style.transform = `translate3d(0, ${yMove}vh, 0)`;
-          modelRef.current.style.opacity = String(opacity);
-        }
-      });
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      cancelAnimationFrame(raf);
-    };
+    let lastSection = -1;
+    return onFrame(() => {
+      if (!visible) return;
+      const root = rootRef.current;
+      if (!root) return;
+      const { p, rect } = pinProgress(root);
+      if (rect.bottom < 0 || rect.top > window.innerHeight) return;
+      const sectionIndex = Math.min(3, Math.floor(p * 4));
+      if (sectionIndex !== lastSection) {
+        lastSection = sectionIndex;
+        setActiveSection(sectionIndex);
+        setModelReady(false);
+      }
+    });
+  }, [visible]);
+
+  // Preload background images
+  useEffect(() => {
+    SECTIONS.forEach((s) => {
+      const img = new Image();
+      img.src = s.bgImage;
+    });
   }, []);
 
   return (
-    <section
-      ref={ref}
-      className="relative h-screen overflow-hidden bg-black"
-      style={{ scrollSnapAlign: "start" }}
-    >
-      {/* Background — cover (fills screen, no black bars) */}
-      <div
-        ref={bgRef}
-        className="absolute inset-0 will-change-transform"
-        style={{
-          backgroundImage: `url(${bgImage})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      />
+    <section ref={rootRef} className="relative" style={{ height: `${STAGE_VH}vh` }}>
+      <div className="sticky top-0 h-screen overflow-hidden bg-black">
+        {/* Background — cover, crossfade */}
+        {SECTIONS.map((s, i) => (
+          <div
+            key={`bg-${i}`}
+            className="absolute inset-0 transition-opacity duration-500"
+            style={{
+              backgroundImage: `url(${s.bgImage})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              opacity: activeSection === i ? 1 : 0,
+            }}
+          />
+        ))}
 
-      {/* Dark gradient overlay */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse at center, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.45) 60%, rgba(0,0,0,0.75) 100%)",
-        }}
-      />
-
-      {/* 3D Model — centered, transparent, no product info */}
-      {visible && (
+        {/* Dark gradient overlay */}
         <div
-          ref={modelRef}
-          className="absolute inset-0 flex items-center justify-center will-change-transform"
-          style={{ opacity: 0 }}
-        >
-          <div className="w-full h-full">
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse at center, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.45) 60%, rgba(0,0,0,0.75) 100%)",
+          }}
+        />
+
+        {/* SINGLE 3D Canvas — swaps model, no flickering, no multiple WebGL contexts */}
+        {visible && (
+          <div className="absolute inset-0 z-10">
             <Suspense fallback={null}>
-              <Canvas3D modelPath={modelPath} scale={scale} />
+              <Canvas3D
+                key={activeSection}
+                modelPath={SECTIONS[activeSection].modelPath}
+                scale={SECTIONS[activeSection].scale}
+                onReady={() => setModelReady(true)}
+              />
             </Suspense>
           </div>
-        </div>
-      )}
+        )}
+
+        {/* Rotating loader — shows while model loads */}
+        {visible && !modelReady && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center z-20 pointer-events-none">
+            <div className="relative w-14 h-14 mb-4">
+              <div className="absolute inset-0 rounded-full border-4 border-white/15" />
+              <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-brand-red animate-spin" />
+            </div>
+            <p className="text-xs uppercase tracking-widest text-white/50 font-semibold flex items-center gap-2">
+              <RotateCw className="w-3 h-3 animate-spin" />
+              Loading 3D…
+            </p>
+          </div>
+        )}
+      </div>
     </section>
   );
 }
