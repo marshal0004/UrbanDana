@@ -94,13 +94,15 @@ export default function Model3DViewer() {
         }}
       />
 
-      {/* 3D Models — 2 at a time: BIG left, SMALL right */}
+      {/* 3D Models — 2 at a time: BIG left (65%), SMALL right (35%) */}
       {visible && (
         <div className="absolute inset-0 flex items-center">
-          {/* LEFT: Big focused model */}
+          {/* LEFT: Big focused model — 65% width */}
           <div
             className="flex-1 flex items-center justify-center transition-all duration-700 ease-out"
             style={{
+              flexBasis: "65%",
+              maxWidth: "65%",
               opacity: transitioning ? 0 : 1,
               transform: transitioning ? "translateX(-30%) scale(0.7)" : "translateX(0) scale(1)",
             }}
@@ -117,11 +119,13 @@ export default function Model3DViewer() {
             </div>
           </div>
 
-          {/* RIGHT: Small preview model */}
+          {/* RIGHT: Small preview model — 35% width */}
           <div
-            className="w-[25%] md:w-[20%] shrink-0 flex items-center justify-center transition-all duration-700 ease-out"
+            className="shrink-0 flex items-center justify-center transition-all duration-700 ease-out"
             style={{
-              opacity: transitioning ? 0 : 0.5,
+              flexBasis: "35%",
+              maxWidth: "35%",
+              opacity: transitioning ? 0 : 0.7,
               transform: transitioning ? "translateX(50%) scale(0.3)" : "translateX(0) scale(1)",
             }}
           >
@@ -130,7 +134,7 @@ export default function Model3DViewer() {
                 <Canvas3D
                   key={`small-${nextIndex}`}
                   modelPath={nextModel.modelPath}
-                  scale={nextModel.scale * 0.5}
+                  scale={nextModel.scale * 0.55}
                 />
               </Suspense>
             </div>
