@@ -19,13 +19,25 @@ const MODELS = [
   { modelPath: "/models/tshirt-3d.glb", bgImage: "/images/3d-bg-4.jpg", scale: 1.8 },
 ];
 
-const CYCLE_INTERVAL = 4500;
+const CYCLE_INTERVAL = 5000;
+const TRANSITION_MS = 800;
 
+/**
+ * 2 persistent canvases — NEVER destroyed.
+ * They alternate between "active" (left, big) and "next" (right, small).
+ * On each cycle:
+ *   1. Active slides LEFT (exits), Next slides to CENTER (becomes active)
+ *   2. After transition: the exited canvas loads the NEW model, then slides IN from RIGHT
+ *   3. Background crossfades to match the new active model
+ * Zero canvas destruction = zero flickering = zero blank screen.
+ */
 export default function Model3DViewer() {
-  const [activeIndex, setActiveIndex] = useState(0);
   const [visible, setVisible] = useState(false);
-  const [modelReady, setModelReady] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [slotA, setSlotA] = useState({ modelIdx: 0, role: "active" as "active" | "next" | "exiting" | "entering" });
+  const [slotB, setSlotB] = useState({ modelIdx: 1, role: "next" as "active" | "next" | "exiting" | "entering" });
   const sectionRef = useRef<HTMLElement>(null);
+  const cycleRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const el = sectionRef.current;
@@ -39,24 +51,77 @@ export default function Model3DViewer() {
   }, []);
 
   useEffect(() => {
-    if (!visible) return;
-    const interval = setInterval(() => {
-      setModelReady(false);
-      setActiveIndex((prev) => (prev + 1) % MODELS.length);
-    }, CYCLE_INTERVAL);
-    return () => clearInterval(interval);
-  }, [visible]);
-
-  useEffect(() => {
     MODELS.forEach((m) => {
       const img = new Image();
       img.src = m.bgImage;
     });
   }, []);
 
+  // Auto-cycle
+  useEffect(() => {
+    if (!visible) return;
+
+    const runCycle = () => {
+      // Determine which slot is currently active
+      const activeSlot = slotA.role === "active" ? "A" : "B";
+      const nextSlot = activeSlot === "A" ? "B" : "A";
+
+      // Step 1: active → exiting (slides left), next → active (slides to center)
+      if (activeSlot === "A") {
+        setSlotA((prev) => ({ ...prev, role: "exiting" }));
+        setSlotB((prev) => ({ ...prev, role: "active" }));
+      } else {
+        setSlotB((prev) => ({ ...prev, role: "exiting" }));
+        setSlotA((prev) => ({ ...prev, role: "active" }));
+      }
+
+      // Update activeIndex for background
+      const newActiveIdx = activeSlot === "A" ? slotB.modelIdx : slotA.modelIdx;
+      setActiveIndex(newActiveIdx);
+
+      // Step 2: After transition, the exited slot loads new model + enters from right
+      setTimeout(() => {
+        const newModelIdx = (newActiveIdx + 1) % MODELS.length;
+        if (activeSlot === "A") {
+          setSlotA({ modelIdx: newModelIdx, role: "entering" });
+        } else {
+          setSlotB({ modelIdx: newModelIdx, role: "entering" });
+        }
+
+        // Step 3: After entering animation, set to "next"
+        setTimeout(() => {
+          if (activeSlot === "A") {
+            setSlotA((prev) => ({ ...prev, role: "next" }));
+          } else {
+            setSlotB((prev) => ({ ...prev, role: "next" }));
+          }
+        }, TRANSITION_MS);
+      }, TRANSITION_MS);
+    };
+
+    cycleRef.current = setInterval(runCycle, CYCLE_INTERVAL);
+    return () => { if (cycleRef.current) clearInterval(cycleRef.current); };
+  }, [visible, slotA, slotB]);
+
+  // Get CSS for each role
+  function getRoleStyle(role: string) {
+    switch (role) {
+      case "active":
+        return { left: "0%", width: "65%", opacity: 1, transform: "translateX(0)", zIndex: 10 };
+      case "next":
+        return { left: "55%", width: "45%", opacity: 0.6, transform: "translateX(0)", zIndex: 5 };
+      case "exiting":
+        return { left: "0%", width: "65%", opacity: 0, transform: "translateX(-100%)", zIndex: 1 };
+      case "entering":
+        return { left: "55%", width: "45%", opacity: 0.6, transform: "translateX(0)", zIndex: 5 };
+      default:
+        return { left: "100%", width: "45%", opacity: 0, transform: "translateX(100%)", zIndex: 0 };
+    }
+  }
+
   return (
     <section ref={sectionRef} className="relative h-screen overflow-hidden bg-black">
-      {/* Background */}
+      {/* Background — crossfade */}
       {MODELS.map((m, i) => (
         <div
           key={`bg-${i}`}
@@ -70,7 +135,7 @@ export default function Model3DViewer() {
         />
       ))}
 
-      {/* Gradient */}
+      {/* Gradient overlay */}
       <div
         className="absolute inset-0"
         style={{
@@ -79,61 +144,41 @@ export default function Model3DViewer() {
         }}
       />
 
-      {/* 3D Models — only 2 canvases max: ACTIVE (left) + NEXT (right) */}
+      {/* 2 PERSISTENT CANVASES — never destroyed, just change role + position */}
       {visible && (
         <>
-          {/* ACTIVE model — positioned left-center, large */}
+          {/* Slot A */}
           <div
-            className="absolute top-0 bottom-0 transition-all duration-700 ease-out"
+            className="absolute top-0 bottom-0 transition-all ease-out"
             style={{
-              left: "0%",
-              width: "65%",
-              opacity: modelReady ? 1 : 0,
-              transform: "translateX(0)",
+              ...getRoleStyle(slotA.role),
+              transitionDuration: `${TRANSITION_MS}ms`,
             }}
           >
             <Suspense fallback={null}>
               <Canvas3D
-                key={`active-${activeIndex}`}
-                modelPath={MODELS[activeIndex].modelPath}
-                scale={MODELS[activeIndex].scale}
-                onReady={() => setModelReady(true)}
+                modelPath={MODELS[slotA.modelIdx].modelPath}
+                scale={slotA.role === "active" ? MODELS[slotA.modelIdx].scale : MODELS[slotA.modelIdx].scale * 0.7}
               />
             </Suspense>
           </div>
 
-          {/* NEXT model — positioned right, medium size, preview */}
+          {/* Slot B */}
           <div
-            className="absolute top-0 bottom-0 transition-all duration-700 ease-out"
+            className="absolute top-0 bottom-0 transition-all ease-out"
             style={{
-              right: "0%",
-              width: "45%",
-              opacity: 0.6,
-              transform: "translateX(0)",
+              ...getRoleStyle(slotB.role),
+              transitionDuration: `${TRANSITION_MS}ms`,
             }}
           >
             <Suspense fallback={null}>
               <Canvas3D
-                key={`next-${(activeIndex + 1) % MODELS.length}`}
-                modelPath={MODELS[(activeIndex + 1) % MODELS.length].modelPath}
-                scale={MODELS[(activeIndex + 1) % MODELS.length].scale * 0.7}
+                modelPath={MODELS[slotB.modelIdx].modelPath}
+                scale={slotB.role === "active" ? MODELS[slotB.modelIdx].scale : MODELS[slotB.modelIdx].scale * 0.7}
               />
             </Suspense>
           </div>
         </>
-      )}
-
-      {/* Loader */}
-      {visible && !modelReady && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center z-30 pointer-events-none">
-          <div className="relative w-12 h-12 mb-3">
-            <div className="absolute inset-0 rounded-full border-4 border-white/15" />
-            <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-brand-red animate-spin" />
-          </div>
-          <p className="text-xs uppercase tracking-widest text-white/50 font-semibold flex items-center gap-2">
-            <RotateCw className="w-3 h-3 animate-spin" /> Loading 3D…
-          </p>
-        </div>
       )}
 
       {/* Progress dots */}
