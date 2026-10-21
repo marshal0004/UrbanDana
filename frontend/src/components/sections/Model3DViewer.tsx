@@ -13,11 +13,18 @@ const draco = new DRACOLoader();
 draco.setDecoderPath("https://www.gstatic.com/draco/v1/decoders/");
 useGLTF.preload("/models/cap-3d.glb", true, (loader: any) => loader.setDRACOLoader(draco));
 useGLTF.preload("/models/tshirt-3d.glb", true, (loader: any) => loader.setDRACOLoader(draco));
+useGLTF.preload("/models/cap-3d-v2.glb", true, (loader: any) => loader.setDRACOLoader(draco));
+useGLTF.preload("/models/tshirt-3d-v2.glb", true, (loader: any) => loader.setDRACOLoader(draco));
 
+// 4 models — each matches its background image
+// Section 1: earth-tone cap → cap-3d.glb (original cap)
+// Section 2: paisley t-shirt → tshirt-3d-v2.glb (new t-shirt1.glb)
+// Section 3: olive leaf cap → cap-3d-v2.glb (new cap (1).glb)
+// Section 4: tribal t-shirt → tshirt-3d.glb (original t-shirt)
 const MODELS = [
   { modelPath: "/models/cap-3d.glb", bgImage: "/images/3d-bg-1.jpg", scale: 2.16, label: "Cap 1" },
-  { modelPath: "/models/tshirt-3d.glb", bgImage: "/images/3d-bg-2.jpg", scale: 1.62, label: "T-Shirt 1" },
-  { modelPath: "/models/cap-3d.glb", bgImage: "/images/3d-bg-3.jpg", scale: 2.16, label: "Cap 2" },
+  { modelPath: "/models/tshirt-3d-v2.glb", bgImage: "/images/3d-bg-2.jpg", scale: 1.62, label: "T-Shirt 1" },
+  { modelPath: "/models/cap-3d-v2.glb", bgImage: "/images/3d-bg-3.jpg", scale: 2.16, label: "Cap 2" },
   { modelPath: "/models/tshirt-3d.glb", bgImage: "/images/3d-bg-4.jpg", scale: 1.62, label: "T-Shirt 2" },
 ];
 
