@@ -6,59 +6,39 @@ import { startScroll, onFrame } from "@/lib/scroll";
 import { clamp, easeOutCubic, lerp, pinProgress, range } from "@/lib/math";
 
 /**
- * Pure CSS 3D parallax — Editorial Hero design (Unifiers of Japan inspired).
+ * Pure CSS 3D parallax — Editorial Hero design with the 4 uploaded product images.
  *
- * DESIGN PRINCIPLES:
- *  - Background = MOOD / lifestyle photo (styled flat-lay or model shot)
- *  - Foreground = CLEAN product cutout on white card (separated from background)
- *  - The two layers use DIFFERENT images — NO "picture-in-picture" recursion.
- *  - Product sits on a soft radial white glow + card so it floats ABOVE the bg.
- *  - Background is slightly blurred (filter: blur) so it recedes behind product.
- *  - Bottom 35% has dark gradient so the label is always legible.
+ * IMAGES (from upload "3d scroll.zip"):
+ *  1 = Signature Cap — styled lifestyle photo (cream cap + brown florals + props)
+ *  2 = Paisley T-Shirt — clean product cutout on dark gray
+ *  3 = Olive Leaf Cap — styled lifestyle photo (cream cap + olive pattern + props)
+ *  4 = Tribal T-Shirt — clean product on textured concrete
  *
- * SCROLL BEHAVIOR:
- *  - First product fully visible on page load (no fade-in).
- *  - Snappy 4% enter / 92% hold / 4% exit per section.
- *  - During HOLD: product at natural size (scale 1.0), centered, opacity 1.
- *  - Stage height = 320vh (4 × 80vh) — less scrolling than before.
- *  - Active progress dot on the right shows current section.
+ * Since each image is already a complete, polished product shot (not a fabric
+ * texture), the SAME image is used for both background and foreground. The
+ * background is HEAVILY blurred + dimmed so it acts as a soft atmospheric glow,
+ * while the foreground shows the same image crisp on a white card.
+ *
+ * 3D ENHANCEMENTS:
+ *  - Deeper perspective (1500px, was 1200px) → more dramatic depth
+ *  - Larger product (min(84vw, 672px) — +20% from previous 560px)
+ *  - Stronger drop-shadow + multi-layer glow behind product
+ *  - Subtle 3D tilt during scroll (rotateX + rotateY combined) — image
+ *    tilts in 2 axes for genuine 3D feel
+ *  - Card border highlight + inner reflection
  */
 
-// Section data — DIFFERENT images for background vs product (no recursion)
-//   bgImg       = lifestyle/mood photo (styled flat-lay with props)
-//   productImg  = clean catalog cutout (single product on simple bg)
 const SECTIONS = [
-  {
-    bgImg: "/images/hero-cap-red.jpg",       // styled hero photo (red bandana + props)
-    productImg: "/images/cat-caps.jpg",      // clean catalog cutout
-    label: "Signature Cap",
-    accent: "#c8102e",
-  },
-  {
-    bgImg: "/images/3d-bg-2.jpg",            // paisley fabric texture
-    productImg: "/images/cat-tshirts.jpg",   // clean t-shirt catalog
-    label: "Paisley T-Shirt",
-    accent: "#d4a017",
-  },
-  {
-    bgImg: "/images/hero-cap-green.jpg",     // olive-green hero photo
-    productImg: "/images/cat-caps.jpg",      // clean cap catalog
-    label: "Olive Leaf Cap",
-    accent: "#10b981",
-  },
-  {
-    bgImg: "/images/3d-bg-4.jpg",            // tribal fabric texture
-    productImg: "/images/cat-tshirts.jpg",   // clean t-shirt catalog
-    label: "Tribal T-Shirt",
-    accent: "#a855f7",
-  },
+  { img: "/images/scroll-1.jpeg", label: "Signature Cap", accent: "#c8102e" },
+  { img: "/images/scroll-2.jpeg", label: "Paisley T-Shirt", accent: "#d4a017" },
+  { img: "/images/scroll-3.jpeg", label: "Olive Leaf Cap", accent: "#10b981" },
+  { img: "/images/scroll-4.jpeg", label: "Tribal T-Shirt", accent: "#a855f7" },
 ];
 
 const STAGE_VH = 320;
 const SECTION_COUNT = SECTIONS.length;
 const SECTION_SIZE = 1 / SECTION_COUNT;
 
-// Per-section transition windows
 const ENTER_END = 0.04;
 const EXIT_START = 0.96;
 
@@ -92,31 +72,33 @@ export default function Model3DViewer() {
 
         if (p >= segStart && p < segEnd) activeIdx = i;
 
-        // === Background layer ===
-        // First section visible from p=0; others crossfade over 6%.
+        // === Background layer — same image, heavily blurred + dimmed (atmosphere) ===
         const bgIn = i === 0 ? 1 : easeOutCubic(range(p, segStart - 0.03, segStart + 0.03));
         const bgOut = range(p, segEnd - 0.03, segEnd + 0.03);
         if (bgRefs.current[i]) {
           bgRefs.current[i]!.style.opacity = String(bgIn * (1 - bgOut));
-          // Subtle parallax: 4vh drift + scale 1.05 → 1.0
-          bgRefs.current[i]!.style.transform = `translate3d(0, ${lerp(0, -4, segP)}vh, 0) scale(${lerp(1.05, 1.0, segP)})`;
+          // Parallax: 6vh drift (was 4) + scale 1.1 → 1.0 (more movement)
+          bgRefs.current[i]!.style.transform = `translate3d(0, ${lerp(0, -6, segP)}vh, 0) scale(${lerp(1.1, 1.0, segP)})`;
         }
 
-        // === Product (foreground) ===
-        // First section fully visible from p=0; others snap in over 4%.
+        // === Product (foreground) — 3D float with dual-axis tilt ===
         const imgIn = i === 0 ? 1 : easeOutCubic(range(p, segStart, segStart + ENTER_END));
         const imgOut = i === SECTION_COUNT - 1
           ? range(p, segEnd - 0.02, segEnd)
           : easeOutCubic(range(p, segEnd - (1 - EXIT_START), segEnd));
 
         if (productRefs.current[i]) {
-          // HOLD: scale 1.0, rotateY 0, translateY 0, translateZ 0, opacity 1
-          const scale = lerp(0.92, 1.0, imgIn) * lerp(1.0, 0.92, imgOut);
-          const yMove = lerp(3, 0, imgIn) - imgOut * 3;
-          const rotateY = lerp(10, 0, imgIn) - imgOut * 10;
-          const translateZ = lerp(-40, 0, imgIn) - imgOut * 40;
+          // HOLD: scale 1.0, no rotation, centered, opacity 1
+          // ENTER: scale 0.85 → 1.0, rotateY 15° → 0, rotateX 5° → 0, translateY 4vh → 0, translateZ -60 → 0
+          // EXIT:  scale 1.0 → 0.85, rotateY 0 → -15°, rotateX 0 → -5°, translateY 0 → -4vh, translateZ 0 → -60
+          const scale = lerp(0.85, 1.0, imgIn) * lerp(1.0, 0.85, imgOut);
+          const yMove = lerp(4, 0, imgIn) - imgOut * 4;
+          const rotateY = lerp(15, 0, imgIn) - imgOut * 15;
+          const rotateX = lerp(5, 0, imgIn) - imgOut * 5;       // NEW: dual-axis tilt
+          const translateZ = lerp(-60, 0, imgIn) - imgOut * 60;
           const opacity = imgIn * (1 - imgOut);
-          productRefs.current[i]!.style.transform = `translate3d(0, ${yMove}vh, ${translateZ}px) scale(${scale}) rotateY(${rotateY}deg)`;
+          productRefs.current[i]!.style.transform =
+            `translate3d(0, ${yMove}vh, ${translateZ}px) scale(${scale}) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
           productRefs.current[i]!.style.opacity = String(opacity);
         }
 
@@ -129,7 +111,7 @@ export default function Model3DViewer() {
         }
       }
 
-      // Active dot indicator
+      // Active progress dots
       for (let i = 0; i < SECTION_COUNT; i++) {
         if (dotRefs.current[i]) {
           const isActive = i === activeIdx;
@@ -140,7 +122,7 @@ export default function Model3DViewer() {
         }
       }
 
-      // HUD scroll hint
+      // HUD
       if (hudRef.current) {
         hudRef.current.style.opacity = String(range(p, 0.01, 0.03) * (1 - range(p, 0.95, 0.99)));
       }
@@ -150,33 +132,44 @@ export default function Model3DViewer() {
   return (
     <section ref={rootRef} aria-label="3D Product Showcase" className="relative" style={{ height: `${STAGE_VH}vh` }}>
       <div className="sticky top-0 h-screen overflow-hidden bg-black">
-        {/* === BACKGROUND LAYER === mood/lifestyle photos, slightly blurred so they recede */}
+        {/* === BACKGROUND LAYER === same image, heavily blurred + dimmed for atmosphere */}
         {SECTIONS.map((s, i) => (
           <div
             key={`bg-${i}`}
             ref={(el) => { bgRefs.current[i] = el; }}
             className="absolute inset-0 will-change-transform"
             style={{
-              backgroundImage: `url(${s.bgImg})`,
+              backgroundImage: `url(${s.img})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
               opacity: i === 0 ? 1 : 0,
-              // Slight blur pushes the background behind the floating product
-              filter: "blur(3px) brightness(0.85)",
+              // Heavy blur (8px) + dim (0.7) → background becomes soft atmosphere
+              filter: "blur(8px) brightness(0.7)",
             }}
           />
         ))}
 
-        {/* === GRADIENT OVERLAY === top fade (subtle) + bottom 35% dark for text legibility */}
+        {/* === COLOR TINT OVERLAY === subtle accent tint per section for mood */}
         <div
-          className="absolute inset-0 pointer-events-none"
+          className="absolute inset-0 pointer-events-none mix-blend-overlay"
           style={{
-            background: "linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, transparent 25%, transparent 50%, rgba(0,0,0,0.55) 80%, rgba(0,0,0,0.85) 100%)",
+            background: "radial-gradient(ellipse at center, rgba(255,255,255,0.15) 0%, transparent 70%)",
           }}
         />
 
-        {/* === PRODUCT LAYER === clean catalog cutouts floating on white radial glow */}
-        <div className="absolute inset-0" style={{ perspective: "1200px", transformStyle: "preserve-3d" }}>
+        {/* === BOTTOM GRADIENT === for label legibility */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: "linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, transparent 25%, transparent 55%, rgba(0,0,0,0.7) 85%, rgba(0,0,0,0.95) 100%)",
+          }}
+        />
+
+        {/* === PRODUCT LAYER === crisp product card floating on multi-layer glow === */}
+        <div
+          className="absolute inset-0"
+          style={{ perspective: "1500px", transformStyle: "preserve-3d" }}  // deeper perspective (was 1200)
+        >
           {SECTIONS.map((s, i) => (
             <div
               key={`product-${i}`}
@@ -187,43 +180,59 @@ export default function Model3DViewer() {
                 transformStyle: "preserve-3d",
               }}
             >
-              {/* Soft white radial glow behind product — separates it from bg */}
+              {/* Layer 1: LARGE soft outer glow (atmospheric halo) */}
               <div
                 className="absolute"
                 style={{
-                  width: "min(85vw, 700px)",
-                  height: "min(85vh, 700px)",
+                  width: "min(110vw, 1000px)",
+                  height: "min(110vh, 1000px)",
+                  background: "radial-gradient(circle, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.15) 30%, rgba(255,255,255,0) 65%)",
+                  borderRadius: "50%",
+                  filter: "blur(40px)",
+                  zIndex: 0,
+                }}
+              />
+              {/* Layer 2: INNER glow (tighter, brighter) */}
+              <div
+                className="absolute"
+                style={{
+                  width: "min(90vw, 760px)",
+                  height: "min(90vh, 760px)",
                   background: "radial-gradient(circle, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.55) 35%, rgba(255,255,255,0) 70%)",
                   borderRadius: "50%",
                   filter: "blur(20px)",
                   zIndex: 0,
                 }}
               />
-              {/* Product image — bumped +20% to 70vw/70vh, max 560px */}
+              {/* Layer 3: PRODUCT CARD — bumped +20% (was 560px → now 672px) */}
               <div
                 className="relative"
                 style={{
-                  width: "min(70vw, 560px)",
-                  height: "min(70vh, 560px)",
+                  width: "min(84vw, 672px)",
+                  height: "min(84vh, 672px)",
                   zIndex: 1,
-                  background: "rgba(255,255,255,0.95)",
-                  borderRadius: "24px",
-                  padding: "20px",
-                  boxShadow: "0 30px 60px rgba(0,0,0,0.5), 0 0 80px rgba(255,255,255,0.15)",
+                  background: "rgba(255,255,255,0.98)",
+                  borderRadius: "28px",
+                  padding: "24px",
+                  // Stronger multi-layer shadow for 3D float effect
+                  boxShadow:
+                    "0 40px 80px rgba(0,0,0,0.6), 0 0 100px rgba(255,255,255,0.2), inset 0 0 0 1px rgba(255,255,255,0.8)",
+                  // Subtle inner reflection
+                  backgroundImage: "linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 40%)",
                 }}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={s.productImg}
+                  src={s.img}
                   alt={s.label}
-                  className="w-full h-full object-contain rounded-lg"
+                  className="w-full h-full object-contain rounded-xl"
                 />
               </div>
             </div>
           ))}
         </div>
 
-        {/* === LABELS === bottom-center, legible on the dark gradient */}
+        {/* === LABELS === */}
         {SECTIONS.map((s, i) => (
           <div
             key={`label-${i}`}
@@ -243,7 +252,7 @@ export default function Model3DViewer() {
           </div>
         ))}
 
-        {/* === ACTIVE PROGRESS DOTS === right side */}
+        {/* === PROGRESS DOTS === */}
         <div className="absolute right-6 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-3">
           {SECTIONS.map((_, i) => (
             <div
