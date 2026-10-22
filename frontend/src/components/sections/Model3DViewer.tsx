@@ -29,10 +29,30 @@ import { clamp, easeOutCubic, lerp, pinProgress, range } from "@/lib/math";
  */
 
 const SECTIONS = [
-  { img: "/images/scroll-1.jpeg", label: "Signature Cap", accent: "#c8102e" },
-  { img: "/images/scroll-2.jpeg", label: "Paisley T-Shirt", accent: "#d4a017" },
-  { img: "/images/scroll-3.jpeg", label: "Olive Leaf Cap", accent: "#10b981" },
-  { img: "/images/scroll-4.jpeg", label: "Tribal T-Shirt", accent: "#a855f7" },
+  {
+    img: "/images/scroll-1.jpeg",
+    label: "Signature Cap",
+    accent: "#c8102e",
+    aspect: 1.77, // 2752×1552 — landscape 16:9 (styled cap with props)
+  },
+  {
+    img: "/images/scroll-2.jpeg",
+    label: "Paisley T-Shirt",
+    accent: "#d4a017",
+    aspect: 1.0,  // 1254×1254 — square (clean t-shirt cutout)
+  },
+  {
+    img: "/images/scroll-3.jpeg",
+    label: "Olive Leaf Cap",
+    accent: "#10b981",
+    aspect: 1.77, // 2752×1552 — landscape 16:9 (styled cap with props)
+  },
+  {
+    img: "/images/scroll-4.jpeg",
+    label: "Tribal T-Shirt",
+    accent: "#a855f7",
+    aspect: 1.17, // 718×615 — ~4:3 landscape (t-shirt on concrete)
+  },
 ];
 
 const STAGE_VH = 320;
@@ -184,8 +204,11 @@ export default function Model3DViewer() {
               <div
                 className="absolute"
                 style={{
-                  width: "min(110vw, 1000px)",
-                  height: "min(110vh, 1000px)",
+                  // Glow matches the card's aspect ratio per-section
+                  width: s.aspect >= 1.4 ? "min(110vw, 1100px)" : "min(110vw, 1000px)",
+                  height: s.aspect >= 1.4
+                    ? `min(${110 / s.aspect}vh, ${1100 / s.aspect}px)`
+                    : "min(110vh, 1000px)",
                   background: "radial-gradient(circle, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.15) 30%, rgba(255,255,255,0) 65%)",
                   borderRadius: "50%",
                   filter: "blur(40px)",
@@ -196,26 +219,31 @@ export default function Model3DViewer() {
               <div
                 className="absolute"
                 style={{
-                  width: "min(90vw, 760px)",
-                  height: "min(90vh, 760px)",
+                  width: s.aspect >= 1.4 ? "min(95vw, 850px)" : "min(90vw, 760px)",
+                  height: s.aspect >= 1.4
+                    ? `min(${95 / s.aspect}vh, ${850 / s.aspect}px)`
+                    : "min(90vh, 760px)",
                   background: "radial-gradient(circle, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.55) 35%, rgba(255,255,255,0) 70%)",
                   borderRadius: "50%",
                   filter: "blur(20px)",
                   zIndex: 0,
                 }}
               />
-              {/* Layer 3: PRODUCT CARD — bumped +20% (was 560px → now 672px) */}
+              {/* Layer 3: PRODUCT CARD — dimensions MATCH each image's aspect ratio.
+                  When card aspect == image aspect, object-cover == object-contain:
+                  FULL image visible with NO cropping AND NO margins. */}
               <div
                 className="relative overflow-hidden"
                 style={{
-                  width: "min(84vw, 672px)",
-                  height: "min(84vh, 672px)",
+                  // Width fixed per aspect, height = width / aspect → exact aspect match
+                  width: "min(90vw, 820px)",
+                  height: `min(${90 / s.aspect}vw, ${820 / s.aspect}px)`,
+                  maxWidth: "92vw",
+                  maxHeight: "85vh",
                   zIndex: 1,
                   background: "rgba(255,255,255,0.98)",
                   borderRadius: "28px",
-                  // NO padding — image fills the entire card edge-to-edge
                   padding: "0",
-                  // Stronger multi-layer shadow for 3D float effect
                   boxShadow:
                     "0 40px 80px rgba(0,0,0,0.6), 0 0 100px rgba(255,255,255,0.2), inset 0 0 0 1px rgba(255,255,255,0.8)",
                 }}
@@ -225,7 +253,7 @@ export default function Model3DViewer() {
                   src={s.img}
                   alt={s.label}
                   className="w-full h-full object-cover"
-                  // image fills entire card with NO margins on any side
+                  // Card aspect == image aspect → no cropping, no margins
                 />
               </div>
             </div>
