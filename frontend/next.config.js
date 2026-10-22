@@ -3,19 +3,20 @@ const nextConfig = {
   reactStrictMode: true,
   images: {
     remotePatterns: [
+      { protocol: "https", hostname: "urbandana.onrender.com" },
       { protocol: "http", hostname: "localhost", port: "4000" },
-      { protocol: "http", hostname: "127.0.0.1", port: "4000" },
     ],
   },
   async rewrites() {
+    const backendUrl = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || "https://urbandana.onrender.com";
     return [
       {
         source: "/api/:path*",
-        destination: `${process.env.BACKEND_URL || "http://localhost:4000"}/api/:path*`,
+        destination: `${backendUrl}/api/:path*`,
       },
       {
         source: "/uploads/:path*",
-        destination: `${process.env.BACKEND_URL || "http://localhost:4000"}/uploads/:path*`,
+        destination: `${backendUrl}/uploads/:path*`,
       },
     ];
   },
