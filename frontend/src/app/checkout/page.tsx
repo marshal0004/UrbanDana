@@ -207,7 +207,7 @@ export default function CheckoutPage() {
         <Lock className="inline w-3 h-3 mr-1" /> Secure checkout · Your info is encrypted
       </p>
 
-      <form onSubmit={placeOrder} className="mt-10 grid lg:grid-cols-3 gap-10">
+      <form onSubmit={placeOrder} className="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-10">
         <div className="lg:col-span-2 space-y-8">
           <fieldset className="space-y-4">
             <legend className="text-xs uppercase tracking-widest text-brand-red font-semibold mb-3">

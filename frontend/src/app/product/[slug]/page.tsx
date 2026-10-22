@@ -40,7 +40,7 @@ export default function ProductPage() {
   if (loading) {
     return (
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid lg:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12">
           <div className="aspect-square rounded-3xl bg-gray-50 animate-pulse" />
           <div className="space-y-4">
             <div className="h-8 bg-gray-50 rounded animate-pulse" />
@@ -83,7 +83,7 @@ export default function ProductPage() {
         <span className="text-brand-black/80">{product.title}</span>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12">
         {/* Gallery */}
         <div className="flex flex-col-reverse lg:flex-row gap-4">
           {product.images.length > 1 && (

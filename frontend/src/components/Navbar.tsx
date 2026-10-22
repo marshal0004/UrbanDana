@@ -52,7 +52,7 @@ export default function Navbar() {
       )}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-28 items-center justify-between gap-4">
+        <div className="flex h-20 md:h-28 items-center justify-between gap-4">
           {/* Left: mobile menu + logo */}
           <div className="flex items-center gap-3">
             <button
@@ -67,7 +67,7 @@ export default function Navbar() {
               <img
                 src="/images/logo.png"
                 alt="URBANDANA"
-                className="h-24 w-auto object-contain"
+                className="h-16 md:h-24 w-auto object-contain"
               />
             </Link>
           </div>

@@ -132,7 +132,7 @@ export default function Hero() {
           <p className="text-xs uppercase tracking-[0.4em] mb-5 font-semibold" style={{ color: slide.accent }}>
             {slide.eyebrow}
           </p>
-          <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter text-paper leading-[0.9] drop-shadow-2xl">
+          <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tighter text-paper leading-[0.9] drop-shadow-2xl">
             {slide.title}
             <br />
             <span style={{ color: slide.accent }}>{slide.titleAccent}</span> {slide.titleEnd}
@@ -141,7 +141,7 @@ export default function Hero() {
             {slide.subtitle}
           </p>
 
-          <div className="mt-10 flex flex-col sm:flex-row gap-4">
+          <div className="mt-6 sm:mt-10 flex flex-col sm:flex-row gap-4">
             <Link
               href={slide.primaryCta.href}
               className="group inline-flex items-center justify-center gap-2 text-paper text-sm font-bold uppercase tracking-widest px-8 py-4 rounded-full transition hover:scale-105"
@@ -158,7 +158,7 @@ export default function Hero() {
             </Link>
           </div>
 
-          <div className="mt-14 flex flex-wrap items-center gap-x-8 gap-y-3 text-[11px] uppercase tracking-widest text-paper/60">
+          <div className="mt-8 sm:mt-14 flex flex-wrap items-center gap-x-8 gap-y-3 text-[11px] uppercase tracking-widest text-paper/60">
             <span>★ 4.8/5 from 700+ reviews</span>
             <span className="opacity-40">|</span>
             <span>Caps ₹249 · T-Shirts ₹299</span>

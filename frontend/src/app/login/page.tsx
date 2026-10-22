@@ -33,7 +33,7 @@ function LoginForm() {
   }
 
   return (
-    <div className="mx-auto max-w-md px-4 py-16 sm:py-24">
+    <div className="mx-auto max-w-md px-4 px-4 py-16 sm:py-24">
       <div className="text-center mb-10">
         <h1 className="text-4xl font-black tracking-tight text-brand-black">Welcome back</h1>
         <p className="mt-2 text-sm text-brand-black/60">

@@ -97,7 +97,7 @@ export default function Model3DViewer() {
             <div key={`product-${i}`} ref={(el) => { productRefs.current[i] = el; }}
               className="absolute inset-0 flex items-center justify-center will-change-transform"
               style={{ opacity: i === 0 ? 1 : 0, transformStyle: "preserve-3d" }}>
-              <div className="relative" style={{ width: "min(75vw, 600px)", height: "min(75vh, 600px)" }}>
+              <div className="relative" style={{ width: "min(70vw, 450px)", height: "min(70vh, 450px)" }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={s.productImg} alt={s.label} className="w-full h-full object-contain"
                   style={{ filter: "drop-shadow(0 25px 80px rgba(0,0,0,0.9)) drop-shadow(0 0 30px rgba(0,0,0,0.5))" }} />
