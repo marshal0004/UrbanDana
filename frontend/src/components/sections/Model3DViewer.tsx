@@ -54,15 +54,15 @@ export default function Model3DViewer() {
           bgRefs.current[i]!.style.transform = `translate3d(0, ${lerp(0, -8, segP)}vh, 0) scale(${lerp(1.1, 1, segP)})`;
         }
 
-        // Product image: 3D float — bigger scale, faster exit (no overlap)
-        const imgIn = easeOutCubic(range(p, segStart, segStart + 0.06));
-        const imgHold = range(p, segStart + 0.06, segEnd - 0.12);
-        const imgOut = easeOutCubic(range(p, segEnd - 0.12, segEnd - 0.02));
+        // Product image: 3D float — smooth enter, smooth exit, NO fading in middle
+        const imgIn = easeOutCubic(range(p, segStart, segStart + 0.08));
+        const imgOut = easeOutCubic(range(p, segEnd - 0.08, segEnd));
         if (productRefs.current[i]) {
-          const scale = lerp(0.6, 1.3, imgIn) * (1 + imgHold * 0.03); // Bigger: 1.3 max
-          const yMove = lerp(8, 0, imgIn) - imgOut * 12;
-          const rotateY = lerp(40, 0, imgIn) - imgOut * 30; // More rotation
-          const translateZ = lerp(-150, 50, imgIn); // Push forward for 3D pop
+          const scale = lerp(0.7, 1.2, imgIn) * (1 - imgOut * 0.3);
+          const yMove = lerp(5, 0, imgIn) - imgOut * 8;
+          const rotateY = lerp(25, 0, imgIn) - imgOut * 15;
+          const translateZ = lerp(-80, 30, imgIn) - imgOut * 50;
+          // Full opacity while in view, only fade during enter and exit
           const opacity = imgIn * (1 - imgOut);
           productRefs.current[i]!.style.transform = `translate3d(0, ${yMove}vh, ${translateZ}px) scale(${scale}) rotateY(${rotateY}deg)`;
           productRefs.current[i]!.style.opacity = String(opacity);
