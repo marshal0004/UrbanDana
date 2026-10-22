@@ -24,12 +24,12 @@ export default function ProductCarousel({
   useEffect(() => {
     const calcWidth = () => {
       const vw = window.innerWidth;
-      let w;
-      // 3 cards visible: ~28% of viewport each (10% smaller than previous 30%)
-      if (vw >= 1024) w = Math.min(380, vw * 0.28);
-      else if (vw >= 640) w = vw * 0.42;
-      else w = vw * 0.72;
-      setCardWidth(Math.max(200, Math.floor(w)));
+      const gap = 12;
+      // Exactly 3 cards: (viewport - 4 gaps) / 3
+      // 10% smaller than previous: use 90% of that
+      let w = (vw - gap * 4) / 3 * 0.90;
+      if (vw < 640) w = vw * 0.72; // Mobile: 1 card
+      setCardWidth(Math.max(180, Math.floor(w)));
     };
     calcWidth();
     window.addEventListener("resize", calcWidth);
