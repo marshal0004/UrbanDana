@@ -26,18 +26,19 @@ const STYLES = [
 /**
  * One Cap · Three Looks — placed AFTER Founder section.
  *
- * Card layout requirements:
- *   - Card width  +10% (was ~411px @ max-w-7xl/gap-6 → now ~452px @ max-w-[1400px]/gap-6)
- *   - Card height +10% (was aspect-[4/5] → 513px tall → now 565px tall)
- *   - 80% of card height = image area (object-cover, no overflow)
- *   - 20% of card height = details area (Style tag + Title + Description)
+ * Card layout (matches the design reference exactly):
+ *   - Container widened ~10%:  max-w-[1400px] (was max-w-7xl = 1280px)
+ *   - Card height +10%:        565px (was ~513px via aspect-[4/5])
+ *   - Top 80% (452px) = IMAGE area  → bg-white, image object-cover fills 100%
+ *   - Bottom 20% (113px) = DETAILS  → bg-brand-black (#0a0a0a) with WHITE text
  *
- * Math:
- *   max-w-[1400px] = 1400px container (10% wider than 1280px)
- *   gap-6 = 24px between cards → 3 cards × 452px + 2 × 24px = 1404px (≈ container)
- *   Card height = 565px (10% taller than 513px)
- *   Image area = 80% × 565px = 452px tall
- *   Details area = 20% × 565px = 113px tall
+ * Visual split is a HARD EDGE — no gradient, no border line — just a clean
+ * color transition between the light image area and the dark details area.
+ *
+ * Details typography:
+ *   - "STYLE 01"  → small GOLD uppercase (text-brand-gold)
+ *   - "Forward"   → large BOLD WHITE (text-paper)
+ *   - Description → small white/80
  */
 export default function ThreeStyles() {
   const { ref, inView } = useInView();
@@ -63,7 +64,7 @@ export default function ThreeStyles() {
             <article
               key={s.n}
               className={cn(
-                "group relative flex flex-col overflow-hidden rounded-2xl bg-white border border-brand-black/10 transition-all duration-700 hover:shadow-xl",
+                "group flex flex-col overflow-hidden rounded-2xl bg-white border border-brand-black/10 transition-all duration-700 hover:shadow-xl",
                 inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
               )}
               style={{
@@ -71,38 +72,38 @@ export default function ThreeStyles() {
                 height: "565px",
               }}
             >
-              {/* Top 80% — image fills completely, no overflow */}
+              {/* TOP 80% — IMAGE area: white bg, image fills completely (object-cover, no overflow) */}
               <div
-                className="relative overflow-hidden bg-gray-50"
+                className="relative w-full overflow-hidden bg-white"
                 style={{ height: "80%" }}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={s.img}
                   alt={`${s.title} style — Urbandana bandana cap`}
-                  className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                  className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                   loading="lazy"
                 />
               </div>
 
-              {/* Bottom 20% — details: Style tag + Title + Description */}
+              {/* BOTTOM 20% — DETAILS area: DARK CHARCOAL bg, WHITE text, hard edge (no border line) */}
               <div
-                className="flex flex-col justify-center px-5 py-4 bg-white"
+                className="flex flex-col justify-center px-5 bg-brand-black"
                 style={{ height: "20%" }}
               >
                 <div className="flex items-center gap-3">
                   <span className="text-xs uppercase tracking-[0.4em] text-brand-gold font-bold whitespace-nowrap">
                     Style {s.n}
                   </span>
-                  <span className="h-px flex-1 bg-brand-black/10" />
-                  <span className="text-xs uppercase tracking-[0.2em] text-brand-black/40 font-semibold whitespace-nowrap">
+                  <span className="h-px flex-1 bg-white/15" />
+                  <span className="text-[10px] uppercase tracking-[0.2em] text-white/40 font-semibold whitespace-nowrap">
                     Convertible
                   </span>
                 </div>
-                <h3 className="mt-2 text-2xl font-black text-brand-black leading-tight">
+                <h3 className="mt-2 text-2xl font-black text-paper leading-tight">
                   {s.title}
                 </h3>
-                <p className="mt-1 text-sm text-brand-black/60 leading-snug line-clamp-2">
+                <p className="mt-1 text-sm text-white/80 leading-snug line-clamp-2">
                   {s.desc}
                 </p>
               </div>
