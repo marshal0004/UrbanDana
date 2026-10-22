@@ -16,11 +16,19 @@ export default function AboutPage() {
         <div className="absolute inset-0 -z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/images/about-hero.jpg"
+            src="/images/about-hero-cap2.jpeg"
             alt=""
-            className="w-full h-full object-cover opacity-40"
+            className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-brand-black/40 via-brand-black/50 to-brand-black" />
+          {/* Light cream gradient on the left for dark-text legibility;
+              transparent on the right so the cap photo is fully visible. */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(to right, rgba(244,236,216,0.95) 0%, rgba(244,236,216,0.75) 35%, rgba(244,236,216,0.25) 65%, rgba(244,236,216,0) 100%)",
+            }}
+          />
         </div>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
           <p className="text-xs uppercase tracking-[0.4em] text-brand-red mb-4 font-semibold">
