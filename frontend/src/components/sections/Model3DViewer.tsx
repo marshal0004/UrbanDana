@@ -206,26 +206,26 @@ export default function Model3DViewer() {
               />
               {/* Layer 3: PRODUCT CARD — bumped +20% (was 560px → now 672px) */}
               <div
-                className="relative"
+                className="relative overflow-hidden"
                 style={{
                   width: "min(84vw, 672px)",
                   height: "min(84vh, 672px)",
                   zIndex: 1,
                   background: "rgba(255,255,255,0.98)",
                   borderRadius: "28px",
-                  padding: "24px",
+                  // NO padding — image fills the entire card edge-to-edge
+                  padding: "0",
                   // Stronger multi-layer shadow for 3D float effect
                   boxShadow:
                     "0 40px 80px rgba(0,0,0,0.6), 0 0 100px rgba(255,255,255,0.2), inset 0 0 0 1px rgba(255,255,255,0.8)",
-                  // Subtle inner reflection
-                  backgroundImage: "linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 40%)",
                 }}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={s.img}
                   alt={s.label}
-                  className="w-full h-full object-contain rounded-xl"
+                  className="w-full h-full object-cover"
+                  // image fills entire card with NO margins on any side
                 />
               </div>
             </div>
