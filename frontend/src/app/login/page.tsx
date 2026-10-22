@@ -121,12 +121,6 @@ function LoginForm() {
           </Link>
         </p>
       </form>
-
-      <div className="mt-10 p-4 rounded-xl bg-gray-50 border border-brand-black/10 text-xs text-brand-black/50">
-        <p className="font-semibold text-brand-black/70 mb-1">Demo admin login</p>
-        <p>Email: <span className="text-brand-black">admin@urbandana.in</span></p>
-        <p>Password: <span className="text-brand-black">admin123</span></p>
-      </div>
     </div>
   );
 }
