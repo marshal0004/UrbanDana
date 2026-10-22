@@ -1,3 +1,4 @@
+// /home/z/my-project/UrbanDana/frontend/src/components/ProductCarousel.tsx
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
@@ -14,31 +15,27 @@ interface ProductCarouselProps {
 
 export default function ProductCarousel({
   products,
-  title,
-  eyebrow,
   autoScroll = true,
 }: ProductCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [paused, setPaused] = useState(false);
-  const [cardWidth, setCardWidth] = useState(600);
+  const [cardWidth, setCardWidth] = useState(380);
 
-  // Calculate card width — ~45% of viewport, so 2-3 cards visible
   useEffect(() => {
     const calcWidth = () => {
       const vw = window.innerWidth;
       let w;
-      // 3 cards visible: ~30% of viewport each (was 45%)
-      if (vw >= 1024) w = Math.min(420, vw * 0.30);
-      else if (vw >= 640) w = vw * 0.45;
-      else w = vw * 0.75;
-      setCardWidth(Math.max(220, Math.floor(w)));
+      // 3 cards visible: ~28% of viewport each (10% smaller than previous 30%)
+      if (vw >= 1024) w = Math.min(380, vw * 0.28);
+      else if (vw >= 640) w = vw * 0.42;
+      else w = vw * 0.72;
+      setCardWidth(Math.max(200, Math.floor(w)));
     };
     calcWidth();
     window.addEventListener("resize", calcWidth);
     return () => window.removeEventListener("resize", calcWidth);
   }, []);
 
-  // Auto-scroll — 3 seconds
   useEffect(() => {
     if (!autoScroll || paused || !scrollRef.current) return;
     const interval = setInterval(() => {
@@ -72,7 +69,6 @@ export default function ProductCarousel({
       onMouseLeave={() => setPaused(false)}
     >
       <div className="mx-auto" style={{ maxWidth: "100%", padding: "0 12px" }}>
-        {/* Headings removed per user request — just arrows on right */}
         <div className="flex justify-end gap-2 mb-3 px-2">
           <button
             onClick={() => scrollByDir("left")}
@@ -104,7 +100,6 @@ export default function ProductCarousel({
                 className="group relative shrink-0 block overflow-hidden rounded-xl transition-all duration-300 hover:shadow-xl"
                 style={{ width: `${cardWidth}px`, scrollSnapAlign: "start" }}
               >
-                {/* Image — 4:5 portrait (taller), large and prominent. Pure content, no overlays. */}
                 <div className="relative aspect-[4/5] overflow-hidden bg-gray-50">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -112,14 +107,6 @@ export default function ProductCarousel({
                     alt={product.title}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
-                  {/* Subtle gradient at bottom for title readability */}
-                  <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                  {/* Title overlay on image — pure content, nothing else */}
-                  <div className="absolute inset-x-0 bottom-0 p-5">
-                    <h3 className="text-lg md:text-xl font-black text-paper drop-shadow-lg line-clamp-2">
-                      {product.title}
-                    </h3>
-                  </div>
                 </div>
               </Link>
             );
