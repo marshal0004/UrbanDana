@@ -68,9 +68,10 @@ export default function HomePage() {
 
       {/* Restored sections — after all products */}
       <Stats />
-      <ThreeStyles />
       <Features />
       <Founder />
+      {/* One Cap · Three Looks — placed AFTER Founder section */}
+      <ThreeStyles />
       <Testimonials />
     </>
   );
