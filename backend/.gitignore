@@ -3,6 +3,6 @@ dist/
 .env.local
 *.log
 dev.db*
-prisma/migrations/
+# prisma/migrations/
 uploads/
 .DS_Store
