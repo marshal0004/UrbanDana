@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: urbandana-api
+    env: node
+    repo: https://github.com/marshal0004/UrbanDana
+    branch: main
+    rootDir: backend
+    buildCommand: npm install && npx prisma generate && npx prisma migrate deploy && npm run seed
+    startCommand: npm start
+    plan: free
+    healthCheckPath: /
+    envVars:
+      - key: DATABASE_URL
+        value: file:./prod.db
+      - key: JWT_SECRET
+        value: urbandana-prod-secret-2026
+      - key: NODE_ENV
+        value: production
+      - key: CORS_ORIGIN
+        value: https://frontend-blue-three-hqb9jpnggb.vercel.app
+      - key: PORT
+        value: "4000"
