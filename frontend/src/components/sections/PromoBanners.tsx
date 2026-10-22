@@ -1,8 +1,9 @@
+// /home/z/my-project/UrbanDana/frontend/src/components/sections/PromoBanners.tsx
 "use client";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
-// Promotional banners — 550px height, images fully visible via background-size: contain
+// Full-width colored banner backgrounds (not cards)
 const BANNERS = [
   {
     eyebrow: "LIMITED EDITION",
@@ -12,7 +13,7 @@ const BANNERS = [
     href: "/shop?category=Limited Edition",
     image: "/images/banner-limited.jpg",
     accent: "#d4a017",
-    bg: "#1a1409",
+    bg: "linear-gradient(135deg, #1a1409 0%, #2a1f0a 100%)",
   },
   {
     eyebrow: "COMBO PACKS",
@@ -22,7 +23,7 @@ const BANNERS = [
     href: "/shop?category=Combo",
     image: "/images/banner-combo.jpg",
     accent: "#10b981",
-    bg: "#0a1a14",
+    bg: "linear-gradient(135deg, #0a1a14 0%, #0a2a1f 100%)",
   },
 ];
 
@@ -36,22 +37,24 @@ export default function PromoBanners() {
               key={b.title}
               href={b.href}
               className="group relative overflow-hidden rounded-2xl transition-all duration-300 hover:shadow-2xl"
-              style={{
-                height: "550px",
-                backgroundColor: b.bg,
-                backgroundImage: `url(${b.image})`,
-                backgroundSize: "contain",
-                backgroundPosition: "center center",
-                backgroundRepeat: "no-repeat",
-              }}
+              style={{ background: b.bg, height: "550px" }}
             >
-              {/* Gradient overlay — only on left side for text readability, right side fully transparent so image is visible */}
-              <div
-                className="absolute inset-0"
-                style={{
-                  background: `linear-gradient(90deg, ${b.bg} 0%, ${b.bg}F5 25%, ${b.bg}99 50%, transparent 75%, transparent 100%)`,
-                }}
-              />
+              {/* Background image — full cover */}
+              <div className="absolute inset-0">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={b.image}
+                  alt={b.title}
+                  className="w-full h-full object-cover opacity-80 group-hover:opacity-95 group-hover:scale-105 transition-all duration-700"
+                />
+                {/* Gradient overlay — left side dark for text readability */}
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background: `linear-gradient(90deg, ${b.bg.includes("1a1409") ? "#1a1409F5" : "#0a1a14F5"} 0%, rgba(10,10,10,0.65) 45%, rgba(10,10,10,0.25) 100%)`,
+                  }}
+                />
+              </div>
 
               {/* Content — left-aligned, vertically centered */}
               <div className="relative h-full flex flex-col justify-center p-10 md:p-12 max-w-[60%]">

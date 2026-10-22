@@ -27,10 +27,11 @@ export default function ProductCarousel({
     const calcWidth = () => {
       const vw = window.innerWidth;
       let w;
-      if (vw >= 1024) w = Math.min(620, vw * 0.45);
-      else if (vw >= 640) w = vw * 0.6;
-      else w = vw * 0.8;
-      setCardWidth(Math.max(280, Math.floor(w)));
+      // 3 cards visible: ~30% of viewport each (was 45%)
+      if (vw >= 1024) w = Math.min(420, vw * 0.30);
+      else if (vw >= 640) w = vw * 0.45;
+      else w = vw * 0.75;
+      setCardWidth(Math.max(220, Math.floor(w)));
     };
     calcWidth();
     window.addEventListener("resize", calcWidth);
@@ -71,38 +72,23 @@ export default function ProductCarousel({
       onMouseLeave={() => setPaused(false)}
     >
       <div className="mx-auto" style={{ maxWidth: "100%", padding: "0 12px" }}>
-        {(title || eyebrow) && (
-          <div className="flex items-end justify-between gap-4 mb-5 px-2">
-            <div>
-              {eyebrow && (
-                <p className="text-xs uppercase tracking-[0.4em] text-brand-red mb-1.5 font-semibold">
-                  {eyebrow}
-                </p>
-              )}
-              {title && (
-                <h2 className="text-3xl md:text-4xl font-black tracking-tight text-brand-black">
-                  {title}
-                </h2>
-              )}
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => scrollByDir("left")}
-                className="w-9 h-9 rounded-full bg-brand-black/5 hover:bg-brand-red hover:text-paper text-brand-black transition flex items-center justify-center"
-                aria-label="Scroll left"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <button
-                onClick={() => scrollByDir("right")}
-                className="w-9 h-9 rounded-full bg-brand-black/5 hover:bg-brand-red hover:text-paper text-brand-black transition flex items-center justify-center"
-                aria-label="Scroll right"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-        )}
+        {/* Headings removed per user request — just arrows on right */}
+        <div className="flex justify-end gap-2 mb-3 px-2">
+          <button
+            onClick={() => scrollByDir("left")}
+            className="w-9 h-9 rounded-full bg-brand-black/5 hover:bg-brand-red hover:text-paper text-brand-black transition flex items-center justify-center"
+            aria-label="Scroll left"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <button
+            onClick={() => scrollByDir("right")}
+            className="w-9 h-9 rounded-full bg-brand-black/5 hover:bg-brand-red hover:text-paper text-brand-black transition flex items-center justify-center"
+            aria-label="Scroll right"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </div>
 
         <div
           ref={scrollRef}

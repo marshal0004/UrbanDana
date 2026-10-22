@@ -6,7 +6,7 @@ import ProductCard from "@/components/ProductCard";
 import { cn } from "@/lib/utils";
 import { SlidersHorizontal } from "lucide-react";
 
-const CATEGORIES = ["All", "Bandana Caps", "T-Shirts", "Visors", "Limited Edition", "Combo"];
+const CATEGORIES = ["All", "Bandana Caps", "T-Shirts", "Limited Edition", "Combo"];
 const SORTS = [
   { v: "newest", l: "Newest" },
   { v: "price-asc", l: "Price: Low to High" },
