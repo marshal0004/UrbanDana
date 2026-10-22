@@ -54,15 +54,16 @@ export default function Model3DViewer() {
           bgRefs.current[i]!.style.transform = `translate3d(0, ${lerp(0, -8, segP)}vh, 0) scale(${lerp(1.1, 1, segP)})`;
         }
 
-        const imgIn = easeOutCubic(range(p, segStart, segStart + 0.08));
-        const imgHold = range(p, segStart + 0.08, segEnd - 0.08);
-        const imgOut = range(p, segEnd - 0.08, segEnd);
+        // Product image: 3D float — bigger scale, faster exit (no overlap)
+        const imgIn = easeOutCubic(range(p, segStart, segStart + 0.06));
+        const imgHold = range(p, segStart + 0.06, segEnd - 0.12);
+        const imgOut = easeOutCubic(range(p, segEnd - 0.12, segEnd - 0.02));
         if (productRefs.current[i]) {
-          const scale = lerp(0.5, 1.0, imgIn) * (1 + imgHold * 0.05);
-          const yMove = lerp(10, 0, imgIn) - imgOut * 8;
-          const rotateY = lerp(30, 0, imgIn) - imgOut * 20;
-          const translateZ = lerp(-100, 0, imgIn);
-          const opacity = imgIn * (1 - imgOut * 0.8);
+          const scale = lerp(0.6, 1.3, imgIn) * (1 + imgHold * 0.03); // Bigger: 1.3 max
+          const yMove = lerp(8, 0, imgIn) - imgOut * 12;
+          const rotateY = lerp(40, 0, imgIn) - imgOut * 30; // More rotation
+          const translateZ = lerp(-150, 50, imgIn); // Push forward for 3D pop
+          const opacity = imgIn * (1 - imgOut);
           productRefs.current[i]!.style.transform = `translate3d(0, ${yMove}vh, ${translateZ}px) scale(${scale}) rotateY(${rotateY}deg)`;
           productRefs.current[i]!.style.opacity = String(opacity);
         }
@@ -96,7 +97,7 @@ export default function Model3DViewer() {
             <div key={`product-${i}`} ref={(el) => { productRefs.current[i] = el; }}
               className="absolute inset-0 flex items-center justify-center will-change-transform"
               style={{ opacity: i === 0 ? 1 : 0, transformStyle: "preserve-3d" }}>
-              <div className="relative" style={{ width: "min(60vw, 450px)", height: "min(60vh, 450px)" }}>
+              <div className="relative" style={{ width: "min(75vw, 600px)", height: "min(75vh, 600px)" }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={s.productImg} alt={s.label} className="w-full h-full object-contain"
                   style={{ filter: "drop-shadow(0 25px 80px rgba(0,0,0,0.9)) drop-shadow(0 0 30px rgba(0,0,0,0.5))" }} />
