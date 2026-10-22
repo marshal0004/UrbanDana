@@ -169,12 +169,14 @@ export default function Model3DViewer() {
                 transformStyle: "preserve-3d",
               }}
             >
-              {/* Product image — NATURAL size (no growth), subtle drop shadow */}
+              {/* Product image — NATURAL size (no growth), subtle drop shadow.
+                  Size bumped +20% (was min(60vw, 420px) × min(60vh, 420px)) →
+                              now min(72vw, 504px) × min(72vh, 504px) */}
               <div
                 className="relative"
                 style={{
-                  width: "min(60vw, 420px)",
-                  height: "min(60vh, 420px)",
+                  width: "min(72vw, 504px)",
+                  height: "min(72vh, 504px)",
                 }}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
