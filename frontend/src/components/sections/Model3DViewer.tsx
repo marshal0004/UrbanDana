@@ -34,24 +34,28 @@ const SECTIONS = [
     label: "Signature Cap",
     accent: "#c8102e",
     aspect: 1.77, // 2752×1552 — landscape 16:9 (styled cap with props)
+    square: false, // use 16:9 landscape card (caps look good this way)
   },
   {
     img: "/images/scroll-2.jpeg",
     label: "Paisley T-Shirt",
     accent: "#d4a017",
     aspect: 1.0,  // 1254×1254 — square (clean t-shirt cutout)
+    square: true, // REVERTED to original 1:1 square card (no change to t-shirts)
   },
   {
     img: "/images/scroll-3.jpeg",
     label: "Olive Leaf Cap",
     accent: "#10b981",
     aspect: 1.77, // 2752×1552 — landscape 16:9 (styled cap with props)
+    square: false, // use 16:9 landscape card (caps look good this way)
   },
   {
     img: "/images/scroll-4.jpeg",
     label: "Tribal T-Shirt",
     accent: "#a855f7",
     aspect: 1.17, // 718×615 — ~4:3 landscape (t-shirt on concrete)
+    square: true, // REVERTED to original 1:1 square card (no change to t-shirts)
   },
 ];
 
@@ -204,11 +208,17 @@ export default function Model3DViewer() {
               <div
                 className="absolute"
                 style={{
-                  // Glow matches the card's aspect ratio per-section
-                  width: s.aspect >= 1.4 ? "min(110vw, 1100px)" : "min(110vw, 1000px)",
-                  height: s.aspect >= 1.4
-                    ? `min(${110 / s.aspect}vh, ${1100 / s.aspect}px)`
-                    : "min(110vh, 1000px)",
+                  // T-shirts (square=true): keep original 1100px circle (unchanged)
+                  // Caps (square=false): glow matches the card's 16:9 aspect
+                  ...(s.square
+                    ? {
+                        width: "min(110vw, 1000px)",
+                        height: "min(110vh, 1000px)",
+                      }
+                    : {
+                        width: "min(110vw, 1100px)",
+                        height: `min(${110 / s.aspect}vh, ${1100 / s.aspect}px)`,
+                      }),
                   background: "radial-gradient(circle, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.15) 30%, rgba(255,255,255,0) 65%)",
                   borderRadius: "50%",
                   filter: "blur(40px)",
@@ -219,41 +229,63 @@ export default function Model3DViewer() {
               <div
                 className="absolute"
                 style={{
-                  width: s.aspect >= 1.4 ? "min(95vw, 850px)" : "min(90vw, 760px)",
-                  height: s.aspect >= 1.4
-                    ? `min(${95 / s.aspect}vh, ${850 / s.aspect}px)`
-                    : "min(90vh, 760px)",
+                  ...(s.square
+                    ? {
+                        width: "min(90vw, 760px)",
+                        height: "min(90vh, 760px)",
+                      }
+                    : {
+                        width: "min(95vw, 850px)",
+                        height: `min(${95 / s.aspect}vh, ${850 / s.aspect}px)`,
+                      }),
                   background: "radial-gradient(circle, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.55) 35%, rgba(255,255,255,0) 70%)",
                   borderRadius: "50%",
                   filter: "blur(20px)",
                   zIndex: 0,
                 }}
               />
-              {/* Layer 3: PRODUCT CARD — dimensions MATCH each image's aspect ratio.
-                  When card aspect == image aspect, object-cover == object-contain:
-                  FULL image visible with NO cropping AND NO margins. */}
+              {/*
+                Layer 3: PRODUCT CARD
+                - CAPS (square=false): card aspect == image aspect (16:9)
+                  → no cropping, no margins on the wide cap photos
+                - T-SHIRTS (square=true): REVERTED to original 1:1 square card
+                  (672px × 672px, exactly as before the aspect-ratio change)
+              */}
               <div
                 className="relative overflow-hidden"
-                style={{
-                  // Width fixed per aspect, height = width / aspect → exact aspect match
-                  width: "min(90vw, 820px)",
-                  height: `min(${90 / s.aspect}vw, ${820 / s.aspect}px)`,
-                  maxWidth: "92vw",
-                  maxHeight: "85vh",
-                  zIndex: 1,
-                  background: "rgba(255,255,255,0.98)",
-                  borderRadius: "28px",
-                  padding: "0",
-                  boxShadow:
-                    "0 40px 80px rgba(0,0,0,0.6), 0 0 100px rgba(255,255,255,0.2), inset 0 0 0 1px rgba(255,255,255,0.8)",
-                }}
+                style={
+                  s.square
+                    ? {
+                        // ORIGINAL square card (t-shirts) — unchanged from before
+                        width: "min(84vw, 672px)",
+                        height: "min(84vh, 672px)",
+                        zIndex: 1,
+                        background: "rgba(255,255,255,0.98)",
+                        borderRadius: "28px",
+                        padding: "0",
+                        boxShadow:
+                          "0 40px 80px rgba(0,0,0,0.6), 0 0 100px rgba(255,255,255,0.2), inset 0 0 0 1px rgba(255,255,255,0.8)",
+                      }
+                    : {
+                        // 16:9 landscape card (caps) — matches image aspect ratio
+                        width: "min(90vw, 820px)",
+                        height: `min(${90 / s.aspect}vw, ${820 / s.aspect}px)`,
+                        maxWidth: "92vw",
+                        maxHeight: "85vh",
+                        zIndex: 1,
+                        background: "rgba(255,255,255,0.98)",
+                        borderRadius: "28px",
+                        padding: "0",
+                        boxShadow:
+                          "0 40px 80px rgba(0,0,0,0.6), 0 0 100px rgba(255,255,255,0.2), inset 0 0 0 1px rgba(255,255,255,0.8)",
+                      }
+                }
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={s.img}
                   alt={s.label}
                   className="w-full h-full object-cover"
-                  // Card aspect == image aspect → no cropping, no margins
                 />
               </div>
             </div>
