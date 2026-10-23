@@ -26,8 +26,8 @@ const MODELS_IMGS = listImages("models");
 const COMBOS_IMGS = listImages("combos");
 
 /**
- * T-shirt color sets — 12 uploaded color variants, each with 5 angle photos.
- * Files live in tshirts/color1/ through tshirts/color12/ subfolders.
+ * T-shirt color sets — 15 uploaded color variants, each with 5 angle photos.
+ * Files live in tshirts/color1/ through tshirts/color15/ subfolders.
  *
  * Per-tshirt image order (positions 0-4):
  *   0 = 00_tshirt_only.png  → main product photo (flat-lay)
@@ -49,8 +49,11 @@ const COMBOS_IMGS = listImages("combos");
  *   color10 = White t-shirt with blue and red side pattern (concrete stairs bg)
  *   color11 = Black t-shirt with colorful patterned side panel (urban street bg)
  *   color12 = Black t-shirt with colorful patterned side panel (urban street bg)
+ *   color13 = White t-shirt with ethnic side panel (concrete stairs and walls bg)
+ *   color14 = White t-shirt with side graphic (concrete stairs and walls bg)
+ *   color15 = White t-shirt with side print (outdoor cafe with plants bg)
  *
- * With 12 t-shirts in the catalog, each t-shirt gets a unique color set
+ * With 15 t-shirts in the catalog, each t-shirt gets a unique color set
  * (1:1 mapping, no cycling/repetition).
  */
 const TSHIRT_COLOR_SETS = [
@@ -66,6 +69,9 @@ const TSHIRT_COLOR_SETS = [
   ["tshirts/color10/00_tshirt_only.png", "tshirts/color10/01_front.png", "tshirts/color10/02_side.png", "tshirts/color10/03_back.png", "tshirts/color10/04_detail.png"],
   ["tshirts/color11/00_tshirt_only.png", "tshirts/color11/01_front.png", "tshirts/color11/02_side.png", "tshirts/color11/03_back.png", "tshirts/color11/04_detail.png"],
   ["tshirts/color12/00_tshirt_only.png", "tshirts/color12/01_front.png", "tshirts/color12/02_side.png", "tshirts/color12/03_back.png", "tshirts/color12/04_detail.png"],
+  ["tshirts/color13/00_tshirt_only.png", "tshirts/color13/01_front.png", "tshirts/color13/02_side.png", "tshirts/color13/03_back.png", "tshirts/color13/04_detail.png"],
+  ["tshirts/color14/00_tshirt_only.png", "tshirts/color14/01_front.png", "tshirts/color14/02_side.png", "tshirts/color14/03_back.png", "tshirts/color14/04_detail.png"],
+  ["tshirts/color15/00_tshirt_only.png", "tshirts/color15/01_front.png", "tshirts/color15/02_side.png", "tshirts/color15/03_back.png", "tshirts/color15/04_detail.png"],
 ].map((set) => set.map((p) => `/uploads/products/${p}`));
 
 // Angle labels for the 5 image positions (used in alt text)
@@ -376,6 +382,24 @@ const TSHIRT_PRODUCTS = [
     rating: 4.7, reviews: 26, stock: 100,
     isFeatured: false, isLimited: false,
     colors: ["Black"], sizes: ["S", "M", "L", "XL", "XXL"] },
+  { title: "Dusty Rose Vintage T-Shirt", subtitle: "White base with ethnic side panel, vintage-inspired",
+    description: "A white t-shirt with an ethnic side panel that evokes dusty rose vintage vibes. 220 GSM combed cotton, regular fit. Romantic, muted, and surprisingly versatile — pairs beautifully with denim and kurtis alike.",
+    category: "T-Shirts", badge: null,
+    rating: 4.6, reviews: 15, stock: 65,
+    isFeatured: false, isLimited: false,
+    colors: ["White", "Dusty Rose"], sizes: ["S", "M", "L", "XL"] },
+  { title: "Charcoal Sketch Oversized T-Shirt", subtitle: "White base with side graphic, oversized fit",
+    description: "Hand-drawn sketch aesthetic on a white base with a bold side graphic. 240 GSM heavyweight cotton, oversized fit. Edgy, artistic, and unique — designed to stand out in any streetwear rotation.",
+    category: "T-Shirts", badge: null,
+    rating: 4.7, reviews: 19, stock: 75,
+    isFeatured: false, isLimited: false,
+    colors: ["White", "Charcoal"], sizes: ["S", "M", "L", "XL", "XXL"] },
+  { title: "Cream Linen Blend T-Shirt", subtitle: "White base with side print, breathable everyday tee",
+    description: "A clean white t-shirt with a subtle side print inspired by outdoor cafe culture. 220 GSM combed cotton with a linen-cotton blend feel. Breathable, lightweight, and perfect for summer. Pre-shrunk, true to size.",
+    category: "T-Shirts", badge: null,
+    rating: 4.8, reviews: 22, stock: 60,
+    isFeatured: true, isLimited: false,
+    colors: ["White", "Cream"], sizes: ["S", "M", "L", "XL"] },
 ];
 
 function slugify(s) {
@@ -473,7 +497,7 @@ async function main() {
 
   // T-shirt products — all ₹299, no oldPrice
   // Each t-shirt gets exactly 5 images: 1 main product photo + 4 angle views.
-  // With 12 t-shirts and 12 color sets, each t-shirt gets a UNIQUE color set (1:1 mapping).
+  // With 15 t-shirts and 15 color sets, each t-shirt gets a UNIQUE color set (1:1 mapping).
   for (let i = 0; i < TSHIRT_PRODUCTS.length; i++) {
     const p = TSHIRT_PRODUCTS[i];
     const colorSet = TSHIRT_COLOR_SETS[i % TSHIRT_COLOR_SETS.length];
