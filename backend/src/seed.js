@@ -26,8 +26,8 @@ const MODELS_IMGS = listImages("models");
 const COMBOS_IMGS = listImages("combos");
 
 /**
- * T-shirt color sets — 4 uploaded color variants, each with 5 angle photos.
- * Files live in tshirts/color1/ through tshirts/color4/ subfolders.
+ * T-shirt color sets — 8 uploaded color variants, each with 5 angle photos.
+ * Files live in tshirts/color1/ through tshirts/color8/ subfolders.
  *
  * Per-tshirt image order (positions 0-4):
  *   0 = 00_tshirt_only.png  → main product photo (flat-lay)
@@ -41,12 +41,23 @@ const COMBOS_IMGS = listImages("combos");
  *   color2 = White t-shirt with patterned side panel
  *   color3 = Solid black t-shirt
  *   color4 = White t-shirt with red patterned panel
+ *   color5 = Black t-shirt with patterned side panel
+ *   color6 = Solid black t-shirt
+ *   color7 = Solid black t-shirt
+ *   color8 = Black t-shirt with blue patterned side panel (folk-art motif)
+ *
+ * With 8 t-shirts in the catalog, each t-shirt gets a unique color set
+ * (1:1 mapping, no cycling/repetition).
  */
 const TSHIRT_COLOR_SETS = [
   ["tshirts/color1/00_tshirt_only.png", "tshirts/color1/01_front.png", "tshirts/color1/02_side.png", "tshirts/color1/03_back.png", "tshirts/color1/04_detail.png"],
   ["tshirts/color2/00_tshirt_only.png", "tshirts/color2/01_front.png", "tshirts/color2/02_side.png", "tshirts/color2/03_back.png", "tshirts/color2/04_detail.png"],
   ["tshirts/color3/00_tshirt_only.png", "tshirts/color3/01_front.png", "tshirts/color3/02_side.png", "tshirts/color3/03_back.png", "tshirts/color3/04_detail.png"],
   ["tshirts/color4/00_tshirt_only.png", "tshirts/color4/01_front.png", "tshirts/color4/02_side.png", "tshirts/color4/03_back.png", "tshirts/color4/04_detail.png"],
+  ["tshirts/color5/00_tshirt_only.png", "tshirts/color5/01_front.png", "tshirts/color5/02_side.png", "tshirts/color5/03_back.png", "tshirts/color5/04_detail.png"],
+  ["tshirts/color6/00_tshirt_only.png", "tshirts/color6/01_front.png", "tshirts/color6/02_side.png", "tshirts/color6/03_back.png", "tshirts/color6/04_detail.png"],
+  ["tshirts/color7/00_tshirt_only.png", "tshirts/color7/01_front.png", "tshirts/color7/02_side.png", "tshirts/color7/03_back.png", "tshirts/color7/04_detail.png"],
+  ["tshirts/color8/00_tshirt_only.png", "tshirts/color8/01_front.png", "tshirts/color8/02_side.png", "tshirts/color8/03_back.png", "tshirts/color8/04_detail.png"],
 ].map((set) => set.map((p) => `/uploads/products/${p}`));
 
 // Angle labels for the 5 image positions (used in alt text)
@@ -333,48 +344,6 @@ const TSHIRT_PRODUCTS = [
     rating: 4.8, reviews: 21, stock: 55,
     isFeatured: true, isLimited: false,
     colors: ["Teal"], sizes: ["S", "M", "L", "XL"] },
-  { title: "Indigo Wave Oversized T-Shirt", subtitle: "Wave motif on indigo cotton",
-    description: "Matching tee for the Indigo Wave Bandana cap. Hand-drawn wave motif printed on a deep indigo base. 240 GSM heavyweight cotton, oversized fit with drop-shoulder cut. Pairs perfectly with the Indigo Wave cap.",
-    category: "T-Shirts", badge: null,
-    rating: 4.7, reviews: 24, stock: 80,
-    isFeatured: false, isLimited: false,
-    colors: ["Indigo"], sizes: ["S", "M", "L", "XL", "XXL"] },
-  { title: "Forest Trail Graphic T-Shirt", subtitle: "Trail-line pattern on olive green",
-    description: "Matching tee for the Forest Trail cap. Subtle trail-line graphic on an olive green base. 220 GSM combed cotton, regular fit. Perfect for outdoor adventures and everyday wear.",
-    category: "T-Shirts", badge: null,
-    rating: 4.6, reviews: 18, stock: 95,
-    isFeatured: false, isLimited: false,
-    colors: ["Olive"], sizes: ["S", "M", "L", "XL"] },
-  { title: "Saffron Sunset Gradient T-Shirt", subtitle: "Sunset gradient on saffron cotton",
-    description: "Matching tee for the Saffron Sunset Bandana cap. Hand-screened sunset gradient on a warm saffron base. 240 GSM heavyweight cotton, oversized fit. Bold, energetic, and unmistakably Indian.",
-    category: "T-Shirts", badge: "New",
-    rating: 4.8, reviews: 31, stock: 70,
-    isFeatured: true, isLimited: false,
-    colors: ["Saffron"], sizes: ["S", "M", "L", "XL"] },
-  { title: "Midnight Geometric T-Shirt", subtitle: "Tonal geometric print on black",
-    description: "Matching tee for the Midnight Geometric cap. Tonal geometric print on a matte black base. 220 GSM combed cotton, regular fit. Subtle enough for everyday, distinctive enough to stand out.",
-    category: "T-Shirts", badge: null,
-    rating: 4.7, reviews: 26, stock: 100,
-    isFeatured: false, isLimited: false,
-    colors: ["Black"], sizes: ["S", "M", "L", "XL", "XXL"] },
-  { title: "Dusty Rose Vintage T-Shirt", subtitle: "Soft dusty rose with vintage wash",
-    description: "Matching tee for the Dusty Rose Bandana cap. Soft dusty rose with a vintage wash finish. 220 GSM combed cotton, regular fit. Romantic, muted, and surprisingly versatile.",
-    category: "T-Shirts", badge: null,
-    rating: 4.6, reviews: 15, stock: 65,
-    isFeatured: false, isLimited: false,
-    colors: ["Dusty Rose"], sizes: ["S", "M", "L", "XL"] },
-  { title: "Charcoal Sketch Oversized T-Shirt", subtitle: "Hand-drawn sketch on charcoal grey",
-    description: "Matching tee for the Charcoal Sketch cap. Hand-drawn sketch graphic on a charcoal grey base. 240 GSM heavyweight cotton, oversized fit. Edgy, artistic, and unique.",
-    category: "T-Shirts", badge: null,
-    rating: 4.7, reviews: 19, stock: 75,
-    isFeatured: false, isLimited: false,
-    colors: ["Charcoal"], sizes: ["S", "M", "L", "XL", "XXL"] },
-  { title: "Cream Linen Blend T-Shirt", subtitle: "Natural cream with linen-cotton blend",
-    description: "Matching tee for the Cream Linen Bandana cap. Natural cream with a linen-cotton blend. Breathable, lightweight, and perfect for summer. 220 GSM, regular fit.",
-    category: "T-Shirts", badge: null,
-    rating: 4.8, reviews: 22, stock: 60,
-    isFeatured: true, isLimited: false,
-    colors: ["Cream"], sizes: ["S", "M", "L", "XL"] },
 ];
 
 function slugify(s) {
@@ -471,8 +440,8 @@ async function main() {
   }
 
   // T-shirt products — all ₹299, no oldPrice
-  // Each t-shirt gets exactly 5 images: 1 main product photo + 4 angle views
-  // (cycling through the 4 color sets: color1, color2, color3, color4, color1, ...)
+  // Each t-shirt gets exactly 5 images: 1 main product photo + 4 angle views.
+  // With 8 t-shirts and 8 color sets, each t-shirt gets a UNIQUE color set (1:1 mapping).
   for (let i = 0; i < TSHIRT_PRODUCTS.length; i++) {
     const p = TSHIRT_PRODUCTS[i];
     const colorSet = TSHIRT_COLOR_SETS[i % TSHIRT_COLOR_SETS.length];
