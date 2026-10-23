@@ -22,11 +22,37 @@ function listImages(subfolder) {
 }
 
 const CAPS_IMGS = listImages("caps");
-const TSHIRTS_IMGS = listImages("tshirts");
 const MODELS_IMGS = listImages("models");
 const COMBOS_IMGS = listImages("combos");
 
-console.log(`Image pools: caps=${CAPS_IMGS.length}, tshirts=${TSHIRTS_IMGS.length}, models=${MODELS_IMGS.length}, combos=${COMBOS_IMGS.length}`);
+/**
+ * T-shirt color sets — 4 uploaded color variants, each with 5 angle photos.
+ * Files live in tshirts/color1/ through tshirts/color4/ subfolders.
+ *
+ * Per-tshirt image order (positions 0-4):
+ *   0 = 00_tshirt_only.png  → main product photo (flat-lay)
+ *   1 = 01_front.png        → front view on model
+ *   2 = 02_side.png         → 3/4 side view
+ *   3 = 03_back.png         → back view
+ *   4 = 04_detail.png       → pattern detail close-up
+ *
+ * Color descriptions (from README.txt in each zip):
+ *   color1 = Black t-shirt with red patterned side panel
+ *   color2 = White t-shirt with patterned side panel
+ *   color3 = Solid black t-shirt
+ *   color4 = White t-shirt with red patterned panel
+ */
+const TSHIRT_COLOR_SETS = [
+  ["tshirts/color1/00_tshirt_only.png", "tshirts/color1/01_front.png", "tshirts/color1/02_side.png", "tshirts/color1/03_back.png", "tshirts/color1/04_detail.png"],
+  ["tshirts/color2/00_tshirt_only.png", "tshirts/color2/01_front.png", "tshirts/color2/02_side.png", "tshirts/color2/03_back.png", "tshirts/color2/04_detail.png"],
+  ["tshirts/color3/00_tshirt_only.png", "tshirts/color3/01_front.png", "tshirts/color3/02_side.png", "tshirts/color3/03_back.png", "tshirts/color3/04_detail.png"],
+  ["tshirts/color4/00_tshirt_only.png", "tshirts/color4/01_front.png", "tshirts/color4/02_side.png", "tshirts/color4/03_back.png", "tshirts/color4/04_detail.png"],
+].map((set) => set.map((p) => `/uploads/products/${p}`));
+
+// Angle labels for the 5 image positions (used in alt text)
+const TSHIRT_ANGLE_LABELS = ["product photo", "front view", "side view", "back view", "detail view"];
+
+console.log(`Image pools: caps=${CAPS_IMGS.length}, tshirt-color-sets=${TSHIRT_COLOR_SETS.length} (5 imgs each), models=${MODELS_IMGS.length}, combos=${COMBOS_IMGS.length}`);
 
 // All caps ₹249 (24900 paise), no fake oldPrice
 const CAP_PRICE = 24900;
@@ -445,17 +471,12 @@ async function main() {
   }
 
   // T-shirt products — all ₹299, no oldPrice
+  // Each t-shirt gets exactly 5 images: 1 main product photo + 4 angle views
+  // (cycling through the 4 color sets: color1, color2, color3, color4, color1, ...)
   for (let i = 0; i < TSHIRT_PRODUCTS.length; i++) {
     const p = TSHIRT_PRODUCTS[i];
-    const tshirtImgs = [
-      TSHIRTS_IMGS[i % TSHIRTS_IMGS.length],
-      TSHIRTS_IMGS[(i + 1) % TSHIRTS_IMGS.length],
-    ].filter(Boolean);
-    const modelImgs = [
-      MODELS_IMGS[i % MODELS_IMGS.length],
-      MODELS_IMGS[(i + 1) % MODELS_IMGS.length],
-    ].filter(Boolean);
-    const imgs = [...tshirtImgs, ...modelImgs];
+    const colorSet = TSHIRT_COLOR_SETS[i % TSHIRT_COLOR_SETS.length];
+    const imgs = colorSet; // exactly 5 images per t-shirt
 
     await prisma.product.create({
       data: {
@@ -467,7 +488,9 @@ async function main() {
         isFeatured: p.isFeatured, isLimited: p.isLimited,
         images: {
           create: imgs.map((url, idx) => ({
-            url, alt: `${p.title} — ${idx < tshirtImgs.length ? "product" : "model"} view ${idx + 1}`, position: idx
+            url,
+            alt: `${p.title} — ${TSHIRT_ANGLE_LABELS[idx]}`,
+            position: idx,
           })),
         },
         variants: {
@@ -478,7 +501,7 @@ async function main() {
         },
       },
     });
-    console.log(`   [TEE ₹299] ${p.title}  (${imgs.length} images)`);
+    console.log(`   [TEE ₹299] ${p.title}  (${imgs.length} images — color set ${(i % TSHIRT_COLOR_SETS.length) + 1})`);
   }
 
   await prisma.cmsContent.create({
@@ -502,7 +525,7 @@ async function main() {
 
   console.log(`\nSeed v6 complete!`);
   console.log(`  ${CAP_PRODUCTS.length} caps (₹249) + ${COMBO_PRODUCTS.length} combos (₹548) + ${TSHIRT_PRODUCTS.length} tees (₹299) = ${CAP_PRODUCTS.length + COMBO_PRODUCTS.length + TSHIRT_PRODUCTS.length} total`);
-  console.log(`  Image folders: caps (${CAPS_IMGS.length}), tshirts (${TSHIRTS_IMGS.length}), models (${MODELS_IMGS.length}), combos (${COMBOS_IMGS.length})`);
+  console.log(`  Image folders: caps (${CAPS_IMGS.length}), tshirt-color-sets (${TSHIRT_COLOR_SETS.length} × 5 imgs = ${TSHIRT_COLOR_SETS.length * 5}), models (${MODELS_IMGS.length}), combos (${COMBOS_IMGS.length})`);
   console.log("  No fake oldPrice strikethroughs — all prices are real");
   console.log("  Admin login: admin@urbandana.in / admin123");
 }
