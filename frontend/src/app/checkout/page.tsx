@@ -2,12 +2,12 @@
 import { useState, useEffect } from "react";
 import { useShop } from "@/context/ShopContext";
 import { useAuth } from "@/context/AuthContext";
-import { api } from "@/lib/api";
+import { api, API_URL } from "@/lib/api";
 import { rupee } from "@/lib/utils";
 import Link from "next/link";
 import { ArrowRight, Check, Lock, CreditCard, Loader2 } from "lucide-react";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+// API_URL imported from @/lib/api — single source of truth (no env var reliance).
 
 export default function CheckoutPage() {
   const { cart, cartTotal, sessionId } = useShop();

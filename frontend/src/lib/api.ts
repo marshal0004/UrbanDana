@@ -1,4 +1,14 @@
-export const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://urbandana.onrender.com";
+// Single source of truth for the backend API URL.
+// Priority:
+//   1. process.env.NEXT_PUBLIC_API_URL — if explicitly set AND non-empty AND not localhost
+//   2. https://urbandana.onrender.com — production fallback (Render backend)
+//
+// We guard against "http://localhost:4000" being baked into the production
+// bundle by a stale Vercel env var. If the env var is localhost/empty, we
+// fall back to the Render URL so the deployed site keeps working.
+const envUrl = process.env.NEXT_PUBLIC_API_URL;
+const isLocalhost = envUrl && (envUrl.includes("localhost") || envUrl.includes("127.0.0.1"));
+export const API_URL = envUrl && !isLocalhost ? envUrl : "https://urbandana.onrender.com";
 
 export interface ProductImage {
   id: string;

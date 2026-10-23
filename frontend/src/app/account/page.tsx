@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { rupee } from "@/lib/utils";
 import { Package, LogOut, User as UserIcon } from "lucide-react";
+import { API_URL } from "@/lib/api";
 
 interface Order {
   id: string;
@@ -15,7 +16,7 @@ interface Order {
   items: { id: string; title: string; price: number; quantity: number; variant?: string | null }[];
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+// API_URL imported from @/lib/api — single source of truth (no env var reliance).
 
 const STATUS_COLORS: Record<string, string> = {
   PENDING: "bg-amber-500/20 text-amber-300 border-amber-500/30",

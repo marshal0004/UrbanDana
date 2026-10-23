@@ -7,6 +7,7 @@ import { useShop } from "@/context/ShopContext";
 import { useAuth } from "@/context/AuthContext";
 import { Menu, ShoppingBag, Search, X, Heart, User, LogOut, Package } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { API_URL } from "@/lib/api";
 
 // NO dropdowns — simple nav links only
 // Order: LIMITED first, then NEW, CAPS, T-SHIRTS, COMBO, About Us
@@ -145,7 +146,7 @@ export default function Navbar() {
                     </Link>
                     {user.role === "ADMIN" && (
                       <a
-                        href={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}/admin`}
+                        href={`${API_URL}/admin`}
                         target="_blank"
                         rel="noreferrer"
                         onClick={() => setUserMenuOpen(false)}

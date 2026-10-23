@@ -2,13 +2,14 @@
 import { useInView } from "@/hooks/useInView";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
+import { API_URL } from "@/lib/api";
 
 export default function Founder() {
   const { ref, inView } = useInView();
   const [data, setData] = useState<{ name: string; origin: string; story: string; image: string } | null>(null);
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}/api/cms/founder`)
+    fetch(`${API_URL}/api/cms/founder`)
       .then((r) => r.json())
       .then(setData)
       .catch(() => setData(null));
