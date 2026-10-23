@@ -2,8 +2,7 @@
 import { useEffect, useState } from "react";
 import { api, type Product } from "@/lib/api";
 import Hero from "@/components/sections/Hero";
-import DriftScrollVideo from "@/components/drift/DriftScrollVideo";
-import Model3DViewer from "@/components/sections/Model3DViewer";
+import { CathedralScrollVideo, BotanicaScrollVideo } from "@/components/drift/scrollVideoSections";
 import ProductCarousel from "@/components/ProductCarousel";
 import PromoBanners from "@/components/sections/PromoBanners";
 import FullStore from "@/components/sections/FullStore";
@@ -35,14 +34,15 @@ export default function HomePage() {
     <>
       <Hero />
 
-      {/* === DRIFT scroll-controlled cinematic video parallax ===
-           Placed directly below Hero, before the 3D model viewer.
-           Uses Canvas + 151 pre-extracted JPEG frames for buttery-smooth
-           60fps scroll-scrubbing (no <video> codec delays). */}
-      <DriftScrollVideo />
+      {/* === DRIFT scroll-controlled cinematic video #1 (Cathedral → T-Shirt) ===
+           Placed directly below Hero. Uses Canvas + 151 pre-extracted JPEG
+           frames for buttery-smooth 60fps scroll-scrubbing. */}
+      <CathedralScrollVideo />
 
-      {/* 3D Model Viewer — 2 caps + 2 t-shirts, interactive */}
-      <Model3DViewer />
+      {/* === DRIFT scroll-controlled cinematic video #2 (Retail Store → Botanical Cap) ===
+           Second scroll-video section. Same smooth Canvas + frames technique.
+           Replaces the old Model3DViewer section. */}
+      <BotanicaScrollVideo />
 
       {/* Auto-scroll carousel 1 — Caps + Combos */}
       {!loading && capsAndCombos.length > 0 && (
