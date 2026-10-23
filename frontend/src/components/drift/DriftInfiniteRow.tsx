@@ -3,23 +3,25 @@
 //
 // Horizontal infinite auto-scrolling product row (Rows 2+).
 //
-// - Scrolls horizontally forever via rAF (60px/sec = normal speed)
-// - Direction prop: "ltr" (left→right) or "rtl" (right→left)
-// - PAUSE on hover, RESUME when hover leaves (continues from same offset)
-// - Each item is an IMAGE (not a full product card) with small caption
-//   (name + price) overlay — clean, image-forward
-// - Track is duplicated for seamless infinite loop
-// - Subtle 3D depth via per-image scale + opacity based on distance
-//   from row center (cards at edges fade + shrink slightly)
+// SEAMLESS LOOP: Each card has marginRight: GAP (instead of CSS gap on
+// the container). This means the track width = N * (CARD_WIDTH + GAP)
+// exactly, and halfWidth = (N/2) * (CARD_WIDTH + GAP) exactly. When
+// offset reaches halfWidth, the reset is pixel-perfect — no gap.
+//
+// PAUSE ON HOVER: The hover target is ONLY the scroll container (the
+// overflow-hidden div), NOT the entire section. So the header text
+// and padding don't trigger pause — only hovering over actual cards.
+//
+// Each card is an IMAGE with small caption overlay.
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { absUrl, type Product } from "@/lib/api";
 
-const CARD_WIDTH = 240; // px — slightly smaller than arc carousel
+const CARD_WIDTH = 240; // px
 const CARD_HEIGHT = 320; // px
-const GAP = 20; // px
+const GAP = 20; // px — applied as marginRight per card (NOT CSS gap)
 const SPEED_PX_PER_SEC = 60; // normal speed
 
 interface DriftInfiniteRowProps {
@@ -36,18 +38,20 @@ export default function DriftInfiniteRow({
   title,
 }: DriftInfiniteRowProps) {
   const reduced = useReducedMotion();
+  const scrollRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const [paused, setPaused] = useState(false);
 
-  // Auto-scroll
   useEffect(() => {
     if (reduced || products.length === 0) return;
     const track = trackRef.current;
     if (!track) return;
 
-    const allItems = [...products, ...products];
-    const totalWidth = allItems.length * (CARD_WIDTH + GAP);
-    const halfWidth = totalWidth / 2;
+    // Each card is (CARD_WIDTH + GAP) wide including its marginRight.
+    // Duplicated set → total track = 2N * (CARD_WIDTH + GAP).
+    // halfWidth = N * (CARD_WIDTH + GAP) — exact, no gap at loop point.
+    const itemWidth = CARD_WIDTH + GAP;
+    const halfWidth = products.length * itemWidth;
 
     let offset = 0;
     let rafId: number | null = null;
@@ -55,8 +59,6 @@ export default function DriftInfiniteRow({
 
     // Direction: ltr = cards move left→right = track translateX increases (positive)
     //            rtl = cards move right→left = track translateX decreases (negative)
-    // translateX(-offset) with dir=-1 for ltr → offset decreases → -offset increases (positive) → track RIGHT → cards RIGHT (L→R) ✓
-    // translateX(-offset) with dir=1 for rtl → offset increases → -offset decreases (negative) → track LEFT → cards LEFT (R→L) ✓
     const dir = direction === "ltr" ? -1 : 1;
 
     const tick = (now: number) => {
@@ -65,7 +67,7 @@ export default function DriftInfiniteRow({
 
       if (!paused) {
         offset += dir * SPEED_PX_PER_SEC * dt;
-        // Seamless loop
+        // Seamless loop — reset by exactly halfWidth (one set width)
         if (dir > 0 && offset >= halfWidth) {
           offset -= halfWidth;
         } else if (dir < 0 && offset <= -halfWidth) {
@@ -86,6 +88,7 @@ export default function DriftInfiniteRow({
 
   if (products.length === 0) return null;
 
+  // Duplicate for seamless infinite loop
   const allItems = [...products, ...products];
 
   return (
@@ -93,10 +96,8 @@ export default function DriftInfiniteRow({
       className="py-10"
       style={{ background: "#f4f1ee", color: "#0b0a0a" }}
       aria-label={title || "Product row"}
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
     >
-      {/* Optional header */}
+      {/* Optional header — NOT part of the hover/pause area */}
       {eyebrow || title ? (
         <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8 mb-6">
           {eyebrow ? (
@@ -107,7 +108,7 @@ export default function DriftInfiniteRow({
                 fontWeight: 600,
                 letterSpacing: "0.3em",
                 textTransform: "uppercase",
-                color: "#e3b867",
+                color: "#c9a227",
                 margin: "0 0 4px 0",
               }}
             >
@@ -130,12 +131,17 @@ export default function DriftInfiniteRow({
         </div>
       ) : null}
 
-      {/* Horizontal infinite track */}
-      <div className="overflow-hidden">
+      {/* Scroll container — ONLY this area triggers pause on hover */}
+      <div
+        ref={scrollRef}
+        className="overflow-hidden"
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+      >
         <div
           ref={trackRef}
           className="flex will-change-transform"
-          style={{ width: "max-content", gap: `${GAP}px`, padding: "0 12px" }}
+          style={{ width: "max-content" }}
         >
           {allItems.map((product, i) => (
             <Link
@@ -145,13 +151,13 @@ export default function DriftInfiniteRow({
               style={{
                 width: `${CARD_WIDTH}px`,
                 height: `${CARD_HEIGHT}px`,
+                marginRight: `${GAP}px`, // gap as marginRight, NOT CSS gap
                 borderRadius: "8px",
                 overflow: "hidden",
                 background: "#ffffff",
                 boxShadow: "0 12px 30px -15px rgba(0,0,0,0.3)",
               }}
             >
-              {/* Product image — fills the card */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={absUrl(product.images[0]?.url || "")}
@@ -160,7 +166,6 @@ export default function DriftInfiniteRow({
                 style={{
                   objectFit: "cover",
                   objectPosition: "center top",
-                  transition: "transform 0.5s ease",
                 }}
                 loading="lazy"
                 decoding="async"

@@ -2,11 +2,10 @@
 // /home/z/my-project/UrbanDana/frontend/src/components/sections/CouponCarousel.tsx
 //
 // Horizontal infinite auto-scrolling coupon marquee.
-// - Cards scroll horizontally forever (CSS animation)
-// - Speed: normal (40s per loop) — visible but not jarring
-// - PAUSE on hover, RESUME when hover leaves
-// - Short height — compact banner strip
-// - Each card is a ticket-style coupon with side notches + hourglass middle
+// - Seamless loop: marginRight per card (not CSS gap) → exact halfWidth reset
+// - Pause on hover: ONLY the scroll container triggers pause (not the section)
+// - Cream background
+// - Compact height
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
@@ -81,22 +80,26 @@ const COUPONS: Coupon[] = [
   },
 ];
 
+const CARD_WIDTH = 380;
+const CARD_HEIGHT = 180;
+const GAP = 24; // applied as marginRight per card
+const SPEED_PX_PER_SEC = 60;
+
 export default function CouponCarousel() {
   const trackRef = useRef<HTMLDivElement>(null);
   const [paused, setPaused] = useState(false);
 
-  // Infinite horizontal scroll via requestAnimationFrame.
-  // The track is duplicated (COUPONS × 2) so when the first set scrolls
-  // completely out of view, we reset position to 0 seamlessly.
   useEffect(() => {
     const track = trackRef.current;
     if (!track) return;
 
+    // Exact halfWidth: N * (CARD_WIDTH + GAP) — no gap at loop point
+    const itemWidth = CARD_WIDTH + GAP;
+    const halfWidth = COUPONS.length * itemWidth;
+
     let offset = 0;
     let rafId: number | null = null;
     let lastTime = performance.now();
-    // Speed: 60 pixels per second = "normal" (visible but not jarring)
-    const SPEED_PX_PER_SEC = 60;
 
     const tick = (now: number) => {
       const dt = (now - lastTime) / 1000;
@@ -104,13 +107,9 @@ export default function CouponCarousel() {
 
       if (!paused) {
         offset += SPEED_PX_PER_SEC * dt;
-
-        // Get the width of ONE set of coupons (half the track)
-        const halfWidth = track.scrollWidth / 2;
-        if (halfWidth > 0 && offset >= halfWidth) {
-          offset -= halfWidth; // Seamless loop — jump back by one set
+        if (offset >= halfWidth) {
+          offset -= halfWidth;
         }
-
         track.style.transform = `translateX(${-offset}px)`;
       }
 
@@ -124,7 +123,6 @@ export default function CouponCarousel() {
     };
   }, [paused]);
 
-  // Duplicate the coupons array so the track is seamless when it loops
   const items = [...COUPONS, ...COUPONS];
 
   return (
@@ -132,14 +130,17 @@ export default function CouponCarousel() {
       className="w-full py-6"
       style={{ background: "#f4f1ee" }}
       aria-label="Special offers and coupon codes"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
     >
-      <div className="overflow-hidden">
+      {/* ONLY the scroll container triggers pause on hover — not the section */}
+      <div
+        className="overflow-hidden"
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+      >
         <div
           ref={trackRef}
           className="flex will-change-transform"
-          style={{ width: "max-content", gap: "24px", padding: "0 12px" }}
+          style={{ width: "max-content" }}
         >
           {items.map((coupon, i) => (
             <CouponCard key={i} coupon={coupon} />
@@ -156,10 +157,9 @@ function CouponCard({ coupon }: { coupon: Coupon }) {
       href={coupon.href}
       className="shrink-0 block no-underline"
       style={{
-        width: "380px",
-        // Compact height — shorter than before
-        height: "180px",
-        // Ticket shape: side notches via CSS mask
+        width: `${CARD_WIDTH}px`,
+        height: `${CARD_HEIGHT}px`,
+        marginRight: `${GAP}px`, // gap as marginRight, NOT CSS gap
         WebkitMaskImage:
           "radial-gradient(circle 12px at 0 50%, transparent 99%, black 100%), radial-gradient(circle 12px at 100% 50%, transparent 99%, black 100%)",
         WebkitMaskComposite: "source-in",
@@ -211,7 +211,7 @@ function CouponCard({ coupon }: { coupon: Coupon }) {
           </p>
         </div>
 
-        {/* Middle — hourglass divider (dashed line) */}
+        {/* Middle — hourglass divider */}
         <div
           style={{
             width: "1px",

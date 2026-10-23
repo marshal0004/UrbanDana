@@ -94,14 +94,15 @@ export default function DriftScrollVideo({
     // ── 1. Setup canvas dimensions (DPR-capped at 1 for performance) ──
     const setupCanvas = () => {
       const dpr = 1;
-      const w = window.innerWidth;
-      const h = window.innerHeight;
+      const w = canvas.clientWidth || window.innerWidth;
+      const h = canvas.clientHeight || window.innerHeight;
       canvas.width = w * dpr;
       canvas.height = h * dpr;
-      canvas.style.width = w + "px";
-      canvas.style.height = h + "px";
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = "high";
+      // Fill with ink so the canvas isn't blank before frames load
+      ctx.fillStyle = "#170b0e";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
     };
     setupCanvas();
 
@@ -143,6 +144,9 @@ export default function DriftScrollVideo({
               img.onload = () => {
                 loadedCount++;
                 if (loadedCount === totalFrames) setLoaded(true);
+                // Draw frame 0 as soon as the FIRST frame is loaded
+                // (don't wait for all 151 — user sees content immediately)
+                if (loadedCount === 1) drawFrame(0);
                 resolve(img);
               };
               img.onerror = () => reject(new Error(`Failed to load frame ${idx + 1}`));

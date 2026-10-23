@@ -146,10 +146,8 @@ export default function DriftArcCarousel() {
       className="py-16"
       style={{ background: "#f4f1ee", color: "#0b0a0a" }}
       aria-label="3D arc carousel — featured products"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
     >
-      {/* Header */}
+      {/* Header — NOT part of the hover/pause area */}
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8 mb-8 text-center">
         <p
           style={{
@@ -179,15 +177,17 @@ export default function DriftArcCarousel() {
         </h2>
       </div>
 
-      {/* 3D perspective container */}
+      {/* 3D perspective container — ONLY this triggers pause on hover */}
       <div
         ref={containerRef}
         className="relative overflow-hidden"
         style={{
-          height: `${CARD_HEIGHT + 80}px`, // extra space for arc vertical drop
+          height: `${CARD_HEIGHT + 80}px`,
           perspective: "1400px",
           perspectiveOrigin: "50% 50%",
         }}
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
       >
         {/* Track — preserve-3d so children can rotate in 3D space */}
         <div
