@@ -3,8 +3,10 @@ import { useEffect, useState } from "react";
 import { api, type Product } from "@/lib/api";
 import Hero from "@/components/sections/Hero";
 import { CathedralScrollVideo, BotanicaScrollVideo } from "@/components/drift/scrollVideoSections";
-import ProductCarousel from "@/components/ProductCarousel";
-import PromoBanners from "@/components/sections/PromoBanners";
+import EditorialOpening from "@/components/drift/editorial/EditorialOpening";
+import EditorialRooms from "@/components/drift/editorial/EditorialRooms";
+import EditorialLetters from "@/components/drift/editorial/EditorialLetters";
+import EditorialDay from "@/components/drift/editorial/EditorialDay";
 import FullStore from "@/components/sections/FullStore";
 import CouponCarousel from "@/components/sections/CouponCarousel";
 import Stats from "@/components/sections/Stats";
@@ -24,48 +26,21 @@ export default function HomePage() {
       .finally(() => setLoading(false));
   }, []);
 
-  // Split products for different carousels
-  const capsAndCombos = allProducts.filter((p) =>
-    p.category === "Bandana Caps" || p.category === "Combo"
-  );
-  const tees = allProducts.filter((p) => p.category === "T-Shirts");
-
   return (
     <>
       <Hero />
 
-      {/* === DRIFT scroll-controlled cinematic video #1 (Cathedral → T-Shirt) ===
-           Placed directly below Hero. Uses Canvas + 151 pre-extracted JPEG
-           frames for buttery-smooth 60fps scroll-scrubbing. */}
+      {/* === DRIFT scroll-controlled cinematic video #1 (Cathedral → T-Shirt) === */}
       <CathedralScrollVideo />
 
-      {/* === DRIFT scroll-controlled cinematic video #2 (Retail Store → Botanical Cap) ===
-           Second scroll-video section. Same smooth Canvas + frames technique.
-           Replaces the old Model3DViewer section. */}
+      {/* === DRIFT scroll-controlled cinematic video #2 (Retail Store → Botanical Cap) === */}
       <BotanicaScrollVideo />
 
-      {/* Auto-scroll carousel 1 — Caps + Combos */}
-      {!loading && capsAndCombos.length > 0 && (
-        <ProductCarousel
-          products={capsAndCombos}
-          eyebrow="Trending Now"
-          title="Caps & Combos"
-          autoScroll={true}
-        />
-      )}
-
-      {/* Eye-catching promo banners */}
-      <PromoBanners />
-
-      {/* Auto-scroll carousel 2 — T-shirts */}
-      {!loading && tees.length > 0 && (
-        <ProductCarousel
-          products={tees}
-          eyebrow="Bandana-Inspired"
-          title="T-Shirts"
-          autoScroll={true}
-        />
-      )}
+      {/* === EDITORIAL SECTIONS (adapted from Sill template) — replaces ProductCarousel + PromoBanners === */}
+      <EditorialOpening />
+      <EditorialRooms />
+      <EditorialLetters />
+      <EditorialDay />
 
       {/* Full-width coupon carousel — 1 per screen, auto-scrolling */}
       <CouponCarousel />
