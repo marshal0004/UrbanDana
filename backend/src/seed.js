@@ -26,8 +26,8 @@ const MODELS_IMGS = listImages("models");
 const COMBOS_IMGS = listImages("combos");
 
 /**
- * T-shirt color sets — 8 uploaded color variants, each with 5 angle photos.
- * Files live in tshirts/color1/ through tshirts/color8/ subfolders.
+ * T-shirt color sets — 12 uploaded color variants, each with 5 angle photos.
+ * Files live in tshirts/color1/ through tshirts/color12/ subfolders.
  *
  * Per-tshirt image order (positions 0-4):
  *   0 = 00_tshirt_only.png  → main product photo (flat-lay)
@@ -37,16 +37,20 @@ const COMBOS_IMGS = listImages("combos");
  *   4 = 04_detail.png       → pattern detail close-up
  *
  * Color descriptions (from README.txt in each zip):
- *   color1 = Black t-shirt with red patterned side panel
- *   color2 = White t-shirt with patterned side panel
- *   color3 = Solid black t-shirt
- *   color4 = White t-shirt with red patterned panel
- *   color5 = Black t-shirt with patterned side panel
- *   color6 = Solid black t-shirt
- *   color7 = Solid black t-shirt
- *   color8 = Black t-shirt with blue patterned side panel (folk-art motif)
+ *   color1  = Black t-shirt with red patterned side panel
+ *   color2  = White t-shirt with patterned side panel
+ *   color3  = Solid black t-shirt
+ *   color4  = White t-shirt with red patterned panel
+ *   color5  = Black t-shirt with patterned side panel
+ *   color6  = Solid black t-shirt
+ *   color7  = Solid black t-shirt
+ *   color8  = Black t-shirt with blue patterned side panel (folk-art motif)
+ *   color9  = White t-shirt with traditional patterned side panel (urban street bg)
+ *   color10 = White t-shirt with blue and red side pattern (concrete stairs bg)
+ *   color11 = Black t-shirt with colorful patterned side panel (urban street bg)
+ *   color12 = Black t-shirt with colorful patterned side panel (urban street bg)
  *
- * With 8 t-shirts in the catalog, each t-shirt gets a unique color set
+ * With 12 t-shirts in the catalog, each t-shirt gets a unique color set
  * (1:1 mapping, no cycling/repetition).
  */
 const TSHIRT_COLOR_SETS = [
@@ -58,6 +62,10 @@ const TSHIRT_COLOR_SETS = [
   ["tshirts/color6/00_tshirt_only.png", "tshirts/color6/01_front.png", "tshirts/color6/02_side.png", "tshirts/color6/03_back.png", "tshirts/color6/04_detail.png"],
   ["tshirts/color7/00_tshirt_only.png", "tshirts/color7/01_front.png", "tshirts/color7/02_side.png", "tshirts/color7/03_back.png", "tshirts/color7/04_detail.png"],
   ["tshirts/color8/00_tshirt_only.png", "tshirts/color8/01_front.png", "tshirts/color8/02_side.png", "tshirts/color8/03_back.png", "tshirts/color8/04_detail.png"],
+  ["tshirts/color9/00_tshirt_only.png", "tshirts/color9/01_front.png", "tshirts/color9/02_side.png", "tshirts/color9/03_back.png", "tshirts/color9/04_detail.png"],
+  ["tshirts/color10/00_tshirt_only.png", "tshirts/color10/01_front.png", "tshirts/color10/02_side.png", "tshirts/color10/03_back.png", "tshirts/color10/04_detail.png"],
+  ["tshirts/color11/00_tshirt_only.png", "tshirts/color11/01_front.png", "tshirts/color11/02_side.png", "tshirts/color11/03_back.png", "tshirts/color11/04_detail.png"],
+  ["tshirts/color12/00_tshirt_only.png", "tshirts/color12/01_front.png", "tshirts/color12/02_side.png", "tshirts/color12/03_back.png", "tshirts/color12/04_detail.png"],
 ].map((set) => set.map((p) => `/uploads/products/${p}`));
 
 // Angle labels for the 5 image positions (used in alt text)
@@ -344,6 +352,30 @@ const TSHIRT_PRODUCTS = [
     rating: 4.8, reviews: 21, stock: 55,
     isFeatured: true, isLimited: false,
     colors: ["Teal"], sizes: ["S", "M", "L", "XL"] },
+  { title: "Indigo Wave Oversized T-Shirt", subtitle: "Wave motif on white cotton with traditional side panel",
+    description: "Hand-drawn wave motif printed on a white cotton base, with a traditional patterned side panel. 240 GSM heavyweight cotton, oversized fit with drop-shoulder cut. Urban streetwear energy distilled into a clean, versatile silhouette.",
+    category: "T-Shirts", badge: "New",
+    rating: 4.7, reviews: 24, stock: 80,
+    isFeatured: false, isLimited: false,
+    colors: ["White", "Indigo"], sizes: ["S", "M", "L", "XL", "XXL"] },
+  { title: "Forest Trail Graphic T-Shirt", subtitle: "Trail-line pattern with blue and red accents",
+    description: "Trail-line graphic on a white base with blue and red side pattern accents. 220 GSM combed cotton, regular fit. Perfect for outdoor adventures and everyday streetwear. Pre-shrunk, true to size.",
+    category: "T-Shirts", badge: null,
+    rating: 4.6, reviews: 18, stock: 95,
+    isFeatured: false, isLimited: false,
+    colors: ["White", "Blue"], sizes: ["S", "M", "L", "XL"] },
+  { title: "Saffron Sunset Gradient T-Shirt", subtitle: "Hand-screened sunset gradient with colorful side panel",
+    description: "Hand-screened sunset gradient with a colorful patterned side panel. 240 GSM heavyweight cotton, oversized fit. Bold, energetic, and unmistakably Indian. Pairs beautifully with denim and neutral bottoms alike.",
+    category: "T-Shirts", badge: "New",
+    rating: 4.8, reviews: 31, stock: 70,
+    isFeatured: true, isLimited: false,
+    colors: ["Black", "Multicolor"], sizes: ["S", "M", "L", "XL"] },
+  { title: "Midnight Geometric T-Shirt", subtitle: "Tonal geometric print with colorful side panel",
+    description: "Tonal geometric print on a matte black base with a colorful patterned side panel. 220 GSM combed cotton, regular fit. Subtle enough for everyday wear, distinctive enough to stand out on the street.",
+    category: "T-Shirts", badge: null,
+    rating: 4.7, reviews: 26, stock: 100,
+    isFeatured: false, isLimited: false,
+    colors: ["Black"], sizes: ["S", "M", "L", "XL", "XXL"] },
 ];
 
 function slugify(s) {
@@ -441,7 +473,7 @@ async function main() {
 
   // T-shirt products — all ₹299, no oldPrice
   // Each t-shirt gets exactly 5 images: 1 main product photo + 4 angle views.
-  // With 8 t-shirts and 8 color sets, each t-shirt gets a UNIQUE color set (1:1 mapping).
+  // With 12 t-shirts and 12 color sets, each t-shirt gets a UNIQUE color set (1:1 mapping).
   for (let i = 0; i < TSHIRT_PRODUCTS.length; i++) {
     const p = TSHIRT_PRODUCTS[i];
     const colorSet = TSHIRT_COLOR_SETS[i % TSHIRT_COLOR_SETS.length];
