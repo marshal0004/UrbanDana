@@ -130,7 +130,7 @@ export default function CouponCarousel() {
   return (
     <section
       className="w-full py-6"
-      style={{ background: "#0a0a0a" }}
+      style={{ background: "#f4f1ee" }}
       aria-label="Special offers and coupon codes"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}

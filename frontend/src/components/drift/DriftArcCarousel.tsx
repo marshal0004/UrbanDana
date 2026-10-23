@@ -91,13 +91,15 @@ export default function DriftArcCarousel() {
         d = Math.max(-1.4, Math.min(1.4, d));
 
         const absD = Math.abs(d);
-        const rotateY = -d * 28; // deg
-        const scale = 1 - absD * 0.06;
-        const translateZ = -absD * 160; // px
-        const y = absD * 30; // px — slight vertical arc
+        // More dramatic "C" shape — like the saree site screenshot
+        // Cards curve around a center point, forming a backward-C / smile arc
+        const rotateY = -d * 38; // deg — more tilt at edges (was 28)
+        const scale = 1 - absD * 0.08; // more shrink at edges (was 0.06)
+        const translateZ = -absD * 200; // more depth (was 160)
+        const y = absD * 60; // more vertical drop — creates the C arc (was 30)
 
         card.style.transform = `translate3d(0, ${y}px, ${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`;
-        card.style.opacity = `${Math.max(0.3, 1 - absD * 0.4)}`;
+        card.style.opacity = `${Math.max(0.25, 1 - absD * 0.5)}`;
         card.style.zIndex = `${Math.round(100 - absD * 10)}`;
       });
     };
@@ -142,7 +144,7 @@ export default function DriftArcCarousel() {
   return (
     <section
       className="py-16"
-      style={{ background: "#0b0a0a", color: "#f4f1ee" }}
+      style={{ background: "#f4f1ee", color: "#0b0a0a" }}
       aria-label="3D arc carousel — featured products"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
@@ -224,8 +226,8 @@ export default function DriftArcCarousel() {
                     className="relative w-full h-full overflow-hidden"
                     style={{
                       borderRadius: "8px",
-                      background: "#1a1a1a",
-                      boxShadow: "0 20px 50px -20px rgba(0,0,0,0.8)",
+                      background: "#ffffff",
+                      boxShadow: "0 20px 50px -20px rgba(0,0,0,0.3)",
                     }}
                   >
                     {/* Product image — fills the card, 3D attractive */}

@@ -53,8 +53,11 @@ export default function DriftInfiniteRow({
     let rafId: number | null = null;
     let lastTime = performance.now();
 
-    // Direction: ltr = offset increases (cards move right), rtl = offset decreases
-    const dir = direction === "ltr" ? 1 : -1;
+    // Direction: ltr = cards move left→right = track translateX increases (positive)
+    //            rtl = cards move right→left = track translateX decreases (negative)
+    // translateX(-offset) with dir=-1 for ltr → offset decreases → -offset increases (positive) → track RIGHT → cards RIGHT (L→R) ✓
+    // translateX(-offset) with dir=1 for rtl → offset increases → -offset decreases (negative) → track LEFT → cards LEFT (R→L) ✓
+    const dir = direction === "ltr" ? -1 : 1;
 
     const tick = (now: number) => {
       const dt = (now - lastTime) / 1000;
@@ -88,7 +91,7 @@ export default function DriftInfiniteRow({
   return (
     <section
       className="py-10"
-      style={{ background: "#0b0a0a", color: "#f4f1ee" }}
+      style={{ background: "#f4f1ee", color: "#0b0a0a" }}
       aria-label={title || "Product row"}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
@@ -144,8 +147,8 @@ export default function DriftInfiniteRow({
                 height: `${CARD_HEIGHT}px`,
                 borderRadius: "8px",
                 overflow: "hidden",
-                background: "#1a1a1a",
-                boxShadow: "0 12px 30px -15px rgba(0,0,0,0.6)",
+                background: "#ffffff",
+                boxShadow: "0 12px 30px -15px rgba(0,0,0,0.3)",
               }}
             >
               {/* Product image — fills the card */}

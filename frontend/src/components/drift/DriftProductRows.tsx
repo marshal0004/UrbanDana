@@ -50,7 +50,7 @@ export default function DriftProductRows() {
     return (
       <div
         className="py-32 text-center"
-        style={{ background: "#0b0a0a", color: "#f4f1ee" }}
+        style={{ background: "#f4f1ee", color: "#0b0a0a" }}
       >
         <div className="text-sm uppercase tracking-[0.3em] opacity-40">
           Loading products…
