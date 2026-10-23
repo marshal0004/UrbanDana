@@ -1,11 +1,19 @@
 // Single source of truth for the backend API URL.
-// Priority:
+//
+// CORS-FREE PROXY STRATEGY (the fix for products not loading on Vercel):
+// All API FETCH calls use RELATIVE URLs (e.g. `/api/products`) so they go
+// through the Vercel rewrite proxy defined in next.config.js. The proxy
+// forwards the request to the Render backend server-side, which bypasses
+// CORS entirely (same-origin from the browser's perspective).
+//
+// API_URL is ONLY used for:
+//   - absUrl() — turning `/uploads/products/x.jpg` into absolute URLs
+//     for <img> tags (img tags don't have CORS restrictions, so this is safe)
+//   - The admin link in the Navbar (opens a new tab to the backend)
+//
+// Priority for API_URL:
 //   1. process.env.NEXT_PUBLIC_API_URL — if explicitly set AND non-empty AND not localhost
 //   2. https://urbandana.onrender.com — production fallback (Render backend)
-//
-// We guard against "http://localhost:4000" being baked into the production
-// bundle by a stale Vercel env var. If the env var is localhost/empty, we
-// fall back to the Render URL so the deployed site keeps working.
 const envUrl = process.env.NEXT_PUBLIC_API_URL;
 const isLocalhost = envUrl && (envUrl.includes("localhost") || envUrl.includes("127.0.0.1"));
 export const API_URL = envUrl && !isLocalhost ? envUrl : "https://urbandana.onrender.com";
@@ -72,7 +80,11 @@ export function absUrl(path: string): string {
 
 async function fetchJSON<T>(path: string, init?: RequestInit): Promise<T> {
   try {
-    const res = await fetch(`${API_URL}${path}`, {
+    // CRITICAL: use RELATIVE URL (not `${API_URL}${path}`).
+    // The Vercel rewrite proxy in next.config.js forwards `/api/*` to
+    // the Render backend server-side, bypassing CORS entirely. This
+    // works because the browser sees same-origin requests.
+    const res = await fetch(path, {
       ...init,
       headers: { "Content-Type": "application/json", ...(init?.headers || {}) },
     });
@@ -84,7 +96,7 @@ async function fetchJSON<T>(path: string, init?: RequestInit): Promise<T> {
   } catch (err) {
     // Network error (backend not running) — return empty data gracefully
     if (err instanceof TypeError && err.message === "Failed to fetch") {
-      console.warn(`Backend not reachable at ${API_URL} — returning empty data`);
+      console.warn(`Backend not reachable via proxy at ${path} — returning empty data`);
       // Return type-appropriate empty data
       if (path.includes("/api/products")) return { items: [], total: 0, page: 1, limit: 50 } as unknown as T;
       if (path.includes("/api/cart")) return { id: "", items: [] } as unknown as T;

@@ -38,7 +38,7 @@ export default function AccountPage() {
     }
     // Note: backend doesn't yet have GET /api/orders for the logged-in user — but we can
     // fetch all orders and filter client-side for now (admin sees all, customer sees their own)
-    fetch(`${API_URL}/api/orders`, { headers: { Authorization: `Bearer ${token}` } })
+    fetch("/api/orders", { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => (r.ok ? r.json() : []))
       .then((data) => setOrders(Array.isArray(data) ? data : []))
       .catch(() => setOrders([]))

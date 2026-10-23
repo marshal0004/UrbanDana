@@ -36,7 +36,7 @@ export default function CheckoutPage() {
 
   // Check Razorpay availability
   useEffect(() => {
-    fetch(`${API_URL}/api/payments/health`)
+    fetch("/api/payments/health")
       .then((r) => r.json())
       .then((d) => {
         setRazorpayAvailable(d.razorpay === true);
@@ -87,7 +87,7 @@ export default function CheckoutPage() {
           return;
         }
 
-        const r = await fetch(`${API_URL}/api/payments/create-order`, {
+        const r = await fetch("/api/payments/create-order", {
           method: "POST",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
           body: JSON.stringify({ amount: total, orderId: order.id }),
@@ -115,7 +115,7 @@ export default function CheckoutPage() {
           handler: async (response: any) => {
             // Verify signature server-side
             try {
-              const vr = await fetch(`${API_URL}/api/payments/verify`, {
+              const vr = await fetch("/api/payments/verify", {
                 method: "POST",
                 headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
                 body: JSON.stringify({

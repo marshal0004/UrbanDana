@@ -42,7 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (t) {
       setToken(t);
       // Verify token + fetch user
-      fetch(`${API_URL}/api/auth/me`, {
+      fetch("/api/auth/me", {
         headers: { Authorization: `Bearer ${t}` },
       })
         .then(async (r) => (r.ok ? r.json() : Promise.reject(r)))
@@ -60,7 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {
-    const res = await fetch(`${API_URL}/api/auth/login`, {
+    const res = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -83,7 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       lastName?: string;
       phone?: string;
     }) => {
-      const res = await fetch(`${API_URL}/api/auth/register`, {
+      const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -109,7 +109,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refreshUser = useCallback(async () => {
     if (!token) return;
     try {
-      const res = await fetch(`${API_URL}/api/auth/me`, {
+      const res = await fetch("/api/auth/me", {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {

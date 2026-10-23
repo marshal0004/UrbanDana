@@ -9,7 +9,7 @@ export default function Founder() {
   const [data, setData] = useState<{ name: string; origin: string; story: string; image: string } | null>(null);
 
   useEffect(() => {
-    fetch(`${API_URL}/api/cms/founder`)
+    fetch("/api/cms/founder")
       .then((r) => r.json())
       .then(setData)
       .catch(() => setData(null));
