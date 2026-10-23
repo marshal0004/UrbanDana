@@ -39,20 +39,21 @@ const FONT_DISPLAY = "Georgia, 'Times New Roman', serif";
 const FONT_SANS = "Inter, system-ui, sans-serif";
 const FONT_SCRIPT = "'Brush Script MT', cursive";
 
-// 12 "windows" — 6 with model poses, 6 plain colored panels with style names
+// 12 "windows" — ALL 12 have model poses (one per window, no plain panels).
+// Each window cycles through the 12 available pose images.
 const WINDOWS = [
-  { type: "plain", color: COLORS.terracotta, label: "01 · Forward" },
-  { type: "photo", color: COLORS.maroon, image: "/images/editorial/pose_01.jpg", label: "02 · Street" },
-  { type: "plain", color: COLORS.purple, label: "03 · Backward" },
-  { type: "plain", color: COLORS.gold, label: "04 · Folded" },
-  { type: "plain", color: COLORS.beige, label: "05 · Casual" },
-  { type: "photo", color: COLORS.mauve, image: "/images/editorial/pose_02.jpg", label: "06 · Bold" },
-  { type: "photo", color: COLORS.sage, image: "/images/editorial/pose_03.jpg", label: "07 · Heritage" },
-  { type: "plain", color: COLORS.maroon, label: "08 · Tower" },
-  { type: "plain", color: COLORS.mauve, label: "09 · Ledge" },
-  { type: "photo", color: COLORS.terracotta, image: "/images/editorial/pose_04.jpg", label: "10 · Party" },
-  { type: "plain", color: COLORS.beige, label: "11 · Travel" },
-  { type: "photo", color: COLORS.gold, image: "/images/editorial/pose_05.jpg", label: "12 · Office" },
+  { color: COLORS.terracotta, image: "/images/editorial/pose_01.jpg", label: "01 · Forward" },
+  { color: COLORS.maroon, image: "/images/editorial/pose_02.jpg", label: "02 · Street" },
+  { color: COLORS.purple, image: "/images/editorial/pose_03.jpg", label: "03 · Backward" },
+  { color: COLORS.gold, image: "/images/editorial/pose_04.jpg", label: "04 · Folded" },
+  { color: COLORS.beige, image: "/images/editorial/pose_05.jpg", label: "05 · Casual" },
+  { color: COLORS.mauve, image: "/images/editorial/pose_06.jpg", label: "06 · Bold" },
+  { color: COLORS.sage, image: "/images/editorial/pose_07.jpg", label: "07 · Heritage" },
+  { color: COLORS.maroon, image: "/images/editorial/pose_08.jpg", label: "08 · Tower" },
+  { color: COLORS.mauve, image: "/images/editorial/pose_09.jpg", label: "09 · Ledge" },
+  { color: COLORS.terracotta, image: "/images/editorial/pose_10.jpg", label: "10 · Party" },
+  { color: COLORS.beige, image: "/images/editorial/pose_11.jpg", label: "11 · Travel" },
+  { color: COLORS.gold, image: "/images/editorial/pose_12.jpg", label: "12 · Office" },
 ];
 
 export default function EditorialOpening() {
@@ -490,67 +491,51 @@ export default function EditorialOpening() {
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "flex-end",
-                minHeight: "150px",
+                minHeight: "180px",
                 overflow: "hidden",
                 background: win.color,
                 color: COLORS.ink,
                 clipPath: "inset(0 0 0 0)",
               }}
             >
-              {win.type === "photo" ? (
-                <>
-                  <div style={{ position: "absolute", inset: "0 0 42px", overflow: "hidden" }}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={win.image}
-                      alt={`Model pose ${i + 1} — UrbanDana editorial`}
-                      style={{
-                        position: "absolute",
-                        inset: 0,
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                      }}
-                      loading="lazy"
-                    />
-                  </div>
-                  <p
-                    style={{
-                      position: "absolute",
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      height: "42px",
-                      padding: "10px 12px 0",
-                      borderTop: `clamp(8px, 1.1vw, 16px) solid ${COLORS.ink}`,
-                      background: win.color,
-                      color: COLORS.ink,
-                      fontFamily: FONT_SANS,
-                      fontSize: "13px",
-                      fontWeight: 600,
-                      letterSpacing: "0.06em",
-                      textTransform: "uppercase",
-                      margin: 0,
-                    }}
-                  >
-                    {win.label}
-                  </p>
-                </>
-              ) : (
-                <p
+              {/* ALL 12 windows now have model photos — no plain panels */}
+              <div style={{ position: "absolute", inset: "0 0 42px", overflow: "hidden" }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={win.image}
+                  alt={`Model pose ${i + 1} — UrbanDana editorial`}
                   style={{
-                    padding: "10px 12px 0",
-                    fontFamily: FONT_SANS,
-                    fontSize: "13px",
-                    fontWeight: 600,
-                    letterSpacing: "0.06em",
-                    textTransform: "uppercase",
-                    margin: 0,
+                    position: "absolute",
+                    inset: 0,
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    objectPosition: "center top",
                   }}
-                >
-                  {win.label}
-                </p>
-              )}
+                  loading="lazy"
+                />
+              </div>
+              <p
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  height: "42px",
+                  padding: "10px 12px 0",
+                  borderTop: `clamp(8px, 1.1vw, 16px) solid ${COLORS.ink}`,
+                  background: win.color,
+                  color: COLORS.ink,
+                  fontFamily: FONT_SANS,
+                  fontSize: "13px",
+                  fontWeight: 600,
+                  letterSpacing: "0.06em",
+                  textTransform: "uppercase",
+                  margin: 0,
+                }}
+              >
+                {win.label}
+              </p>
             </div>
           ))}
         </div>

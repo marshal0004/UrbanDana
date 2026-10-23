@@ -337,7 +337,7 @@ export default function EditorialDay() {
                   style={{
                     aspectRatio: useNativeScroll ? "16 / 9" : "auto",
                     flex: useNativeScroll ? "none" : "1 1 0",
-                    minHeight: useNativeScroll ? "0" : "90px",
+                    minHeight: useNativeScroll ? "0" : "clamp(160px, 24vh, 300px)",
                     marginTop: useNativeScroll ? "0" : "auto",
                     marginLeft: useNativeScroll ? "0" : "calc(-1 * clamp(18px, 2.3vw, 34px))",
                     marginRight: useNativeScroll ? "0" : "calc(-1 * clamp(18px, 2.3vw, 34px))",
@@ -349,7 +349,7 @@ export default function EditorialDay() {
                   <img
                     src={hour.photo}
                     alt={`Model pose for ${hour.time} — ${hour.title}`}
-                    style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+                    style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top" }}
                     loading="lazy"
                   />
                 </div>

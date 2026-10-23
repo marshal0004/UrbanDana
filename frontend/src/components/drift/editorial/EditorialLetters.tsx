@@ -228,8 +228,8 @@ export default function EditorialLetters() {
                 data-photo
                 style={{
                   position: "relative",
-                  aspectRatio: i === 0 ? "auto" : "4 / 3",
-                  minHeight: i === 0 ? "340px" : "0",
+                  aspectRatio: "auto",
+                  minHeight: i === 0 ? "340px" : "clamp(220px, 26vw, 360px)",
                   overflow: "hidden",
                 }}
               >
@@ -237,7 +237,7 @@ export default function EditorialLetters() {
                 <img
                   src={letter.photo}
                   alt={`Customer ${letter.sign} wearing UrbanDana`}
-                  style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+                  style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top" }}
                   loading="lazy"
                 />
               </div>

@@ -195,7 +195,7 @@ export default function EditorialRooms() {
             <img
               src="/images/editorial/pose_07.jpg"
               alt="Model wearing UrbanDana cap"
-              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top" }}
               loading="lazy"
             />
           </div>
@@ -214,12 +214,12 @@ export default function EditorialRooms() {
             overflow: "hidden",
           }}
         >
-          <div style={{ position: "relative", overflow: "hidden", minHeight: "0" }}>
+          <div style={{ position: "relative", overflow: "hidden", minHeight: "clamp(280px, 36vh, 460px)" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/images/editorial/pose_08.jpg"
               alt="Model wearing UrbanDana t-shirt"
-              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top" }}
               loading="lazy"
             />
           </div>
@@ -272,12 +272,12 @@ export default function EditorialRooms() {
             overflow: "hidden",
           }}
         >
-          <div style={{ position: "relative", overflow: "hidden" }}>
+          <div style={{ position: "relative", overflow: "hidden", minHeight: "clamp(220px, 28vh, 360px)" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/images/editorial/pose_09.jpg"
               alt="Model with UrbanDana combo"
-              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top" }}
               loading="lazy"
             />
           </div>
