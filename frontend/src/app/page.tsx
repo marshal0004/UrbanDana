@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { api, type Product } from "@/lib/api";
 import Hero from "@/components/sections/Hero";
+import DriftScrollVideo from "@/components/drift/DriftScrollVideo";
 import Model3DViewer from "@/components/sections/Model3DViewer";
 import ProductCarousel from "@/components/ProductCarousel";
 import PromoBanners from "@/components/sections/PromoBanners";
@@ -33,6 +34,12 @@ export default function HomePage() {
   return (
     <>
       <Hero />
+
+      {/* === DRIFT scroll-controlled cinematic video parallax ===
+           Placed directly below Hero, before the 3D model viewer.
+           Uses Canvas + 151 pre-extracted JPEG frames for buttery-smooth
+           60fps scroll-scrubbing (no <video> codec delays). */}
+      <DriftScrollVideo />
 
       {/* 3D Model Viewer — 2 caps + 2 t-shirts, interactive */}
       <Model3DViewer />
