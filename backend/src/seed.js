@@ -1,7 +1,7 @@
 /**
- * UrbanDana — Database seed (v6 — real pricing: caps ₹249, t-shirts ₹299, combos)
+ * UrbanDana — Database seed (v6 — real pricing: caps ₹249, t-shirts ₹349, combos)
  * - All Urbandana caps: ₹249 (24900 paise)
- * - All T-shirts: ₹299 (29900 paise)
+ * - All T-shirts: ₹349 (34900 paise)
  * - Bundles renamed to "Combo"
  * - No fake oldPrice strikethroughs (removed all inflated "was" prices)
  * - 4 combo products use the 4 real tshirt+cap combo photos
@@ -96,8 +96,8 @@ console.log(`Image pools: cap-color-sets=${CAP_COLOR_SETS.length} (5 imgs each),
 
 // All caps ₹249 (24900 paise), no fake oldPrice
 const CAP_PRICE = 24900;
-// All t-shirts ₹299 (29900 paise), no fake oldPrice
-const TEE_PRICE = 29900;
+// All t-shirts ₹349 (34900 paise), no fake oldPrice
+const TEE_PRICE = 34900;
 
 const CAP_PRODUCTS = [
   { title: "Signature Red Paisley", subtitle: "The cap that started it all",
@@ -422,7 +422,7 @@ function slugify(s) {
 }
 
 async function main() {
-  console.log("Seeding UrbanDana v6 (caps ₹249, t-shirts ₹299, combos, no fake prices)...");
+  console.log("Seeding UrbanDana v6 (caps ₹249, t-shirts ₹349, combos, no fake prices)...");
 
   await prisma.wishlist.deleteMany();
   await prisma.cartItem.deleteMany();
@@ -477,8 +477,8 @@ async function main() {
     console.log(`   [CAP ₹249] ${p.title}  (${imgs.length} images)`);
   }
 
-  // Combo products — use the 4 real combo photos, price = cap + tee = ₹548
-  const COMBO_PRICE = CAP_PRICE + TEE_PRICE; // ₹548
+  // Combo products — use the 4 real combo photos, price = cap + tee = ₹598
+  const COMBO_PRICE = CAP_PRICE + TEE_PRICE; // ₹598
   for (let i = 0; i < COMBO_PRODUCTS.length; i++) {
     const p = COMBO_PRODUCTS[i];
     const comboImg = COMBOS_IMGS[p.comboImgIndex];
@@ -510,10 +510,10 @@ async function main() {
         },
       },
     });
-    console.log(`   [COMBO ₹548] ${p.title}  (${imgs.length} images — combo photos)`);
+    console.log(`   [COMBO ₹598] ${p.title}  (${imgs.length} images — combo photos)`);
   }
 
-  // T-shirt products — all ₹299, no oldPrice
+  // T-shirt products — all ₹349, no oldPrice
   // Each t-shirt gets exactly 5 images: 1 main product photo + 4 angle views.
   // With 15 t-shirts and 15 color sets, each t-shirt gets a UNIQUE color set (1:1 mapping).
   for (let i = 0; i < TSHIRT_PRODUCTS.length; i++) {
@@ -544,7 +544,7 @@ async function main() {
         },
       },
     });
-    console.log(`   [TEE ₹299] ${p.title}  (${imgs.length} images — color set ${(i % TSHIRT_COLOR_SETS.length) + 1})`);
+    console.log(`   [TEE ₹349] ${p.title}  (${imgs.length} images — color set ${(i % TSHIRT_COLOR_SETS.length) + 1})`);
   }
 
   await prisma.cmsContent.create({
@@ -567,7 +567,7 @@ async function main() {
   console.log("   CMS content");
 
   console.log(`\nSeed v6 complete!`);
-  console.log(`  ${CAP_PRODUCTS.length} caps (₹249) + ${COMBO_PRODUCTS.length} combos (₹548) + ${TSHIRT_PRODUCTS.length} tees (₹299) = ${CAP_PRODUCTS.length + COMBO_PRODUCTS.length + TSHIRT_PRODUCTS.length} total`);
+  console.log(`  ${CAP_PRODUCTS.length} caps (₹249) + ${COMBO_PRODUCTS.length} combos (₹598) + ${TSHIRT_PRODUCTS.length} tees (₹349) = ${CAP_PRODUCTS.length + COMBO_PRODUCTS.length + TSHIRT_PRODUCTS.length} total`);
   console.log(`  Image folders: cap-color-sets (${CAP_COLOR_SETS.length} × 5 imgs = ${CAP_COLOR_SETS.length * 5}), tshirt-color-sets (${TSHIRT_COLOR_SETS.length} × 5 imgs = ${TSHIRT_COLOR_SETS.length * 5}), models (${MODELS_IMGS.length}), combos (${COMBOS_IMGS.length})`);
   console.log("  No fake oldPrice strikethroughs — all prices are real");
   console.log("  Admin login: admin@urbandana.in / admin123");
