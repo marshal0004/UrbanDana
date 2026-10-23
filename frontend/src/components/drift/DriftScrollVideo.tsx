@@ -143,6 +143,9 @@ export default function DriftScrollVideo({
               img.onload = () => {
                 loadedCount++;
                 if (loadedCount === totalFrames) setLoaded(true);
+                // Draw frame 0 as soon as the FIRST frame is loaded
+                // so the canvas isn't blank while remaining frames download
+                if (loadedCount === 1) drawFrame(0);
                 resolve(img);
               };
               img.onerror = () => reject(new Error(`Failed to load frame ${idx + 1}`));
@@ -236,7 +239,7 @@ export default function DriftScrollVideo({
           }
         });
       },
-      { rootMargin: "200px 0px" }
+      { rootMargin: "100% 0px" } // Start loading 1 full viewport before section enters
     );
     intersectionObs.observe(section);
 
