@@ -21,7 +21,18 @@ function listImages(subfolder) {
     .map((f) => `/uploads/products/${subfolder}/${f}`);
 }
 
-const CAPS_IMGS = listImages("caps");
+// === CAP COLOR SETS — 4 unique sets × 5 angle photos each ===
+// Each cap gets one full color set (5 images: main + 4 angles).
+// 24 caps cycle through 4 sets (6 caps per set).
+const CAP_ANGLE_LABELS = [
+  "product photo", "front view", "side view", "back view", "detail view",
+];
+const CAP_COLOR_SETS = [
+  { folder: "cap1", images: ["00_angle.jpg", "01_angle.jpg", "02_angle.jpg", "03_angle.jpg", "04_angle.jpg"] },
+  { folder: "cap2", images: ["00_angle.jpg", "01_angle.jpg", "02_angle.jpg", "03_angle.jpg", "04_angle.jpg"] },
+  { folder: "cap3", images: ["00_angle.jpg", "01_angle.jpg", "02_angle.jpg", "03_angle.jpg", "04_angle.jpg"] },
+  { folder: "cap4", images: ["00_angle.jpg", "01_angle.jpg", "02_angle.jpg", "03_angle.jpg", "04_angle.jpg"] },
+];
 const MODELS_IMGS = listImages("models");
 const COMBOS_IMGS = listImages("combos");
 
@@ -77,7 +88,7 @@ const TSHIRT_COLOR_SETS = [
 // Angle labels for the 5 image positions (used in alt text)
 const TSHIRT_ANGLE_LABELS = ["product photo", "front view", "side view", "back view", "detail view"];
 
-console.log(`Image pools: caps=${CAPS_IMGS.length}, tshirt-color-sets=${TSHIRT_COLOR_SETS.length} (5 imgs each), models=${MODELS_IMGS.length}, combos=${COMBOS_IMGS.length}`);
+console.log(`Image pools: cap-color-sets=${CAP_COLOR_SETS.length} (5 imgs each), tshirt-color-sets=${TSHIRT_COLOR_SETS.length} (5 imgs each), models=${MODELS_IMGS.length}, combos=${COMBOS_IMGS.length}`);
 
 // All caps ₹249 (24900 paise), no fake oldPrice
 const CAP_PRICE = 24900;
@@ -432,10 +443,11 @@ async function main() {
   console.log("   Admin: admin@urbandana.in / admin123");
 
   // Cap products — all ₹249, no oldPrice
-  const capImgsPerProduct = Math.max(1, Math.floor(CAPS_IMGS.length / CAP_PRODUCTS.length));
+  // Each cap gets one full color set (5 images: main + 4 angles)
   for (let i = 0; i < CAP_PRODUCTS.length; i++) {
     const p = CAP_PRODUCTS[i];
-    let imgs = CAPS_IMGS.slice(i * capImgsPerProduct, (i + 1) * capImgsPerProduct);
+    const capSet = CAP_COLOR_SETS[i % CAP_COLOR_SETS.length];
+    let imgs = capSet.images.map(img => `/uploads/products/caps/${capSet.folder}/${img}`);
     if (COMBOS_IMGS.length > 0) {
       imgs = [...imgs, COMBOS_IMGS[i % COMBOS_IMGS.length]];
     }
@@ -448,7 +460,7 @@ async function main() {
         rating: p.rating, reviews: p.reviews, stock: p.stock,
         isFeatured: p.isFeatured, isLimited: p.isLimited,
         images: {
-          create: imgs.map((url, idx) => ({ url, alt: `${p.title} — view ${idx + 1}`, position: idx })),
+          create: imgs.map((url, idx) => ({ url, alt: `${p.title} — ${CAP_ANGLE_LABELS[idx] || `view ${idx + 1}`}`, position: idx })),
         },
         variants: {
           create: [
@@ -466,11 +478,13 @@ async function main() {
   for (let i = 0; i < COMBO_PRODUCTS.length; i++) {
     const p = COMBO_PRODUCTS[i];
     const comboImg = COMBOS_IMGS[p.comboImgIndex];
-    // Use 2-3 combo shots + a few cap images for variety
+    // Use 2-3 combo shots + one cap image from the color sets
+    const capSet = CAP_COLOR_SETS[i % CAP_COLOR_SETS.length];
+    const capImgUrl = `/uploads/products/caps/${capSet.folder}/${capSet.images[0]}`;
     const imgs = [
       comboImg,
       COMBOS_IMGS[(p.comboImgIndex + 1) % COMBOS_IMGS.length],
-      CAPS_IMGS[i * 10], // one cap image
+      capImgUrl, // one cap image from the color sets
     ].filter(Boolean);
 
     await prisma.product.create({
@@ -482,7 +496,7 @@ async function main() {
         rating: p.rating, reviews: p.reviews, stock: p.stock,
         isFeatured: p.isFeatured, isLimited: p.isLimited,
         images: {
-          create: imgs.map((url, idx) => ({ url, alt: `${p.title} — view ${idx + 1}`, position: idx })),
+          create: imgs.map((url, idx) => ({ url, alt: `${p.title} — ${CAP_ANGLE_LABELS[idx] || `view ${idx + 1}`}`, position: idx })),
         },
         variants: {
           create: [
@@ -550,7 +564,7 @@ async function main() {
 
   console.log(`\nSeed v6 complete!`);
   console.log(`  ${CAP_PRODUCTS.length} caps (₹249) + ${COMBO_PRODUCTS.length} combos (₹548) + ${TSHIRT_PRODUCTS.length} tees (₹299) = ${CAP_PRODUCTS.length + COMBO_PRODUCTS.length + TSHIRT_PRODUCTS.length} total`);
-  console.log(`  Image folders: caps (${CAPS_IMGS.length}), tshirt-color-sets (${TSHIRT_COLOR_SETS.length} × 5 imgs = ${TSHIRT_COLOR_SETS.length * 5}), models (${MODELS_IMGS.length}), combos (${COMBOS_IMGS.length})`);
+  console.log(`  Image folders: cap-color-sets (${CAP_COLOR_SETS.length} × 5 imgs = ${CAP_COLOR_SETS.length * 5}), tshirt-color-sets (${TSHIRT_COLOR_SETS.length} × 5 imgs = ${TSHIRT_COLOR_SETS.length * 5}), models (${MODELS_IMGS.length}), combos (${COMBOS_IMGS.length})`);
   console.log("  No fake oldPrice strikethroughs — all prices are real");
   console.log("  Admin login: admin@urbandana.in / admin123");
 }
