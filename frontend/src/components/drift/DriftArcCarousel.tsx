@@ -21,11 +21,12 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { api, absUrl, type Product } from "@/lib/api";
+import Image from "next/image";
 
 const CARD_WIDTH = 280; // px
 const CARD_HEIGHT = 380; // px
 const GAP = 24; // px
-const SPEED_PX_PER_SEC = 50; // normal speed
+const SPEED_PX_PER_SEC = 80; // faster speed (was 50)
 
 export default function DriftArcCarousel() {
   const reduced = useReducedMotion();
@@ -99,7 +100,7 @@ export default function DriftArcCarousel() {
         const y = absD * 60; // more vertical drop — creates the C arc (was 30)
 
         card.style.transform = `translate3d(0, ${y}px, ${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`;
-        card.style.opacity = `${Math.max(0.25, 1 - absD * 0.5)}`;
+        card.style.opacity = "1"; // cards stay fully clear — no fading
         card.style.zIndex = `${Math.round(100 - absD * 10)}`;
       });
     };
@@ -230,18 +231,15 @@ export default function DriftArcCarousel() {
                       boxShadow: "0 20px 50px -20px rgba(0,0,0,0.3)",
                     }}
                   >
-                    {/* Product image — fills the card, 3D attractive */}
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    {/* Product image — next/image for Vercel CDN optimization (WebP, resize, edge cache) */}
+                    <Image
                       src={absUrl(product.images[0]?.url || "")}
                       alt={product.title}
-                      className="absolute inset-0 w-full h-full"
-                      style={{
-                        objectFit: "cover",
-                        objectPosition: "center top",
-                      }}
+                      fill
+                      sizes="280px"
+                      style={{ objectFit: "cover", objectPosition: "center top" }}
                       loading="lazy"
-                      decoding="async"
+                      placeholder="empty"
                     />
                     {/* Dark gradient at bottom for caption legibility */}
                     <div

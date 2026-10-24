@@ -18,6 +18,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { absUrl, type Product } from "@/lib/api";
+import Image from "next/image";
 
 const CARD_WIDTH = 240; // px
 const CARD_HEIGHT = 320; // px
@@ -151,24 +152,23 @@ export default function DriftInfiniteRow({
               style={{
                 width: `${CARD_WIDTH}px`,
                 height: `${CARD_HEIGHT}px`,
-                marginRight: `${GAP}px`, // gap as marginRight, NOT CSS gap
+                marginRight: `${GAP}px`,
+                position: "relative", // gap as marginRight, NOT CSS gap
                 borderRadius: "8px",
                 overflow: "hidden",
                 background: "#ffffff",
                 boxShadow: "0 12px 30px -15px rgba(0,0,0,0.3)",
               }}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              {/* Product image — next/image for Vercel CDN optimization */}
+              <Image
                 src={absUrl(product.images[0]?.url || "")}
                 alt={product.title}
-                className="w-full h-full"
-                style={{
-                  objectFit: "cover",
-                  objectPosition: "center top",
-                }}
+                fill
+                sizes="240px"
+                style={{ objectFit: "cover", objectPosition: "center top" }}
                 loading="lazy"
-                decoding="async"
+                placeholder="empty"
               />
               {/* Dark gradient at bottom for caption */}
               <div
