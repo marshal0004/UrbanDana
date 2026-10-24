@@ -123,7 +123,15 @@ export default function DriftScrollVideo({
       const iw = img.naturalWidth || img.width;
       const ih = img.naturalHeight || img.height;
       if (!iw || !ih) return;
-      const scale = Math.max(cw / iw, ch / ih);
+      // For PORTRAIT images (taller than wide, like the cathedral video
+      // 834×1112), use CONTAIN fit — shows the ENTIRE image (t-shirt fully
+      // visible top to bottom) with the ink background filling the sides.
+      // For LANDSCAPE images (wider than tall, like the botanica video
+      // 1278×720), use COVER fit — fills the canvas completely (looks good).
+      const isPortrait = ih > iw;
+      const scale = isPortrait
+        ? Math.min(cw / iw, ch / ih)  // contain — entire image visible
+        : Math.max(cw / iw, ch / ih); // cover — fill canvas
       const dw = iw * scale;
       const dh = ih * scale;
       const dx = (cw - dw) / 2;
