@@ -1,4 +1,10 @@
 "use client";
+// /home/z/my-project/UrbanDana/frontend/src/components/sections/Hero.tsx
+//
+// Hero section with VIDEO backgrounds (parallax cap videos) — NO dark overlay.
+// Cap colors are fully visible (no fade/gradient covering the video).
+// 3 slides crossfade every 6s, each with a different cap color video.
+
 import Link from "next/link";
 import { useEffect, useState, useCallback } from "react";
 import { ArrowRight, Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
@@ -15,9 +21,8 @@ const SLIDES = [
     subtitle: "One cap. Three looks. Wear it forward, backward, or fold it low. Handcrafted in India. No restocks. No rules.",
     primaryCta: { href: "/shop", label: "Shop the Drop" },
     secondaryCta: { href: "/about", label: "The Urbandana Story" },
-    bgImage: "/images/hero-cap-red.jpg",
+    bgVideo: "/videos/hero/hero-bg-red.mp4",
     accent: "#c8102e",
-    overlay: "linear-gradient(90deg, rgba(10,10,10,0.85) 0%, rgba(10,10,10,0.5) 60%, rgba(10,10,10,0.3) 100%)",
   },
   {
     pill: "LIMITED — 200 PIECES ONLY",
@@ -29,9 +34,8 @@ const SLIDES = [
     subtitle: "Sunset Art Cap — hand-drawn sun motif in golden orange against deep indigo. Numbered authenticity tag. Only 200 made.",
     primaryCta: { href: "/product/sunset-art-cap", label: "Get the Sunset Art Cap" },
     secondaryCta: { href: "/shop?category=Limited Edition", label: "All Limited Drops" },
-    bgImage: "/images/hero-cap-sunset.jpg",
+    bgVideo: "/videos/hero/hero-bg-blue.mp4",
     accent: "#d4a017",
-    overlay: "linear-gradient(90deg, rgba(10,10,10,0.85) 0%, rgba(10,10,10,0.5) 60%, rgba(10,10,10,0.3) 100%)",
   },
   {
     pill: "BEST VALUE — COMBO PACKS",
@@ -43,9 +47,8 @@ const SLIDES = [
     subtitle: "All 6 signature colourways in a premium wooden gift box with numbered certificate. The ultimate Urbandana collector's item.",
     primaryCta: { href: "/shop?category=Combo", label: "Get Combo Packs" },
     secondaryCta: { href: "/shop", label: "Shop All" },
-    bgImage: "/images/hero-cap-green.jpg",
+    bgVideo: "/videos/hero/hero-bg-green.mp4",
     accent: "#10b981",
-    overlay: "linear-gradient(90deg, rgba(10,10,10,0.85) 0%, rgba(10,10,10,0.5) 60%, rgba(10,10,10,0.3) 100%)",
   },
 ];
 
@@ -69,16 +72,26 @@ export default function Hero() {
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      {/* Background — real Urbandana cap photo, changes per slide */}
-      <div className="absolute inset-0 -z-10 transition-all duration-1000">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          key={slide.bgImage}
-          src={slide.bgImage}
-          alt=""
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0" style={{ background: slide.overlay }} />
+      {/* Background — parallax cap VIDEO, NO dark overlay (cap colors fully visible) */}
+      <div className="absolute inset-0 -z-10">
+        {SLIDES.map((s, i) => (
+          <video
+            key={s.bgVideo}
+            src={s.bgVideo}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
+            style={{
+              opacity: active === i ? 1 : 0,
+              objectPosition: "center center",
+            }}
+            aria-hidden={active !== i}
+          />
+        ))}
+        {/* NO dark overlay — cap colors are fully visible */}
       </div>
 
       {/* Slide indicators (right side) */}
@@ -161,7 +174,7 @@ export default function Hero() {
           <div className="mt-8 sm:mt-14 flex flex-wrap items-center gap-x-8 gap-y-3 text-[11px] uppercase tracking-widest text-paper/60">
             <span>★ 4.8/5 from 700+ reviews</span>
             <span className="opacity-40">|</span>
-            <span>Caps ₹249 · T-Shirts ₹299</span>
+            <span>Caps ₹249 · T-Shirts ₹349</span>
             <span className="opacity-40">|</span>
             <span>7-day easy returns</span>
             <span className="opacity-40">|</span>
