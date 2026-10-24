@@ -58,7 +58,7 @@ export default function HeroMarquee() {
       style={{
         background: "#6e0f2e",
         color: "#f4f1ee",
-        height: "40px",
+        height: "60px",
         display: "flex",
         alignItems: "center",
       }}
