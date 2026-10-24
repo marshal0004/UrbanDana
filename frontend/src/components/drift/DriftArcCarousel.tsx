@@ -22,6 +22,8 @@ import Link from "next/link";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { api, absUrl, type Product } from "@/lib/api";
 import Image from "next/image";
+import { useShop } from "@/context/ShopContext";
+import { ShoppingBag } from "lucide-react";
 
 const CARD_WIDTH = 280; // px
 const CARD_HEIGHT = 380; // px
@@ -34,6 +36,8 @@ export default function DriftArcCarousel() {
   const trackRef = useRef<HTMLDivElement>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [paused, setPaused] = useState(false);
+  const { addToCart } = useShop();
+  const [adding, setAdding] = useState<string | null>(null);
 
   // Fetch real products from backend
   useEffect(() => {
@@ -249,30 +253,26 @@ export default function DriftArcCarousel() {
                           "linear-gradient(180deg, rgba(0,0,0,0) 50%, rgba(0,0,0,0.85) 100%)",
                       }}
                     />
-                    {/* Caption — name + price */}
+                    {/* Caption — name + price + Add to Bag */}
                     <div className="absolute bottom-4 left-4 right-4 text-white">
-                      <p
-                        style={{
-                          fontFamily: "Georgia, 'Times New Roman', serif",
-                          fontSize: "1.125rem",
-                          fontWeight: 500,
-                          lineHeight: 1.2,
-                          margin: "0 0 4px 0",
-                        }}
-                      >
-                        {product.title}
-                      </p>
-                      <p
-                        style={{
-                          fontFamily: "Inter, system-ui, sans-serif",
-                          fontSize: "0.875rem",
-                          fontWeight: 600,
-                          color: "#e3b867",
-                          margin: 0,
-                        }}
-                      >
-                        ₹{Math.round(product.price / 100)}
-                      </p>
+                      <p style={{ fontFamily: "Georgia, 'Times New Roman', serif", fontSize: "1.125rem", fontWeight: 500, lineHeight: 1.2, margin: "0 0 4px 0" }}>{product.title}</p>
+                      <div className="flex items-center gap-3">
+                        <p style={{ fontFamily: "Inter, system-ui, sans-serif", fontSize: "0.875rem", fontWeight: 600, color: "#e3b867", margin: 0 }}>₹{Math.round(product.price / 100)}</p>
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setAdding(product.id);
+                            addToCart(product).finally(() => setTimeout(() => setAdding(null), 600));
+                          }}
+                          disabled={adding === product.id}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-semibold uppercase tracking-[0.15em] transition-all duration-300 hover:scale-105"
+                          style={{ background: "#0b0a0a", color: "#f4f1ee", border: "1px solid #e3b867" }}
+                        >
+                          <ShoppingBag className="w-3 h-3" />
+                          {adding === product.id ? "Adding…" : "Add to Bag"}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </Link>

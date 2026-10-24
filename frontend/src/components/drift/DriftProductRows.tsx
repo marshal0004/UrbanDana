@@ -44,7 +44,6 @@ export default function DriftProductRows() {
   const tees = allProducts.filter((p) => p.category === "T-Shirts");
   const combos = allProducts.filter((p) => p.category === "Combo");
   const limited = allProducts.filter((p) => p.category === "Limited Edition");
-  const visors = allProducts.filter((p) => p.category === "Visors");
 
   if (loading) {
     return (
@@ -104,15 +103,8 @@ export default function DriftProductRows() {
         />
       )}
 
-      {/* === ROW 6: Visors (L→R) — if any === */}
-      {visors.length > 0 && (
-        <DriftInfiniteRow
-          products={visors}
-          direction="ltr"
-          eyebrow="Adjustable · Sun Visor"
-          title="Visors"
-        />
-      )}
+      {/* Visors row removed per user request */}
+
     </>
   );
 }
