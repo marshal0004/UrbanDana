@@ -68,7 +68,7 @@ export default function Hero() {
 
   return (
     <section
-      className="relative min-h-[88vh] flex flex-col justify-end overflow-hidden"
+      className="relative min-h-[92vh] flex flex-col justify-end overflow-hidden"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
@@ -91,7 +91,15 @@ export default function Hero() {
             aria-hidden={active !== i}
           />
         ))}
-        {/* NO dark overlay — cap colors are fully visible */}
+        {/* Subtle bottom gradient ONLY — keeps cap colors visible at top,
+            makes white text readable at bottom. NOT a full dark overlay. */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 35%, rgba(0,0,0,0.35) 65%, rgba(0,0,0,0.55) 100%)",
+          }}
+        />
       </div>
 
       {/* Slide indicators (right side) */}

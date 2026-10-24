@@ -1,5 +1,6 @@
 "use client";
 import Hero from "@/components/sections/Hero";
+import HeroMarquee from "@/components/drift/HeroMarquee";
 import { CathedralScrollVideo, BotanicaScrollVideo } from "@/components/drift/scrollVideoSections";
 import EditorialOpening from "@/components/drift/editorial/EditorialOpening";
 import EditorialRooms from "@/components/drift/editorial/EditorialRooms";
@@ -17,6 +18,9 @@ export default function HomePage() {
   return (
     <>
       <Hero />
+
+      {/* === MARQUEE STRIP — infinite horizontal scroll, touches Hero + ScrollVideo === */}
+      <HeroMarquee />
 
       {/* === DRIFT scroll-controlled cinematic video #1 (Cathedral → T-Shirt) === */}
       <CathedralScrollVideo />
