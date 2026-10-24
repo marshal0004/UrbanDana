@@ -1,7 +1,7 @@
 "use client";
 import Hero from "@/components/sections/Hero";
 import HeroMarquee from "@/components/drift/HeroMarquee";
-import { CathedralScrollVideo, BotanicaScrollVideo } from "@/components/drift/scrollVideoSections";
+import { CathedralScrollVideo, BotanicaScrollVideo, FabricRevealScrollVideo } from "@/components/drift/scrollVideoSections";
 import EditorialOpening from "@/components/drift/editorial/EditorialOpening";
 import EditorialRooms from "@/components/drift/editorial/EditorialRooms";
 import EditorialLetters from "@/components/drift/editorial/EditorialLetters";
@@ -45,6 +45,12 @@ export default function HomePage() {
            Row 5: Limited Edition (R→L)
            Each row auto-scrolls infinitely, pauses on hover. */}
       <DriftProductRows />
+
+      {/* === DRIFT scroll-controlled cinematic video #3 (Fabric Reveal → Heritage Tee) ===
+           Placed AFTER product rows (after Limited Edition row).
+           Same Canvas + frames technique, same contain/cover framing logic.
+           250 frames at 1280×720 (landscape → cover fit, fills canvas). */}
+      <FabricRevealScrollVideo />
 
       {/* Restored sections — after all products */}
       <Stats />
