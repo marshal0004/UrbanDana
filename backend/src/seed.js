@@ -36,6 +36,11 @@ const CAP_COLOR_SETS = [
   { folder: "cap6", images: ["00_angle.jpg", "01_angle.jpg", "02_angle.jpg", "03_angle.jpg", "04_angle.jpg"] },
   { folder: "cap7", images: ["00_angle.jpg", "01_angle.jpg", "02_angle.jpg", "03_angle.jpg", "04_angle.jpg"] },
   { folder: "cap8", images: ["00_angle.jpg", "01_angle.jpg", "02_angle.jpg", "03_angle.jpg", "04_angle.jpg"] },
+  { folder: "cap9", images: ["00_angle.jpg", "01_angle.jpg", "02_angle.jpg", "03_angle.jpg", "04_angle.jpg"] },
+  { folder: "cap10", images: ["00_angle.jpg", "01_angle.jpg", "02_angle.jpg", "03_angle.jpg", "04_angle.jpg"] },
+  { folder: "cap11", images: ["00_angle.jpg", "01_angle.jpg", "02_angle.jpg", "03_angle.jpg", "04_angle.jpg"] },
+  { folder: "cap12", images: ["00_angle.jpg", "01_angle.jpg", "02_angle.jpg", "03_angle.jpg", "04_angle.jpg"] },
+  { folder: "cap13", images: ["00_angle.jpg", "01_angle.jpg", "02_angle.jpg", "03_angle.jpg", "04_angle.jpg"] },
 ];
 const MODELS_IMGS = listImages("models");
 const COMBOS_IMGS = listImages("combos");
